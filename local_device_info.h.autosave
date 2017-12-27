@@ -1,0 +1,13 @@
+#ifndef USER_H
+#define USER_H
+
+
+class Stru_device_info
+{
+public:
+    Stru_device_info();
+private:
+    long 
+};
+
+#endif // USER_H

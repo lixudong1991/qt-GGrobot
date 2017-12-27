@@ -1,0 +1,64 @@
+<RCC>
+    <qresource prefix="/sysButton">
+        <file alias="arrow_down">img/sysButton/arrow_down.png</file>
+        <file alias="close">img/sysButton/close.png</file>
+        <file alias="close_hover">img/sysButton/close_hover.png</file>
+        <file alias="close_pressed">img/sysButton/close_pressed.png</file>
+        <file alias="feedback">img/sysButton/feedback.png</file>
+        <file alias="feedback_hover">img/sysButton/feedback_hover.png</file>
+        <file alias="feedback_pressed">img/sysButton/feedback_pressed.png</file>
+        <file alias="medal">img/sysButton/medal.png</file>
+        <file alias="medal_hover">img/sysButton/medal_hover.png</file>
+        <file alias="medal_pressed">img/sysButton/medal_pressed.png</file>
+        <file alias="menu">img/sysButton/menu.png</file>
+        <file alias="menu_hover">img/sysButton/menu_hover.png</file>
+        <file alias="menu_pressed">img/sysButton/menu_pressed.png</file>
+        <file alias="min">img/sysButton/min.png</file>
+        <file alias="min_hover">img/sysButton/min_hover.png</file>
+        <file alias="min_pressed">img/sysButton/min_pressed.png</file>
+    </qresource>
+    <qresource prefix="/toolWidget">
+        <file alias="gongNeng">img/toolWidget/gongNeng.png</file>
+        <file alias="jiaSu">img/toolWidget/jiaSu.png</file>
+        <file alias="menZhen">img/toolWidget/menZhen.png</file>
+        <file alias="muMa">img/toolWidget/muMa.png</file>
+        <file alias="qingLi">img/toolWidget/qingLi.png</file>
+        <file alias="tiJian">img/toolWidget/tiJian.png</file>
+        <file alias="expert">img/toolWidget/expert.png</file>
+        <file alias="repair">img/toolWidget/repair.png</file>
+    </qresource>
+    <qresource prefix="/mainMenu">
+        <file alias="setting">img/mainMenu/setting.png</file>
+    </qresource>
+    <qresource prefix="/loginDialog">
+        <file alias="arrowDown">img/loginDialog/arrowDown.png</file>
+        <file alias="delete">img/loginDialog/delete.png</file>
+        <file alias="attention">img/loginDialog/attention.png</file>
+        <file alias="1">img/loginDialog/1.png</file>
+        <file alias="2">img/loginDialog/2.png</file>
+        <file alias="3">img/loginDialog/3.png</file>
+        <file alias="4">img/loginDialog/4.png</file>
+        <file alias="5">img/loginDialog/5.png</file>
+        <file alias="6">img/loginDialog/6.png</file>
+        <file alias="7">img/loginDialog/7.png</file>
+        <file alias="8">img/loginDialog/8.png</file>
+    </qresource>
+    <qresource prefix="/shadow">
+        <file alias="shadow_left">img/shadow/shadow_left.png</file>
+        <file alias="shadow_left_bottom">img/shadow/shadow_left_bottom.png</file>
+        <file alias="shadow_left_top">img/shadow/shadow_left_top.png</file>
+        <file alias="shadow_right">img/shadow/shadow_right.png</file>
+        <file alias="shadow_right_top">img/shadow/shadow_right_top.png</file>
+        <file alias="shadow_top">img/shadow/shadow_top.png</file>
+        <file alias="shadow_right_bottom">img/shadow/shadow_right_bottom.png</file>
+        <file alias="shadow_bottom">img/shadow/shadow_bottom.png</file>
+    </qresource>
+    <qresource prefix="/qss">
+        <file alias="wid">style/widget.qss</file>
+        <file alias="infol">style/bb.jpg</file>
+		<file alias="wall">style/wall.png</file>
+		<file alias="content">style/content.png</file>
+		<file alias="export">style/export.png</file>
+		<file alias="ba">style/ba.jpg</file>
+    </qresource>
+</RCC>
