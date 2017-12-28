@@ -27,10 +27,15 @@ ExportWidget::~ExportWidget()
     {
         return;
     }
-    QMap<int, QList<Substationdata>*>::iterator iter;
+    QMap<int, QList<Substationdata*>*>::iterator iter;
     for( iter=data->begin(); iter!=data->end(); ++iter)
     {
-        delete iter.value();
+        const QList<Substationdata*>* tem=iter.value();
+        for(auto &i:*tem)
+        {
+                delete i;
+        }
+        delete tem;
     }
     delete data;
 }
@@ -201,30 +206,30 @@ void ExportWidget::posSizeChange(QString s)
          dataTable->setRowCount(li->size());
          for(int j=0;j<li->size();j++)
          {
-             const Substationdata &tem=li->at(j);
-             QTableWidgetItem *item0=new QTableWidgetItem(QString::number(tem.getPos()));
+             auto &tem=li->at(j);
+             QTableWidgetItem *item0=new QTableWidgetItem(QString::number(tem->getPos()));
              item0->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
              dataTable->setItem(j,0,item0);
-             QTableWidgetItem *item1=new QTableWidgetItem(tem.getReportTime());
+             QTableWidgetItem *item1=new QTableWidgetItem(tem->getReportTime());
              item1->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
              dataTable->setItem(j,1,item1);
              QString types,dat;
-             switch (tem.getDatatype()) {
+             switch (tem->getDatatype()) {
              case 0:
                  types=CH("开关状态");
-                 dat=tem.getData()==0?CH("关"):CH("开");
+                 dat=tem->getData()==0?CH("关"):CH("开");
                  break;
              case 1:
                  types=CH("油位");
-                 dat=QString::number(tem.getData());
+                 dat=QString::number(tem->getData());
                  break;
              case 2:
                  types=CH("红外");
-                 dat=QString::number(tem.getData());
+                 dat=QString::number(tem->getData());
                  break;
              default:
                  types=CH("其它");
-                 dat=QString::number(tem.getData());
+                 dat=QString::number(tem->getData());
                  break;
              }
          QTableWidgetItem *item2=new QTableWidgetItem(types);
@@ -241,7 +246,7 @@ void ExportWidget::initsolts()
      connect(deviceId,SIGNAL(currentIndexChanged(int)),this,SLOT(deviceIdchange(int)));
      connect(exportbt,SIGNAL(clicked(bool)),SLOT(exportCsv()));
      connect(selectbt,SIGNAL(clicked(bool)),this,SLOT(selectData()));
-     connect(&thr,SIGNAL(threadEnd(QMap<int,QList<Substationdata>*>*)),this,SLOT(getDatamap(QMap<int,QList<Substationdata>*>*)));
+     connect(&thr,SIGNAL(threadEnd(QMap<int,QList<Substationdata*>*>*)),this,SLOT(getDatamap(QMap<int,QList<Substationdata*>*>*)));
      connect(dataTable,SIGNAL(cellClicked(int,int)),this,SLOT(showImage(int,int)));
      connect(&downt,SIGNAL(finish(QString)),this,SLOT(setImage(QString)));
      connect(downima,SIGNAL(error()),this,SLOT(loadingtimeout()));
@@ -259,7 +264,7 @@ void ExportWidget::loadingtimeout()
  void ExportWidget::showImage(int row,int)
  {
      int pos=posbox->currentText().toInt();
-     QString s=data->value(pos)->at(row).getPictureName();
+     QString s=data->value(pos)->at(row)->getPictureName();
      QFile file(EXPORTPATH+s);
       if(file.exists())
       {
@@ -318,16 +323,21 @@ void ExportWidget::exportCsv()
    downima->loadingStart(true,CH("正在导出..."));
    // qDebug()<<"filename: "<<filename<<"  " <<"startTime: "<<beginTime->text()<<"  " <<"stopTime: "<<endTime->text()<<"\n"<<"startPos: "<<beginPos->currentText()<<"  " <<"stopPos: "<<endPos->currentText()<<"  " <<"deviceId: "<<userDevices->at(deviceId->currentIndex()).getTerminalId()<<"\n";
 }
-void ExportWidget::getDatamap(QMap<int,QList<Substationdata>*>* v)
+void ExportWidget::getDatamap(QMap<int,QList<Substationdata*>*>* v)
 {
-      if(data!=NULL)
+     if(data!=NULL)
       {
-          QMap<int, QList<Substationdata>*>::iterator iter;
-           for( iter=data->begin(); iter!=data->end(); ++iter)
-           {
-                delete iter.value();
-            }
-        delete data;
+          QMap<int, QList<Substationdata*>*>::iterator iter;
+          for( iter=data->begin(); iter!=data->end(); ++iter)
+          {
+              const QList<Substationdata*>* tem=iter.value();
+              for(auto &i:*tem)
+              {
+                      delete i;
+              }
+              delete tem;
+          }
+          delete data;
        }
        dataTable->clearContents();
         data=v;
@@ -337,7 +347,7 @@ void ExportWidget::getDatamap(QMap<int,QList<Substationdata>*>* v)
         selectbt->setEnabled(true);
         disconnect(posbox,SIGNAL(currentIndexChanged(QString)),this,SLOT(posSizeChange(QString)));
         posbox->clear();
-       QMapIterator<int,QList<Substationdata>*> i(*data);
+       QMapIterator<int,QList<Substationdata*>*> i(*data);
        while (i.hasNext()) {
                i.next();
                posbox->addItem(QString::number(i.key()));

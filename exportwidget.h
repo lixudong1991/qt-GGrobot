@@ -27,7 +27,7 @@ private slots:
     void posSizeChange(QString);
     void exportCsv();
     void selectData();
-    void getDatamap(QMap<int,QList<Substationdata>*>*);
+    void getDatamap(QMap<int,QList<Substationdata*>*>*);
     void showImage(int,int);
     void setImage(QString);
     void  loadingtimeout();
@@ -58,7 +58,7 @@ private:
     QLabel* info;
 
     const QList<Userterminal> *userDevices;
-    QMap<int,QList<Substationdata>*> *data=NULL;
+    QMap<int,QList<Substationdata*>*> *data=NULL;
     FindDataThread thr;
 
     void initLabel();

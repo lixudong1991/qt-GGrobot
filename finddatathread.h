@@ -35,7 +35,7 @@ class  FindDataThread: public QThread
     }
     bool  model=true;
 signals:
-    void  threadEnd(QMap<int,QList<Substationdata>*>*);
+    void  threadEnd(QMap<int,QList<Substationdata*>*>*);
 private slots:
 
 protected:
@@ -48,7 +48,7 @@ private:
     QString startpos;
     QString stoppos;
 
-    QMap<int,QList<Substationdata>*> *datamap;
+    QMap<int,QList<Substationdata*>*> *datamap;
 
 };
 #endif // FINDDATATHREAD_H

@@ -300,9 +300,10 @@ void  CloudWidget::setLabelSize(int wid,int hei)
     normalImageL->setFixedSize((width-40)/2,h/2-20);
     cloudL->setFixedSize(((h/2-20)/3)*4,h/2-20);
     cloudVideo->setFixedSize((width-16)/2,h/2-20);
-    infoL->setSize((width-16)/2,h/2-20);
+    infoL->setSize((width-14)/2,h/2-18);
     infoL->hide();
-    positionL->setFixedSize((width-6)/2,h/2-6);
+    positionL->setFixedSize((width-15)/2,h/2-12);
+    positionL->setBackImg((width-16)/2,h/2-12);
     infraredImageL->setFixedSize((width-40)/2,h/2-20);
     posinit();
 }
