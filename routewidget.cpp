@@ -7,6 +7,7 @@ RouteWidget::RouteWidget(QWidget *parent) :
 }
 void RouteWidget::setBackImg(int w ,int h)
 {
+     qDebug()<<QString::number(w)<<" "<<QString::number(h);
     this->setAutoFillBackground(true); // 这句要加上, 否则可能显示不出背景图.
     QPalette palette = this->palette();
     palette.setBrush(QPalette::Window,
@@ -21,8 +22,9 @@ RouteWidget::~RouteWidget()
 }
 void RouteWidget::paintEvent(QPaintEvent*)
 {
-   /*QPainter painter(this);
+    QPainter painter(this);
     painter.setPen(Qt::NoPen);
-    painter.setBrush(Qt::white);
-    painter.drawPixmap(QRect(0, 2, this->width()-2, this->height()-5), QPixmap(":/qss/infol"));*/
+    painter.setBrush(Qt::blue);
+    painter.drawEllipse(QPoint(50,50),5,5);
+
 }
