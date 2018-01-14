@@ -20,7 +20,7 @@ void ExportDownima::timeout()
     timer->stop();
     LOGE("-----------loading timeout-----------");
     loading_widget->start(false);
-    QMessageBox::critical(this,"error",CH("³ÌÐò´íÎó"));
+   // QMessageBox::critical(this,"error",CH("³ÌÐò´íÎó"));
     emit error();
     this->close();
 }

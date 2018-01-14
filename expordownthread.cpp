@@ -8,9 +8,11 @@ Expordownthread::~Expordownthread()
 {
     if(isRunning())
    {
+        mutex.lock();
         e=false;
         cond.wakeOne();
-        wait();
+        mutex.unlock();
+        wait();     
     }
 }
 
@@ -22,12 +24,16 @@ void  Expordownthread::run()
     int port =ftpconfig.value("ftpserver/port").toInt();
     QString user= ftpconfig.value("ftpserver/user").toString();
     QString pwd=ftpconfig.value("ftpserver/pwd").toString();
-    while(e)
+    while(true)
     {
-        mutex.lock();
-        LOGI("exportdownthread wait");
-        cond.wait(&mutex);    
-        if(e){
+           mutex.lock();
+           LOGI("exportdownthread wait");
+           cond.wait(&mutex);
+            if(!e)
+            {
+               mutex.unlock();
+               break;
+            }
             LOGI("exportdownthread ftp download: "<<EXPORTPATH.toStdString()<<filename.toStdString());
             FtpManager ftpmanager;
             ftpmanager.setHostPort(ip, port);
@@ -37,8 +43,7 @@ void  Expordownthread::run()
             ftpmanager.get(EXPORTPATH+filename);      
             exec();
             LOGI("exportdownthread  exec");
-        }
-        mutex.unlock();
+            mutex.unlock();
     }
     LOGI("exportdownthread exit");
 }

@@ -5,6 +5,10 @@
 #include <QTableWidgetItem>
 #include <QHeaderView>
 #include <QDir>
+#include <QDomComment>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #define CH(a) QString::fromLocal8Bit(a)
 
 ExportWidget::ExportWidget(QWidget *parent) :
@@ -181,8 +185,6 @@ void ExportWidget::initData()
         deviceId->addItem(userdevice.getTerminalId());
     }
     deviceIdchange(deviceId->currentIndex());
-    exportbt->setEnabled(true);
-    selectbt->setEnabled(true);
     LOGI("exportdownthread start------------------------------------->");
     downt.start();
 }
@@ -190,13 +192,22 @@ void ExportWidget::deviceIdchange(int i)
 {
      beginPos->clear();
      endPos->clear();
-    int possize=userDevices->at(i).getPosSize();
-    int j=1;
-    while(possize)
-    {
-        beginPos->addItem(QString::number(j++));
-        endPos->addItem(QString::number(possize--));
-    }
+     QString term=userDevices->at(i).getTerminalId();
+     parseXML(QString("map/")+term+".xml");
+     QMapIterator<int,QPointF> iter(points);
+     while (iter.hasNext()) {
+             iter.next();
+             beginPos->addItem(QString::number(iter.key()));
+             endPos->addItem(QString::number(iter.key()));
+     }
+     if(beginPos->count()!=0)
+     {
+         exportbt->setEnabled(true);
+         selectbt->setEnabled(true);
+     }else{
+         exportbt->setEnabled(false);
+         selectbt->setEnabled(false);
+     }
 }
 void ExportWidget::posSizeChange(QString s)
 {
@@ -217,19 +228,19 @@ void ExportWidget::posSizeChange(QString s)
              switch (tem->getDatatype()) {
              case 0:
                  types=CH("开关状态");
-                 dat=tem->getData()==0?CH("关"):CH("开");
+                 //dat=tem->getData()==0?CH("关"):CH("开");
                  break;
              case 1:
                  types=CH("油位");
-                 dat=QString::number(tem->getData());
+//               dat=QString::number(tem->getData());
                  break;
              case 2:
                  types=CH("红外");
-                 dat=QString::number(tem->getData());
+          //       dat=QString::number(tem->getData());
                  break;
              default:
-                 types=CH("其它");
-                 dat=QString::number(tem->getData());
+                 types=CH("温度");
+                dat=QString::number(tem->getData()*0.01);
                  break;
              }
          QTableWidgetItem *item2=new QTableWidgetItem(types);
@@ -357,4 +368,103 @@ void ExportWidget::getDatamap(QMap<int,QList<Substationdata*>*>* v)
            connect(posbox,SIGNAL(currentIndexChanged(QString)),this,SLOT(posSizeChange(QString)));
            posSizeChange(posbox->currentText());
        }
+}
+void ExportWidget::parseXML(const QString &fname)
+{
+    if(fname.isEmpty())
+        return;
+
+    QFile file(fname);
+    if(!file.open(QFile::ReadOnly | QFile::Text)) {
+        QMessageBox::information(nullptr, QString("error"),
+                                 CH("打开地图失败"));
+
+        return;
+    }
+
+    QDomDocument domDocument;
+    QString error;
+    int row = 0, column = 0;
+    if(!domDocument.setContent(&file, false, &error, &row, &column)) {
+        QMessageBox::information(nullptr, QString("Error"),
+                                 QString("parse file failed at line row and column") +
+                                 QString::number(row, 10) + QString(",") +
+                                 QString::number(column, 10));
+        file.close();
+        return;
+    }
+
+    if(domDocument.isNull()) {
+        QMessageBox::information(nullptr, QString("title"),
+                                 QString("document is null!"));
+
+        file.close();
+        return;
+    }
+
+    const QDomElement domElement = domDocument.documentElement();
+
+    const QString domElementTagName = domElement.tagName();
+
+    if (domElementTagName != "routemap") {
+        QMessageBox::information(nullptr, QString("title"),
+                                 QString("Root Name is wrong!"));
+        file.close();
+        return;
+    }
+    const QDomNodeList pointList = domElement.childNodes();
+    for(int i=0;i<pointList.count();i++)
+    {
+        const QDomNode p =pointList.item(i);
+        if(!p.isNull())
+        {
+            QDomElement elementson = p.toElement();
+            if(!elementson.isNull()) {
+                if (elementson.hasAttribute("id"))
+                {
+                    int pid=elementson.attributeNode("id").value().toInt();
+                    if(pid>=2000)
+                    {
+                        const QDomNode fristNode =elementson.firstChild();
+                        const QDomNode lastNode =elementson.lastChild();
+                        if(!fristNode.isNull()&&!lastNode.isNull())
+                        {
+                            const QDomElement fristElement = fristNode.toElement();
+                            const QDomElement lastElement = lastNode.toElement();
+                            if(!fristElement.isNull()&&!lastElement.isNull())
+                            {
+                                int xp=-1,yp=-1;
+                                const QString tagname=fristElement.tagName();
+                                const QString tagval=fristElement.text();
+                                if(!tagval.isEmpty())
+                                {
+                                    if(tagname=="x")
+                                    {
+                                        xp=tagval.toInt();
+                                    }else{
+                                        yp=tagval.toInt();
+                                    }
+                                }
+                                const QString tagname1=lastElement.tagName();
+                                const QString tagval1=lastElement.text();
+                                if(!tagval1.isEmpty())
+                                {
+                                    if(tagname1=="x")
+                                    {
+                                        xp=tagval1.toInt();
+                                    }else{
+                                        yp=tagval1.toInt();
+                                    }
+                                }
+                                if(xp!=-1&&yp!=-1)
+                                {
+                                    points.insert(pid,QPointF(((double)xp)/1000.0,((double)yp)/1000.0));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

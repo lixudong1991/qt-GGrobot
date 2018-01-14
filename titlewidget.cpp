@@ -70,7 +70,6 @@ TitleWidget::~TitleWidget()
 }
 void TitleWidget::translateLanguage()
 {
-    version_title->setText(CH("电力设备数据展示"));
     main_menu_button->setToolTip(CH("配置信息"));
     close_button->setToolTip(CH("关闭"));
     min_button->setToolTip(CH("最小化"));

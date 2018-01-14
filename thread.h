@@ -20,9 +20,9 @@ class  Thread: public QThread
     }
 
  signals:
-    void finish(Substationdata*);
+    void finish(Substationdata*,QList<int>*);
     void queryErr();
-  private slots:
+private slots:
     void download();
     void timeout();
  protected:
@@ -32,6 +32,7 @@ private:
     QMutex mutex;
     QTimer *timer;
     Substationdata data;
+    QList<int> ids;
     volatile bool exit_t=true;
 };
 

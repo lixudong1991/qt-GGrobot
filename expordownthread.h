@@ -20,7 +20,9 @@ class  Expordownthread: public QThread
     }
     void wakeT()
     {
+        mutex.lock();
         cond.wakeOne();
+        mutex.unlock();
     }
     void exitexec()
     {

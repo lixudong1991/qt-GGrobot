@@ -45,9 +45,10 @@ void LoginThread::run()
             userdevice.setCloudPort(query.value(8).toString());
             userdevice.setCloudUser(query.value(9).toString());
             userdevice.setCloudPwd(query.value(10).toString());
-            userdevice.setOwnerUnit(query.value(11).toString());
-            userdevice.setRemark(query.value(12).toString());
-            userdevice.setPosSize(query.value(13).toInt());
+            userdevice.setInfraredIp(query.value(11).toString());
+            userdevice.setOwnerUnit(query.value(12).toString());
+            userdevice.setRemark(query.value(13).toString());
+            userdevice.setPosSize(query.value(14).toInt());
             userDevices->append(userdevice);
         }
         emit logstatus(userid);

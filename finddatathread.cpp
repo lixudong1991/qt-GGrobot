@@ -14,7 +14,7 @@ void FindDataThread::run()
 {
      LOGI("finddatathread start");
     QSqlQuery query;
-    QString sql="SELECT reportTime,pos,datatype,`data`,pictureType,pictureName FROM tbl_substationdata WHERE terminalId='"+deviceId+"' AND reportTime >='"+starttime+"' AND reportTime <='"+stoptime+"' AND pos >="+startpos+" AND  pos <="+stoppos+" ORDER BY pos,reportTime";
+    QString sql="SELECT reportTime,pos,datatype,`data`,pictureType,pictureName FROM tbl_substationdata WHERE terminalId='"+deviceId+"' AND reportTime >='"+starttime+"' AND reportTime <='"+stoptime+"' AND pos >="+startpos+" AND  pos <="+stoppos+" AND pos > 2000 ORDER BY pos,reportTime";
    // qDebug()<<deviceId<<" "<<starttime<<" "<<stoptime<<" "<<startpos<<" "<<stoppos;
     query.exec(sql);
     datamap=new  QMap<int,QList<Substationdata*>*>();
@@ -86,7 +86,7 @@ void FindDataThread::run()
                }
        file.close();
        LOGI("导出文件成功:"<<name.toStdString());
-    }
-    emit threadEnd(datamap);
+     }
+     emit threadEnd(datamap);
      LOGI("finddataThread exit");
 }

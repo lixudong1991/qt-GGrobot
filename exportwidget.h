@@ -9,6 +9,7 @@
 #include "finddatathread.h"
 #include "exportdownima.h"
 #include "expordownthread.h"
+#include "push_button.h"
 class ExportWidget : public QWidget
 {
     Q_OBJECT
@@ -57,8 +58,9 @@ private:
     QLabel* ima;
     QLabel* info;
 
-    const QList<Userterminal> *userDevices;
+    const QList<Userterminal> *userDevices=NULL;
     QMap<int,QList<Substationdata*>*> *data=NULL;
+    QMap<int,QPointF> points;
     FindDataThread thr;
 
     void initLabel();
@@ -69,6 +71,7 @@ private:
     Expordownthread downt;
 
     void selectDataThr(bool,const QString&);
+    void parseXML(const QString &fname);
 };
 
 #endif // EXPORTWIDGET_H

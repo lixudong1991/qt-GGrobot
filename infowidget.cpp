@@ -19,16 +19,16 @@ void Infowidget::paintEvent(QPaintEvent *)
    // w=h=200;
     QPainterPath path;
     path.setFillRule(Qt::WindingFill);
-    path.addRect(1, 1, w-1,h-1);
+    path.addRect(0, 0, w,h);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.fillPath(path, QBrush(Qt::black));
 
-    painter.setPen(QPen(Qt::white, 1, Qt::SolidLine));
-    painter.drawLine(QPoint(1,1),QPoint(w-2,1));
-    painter.drawLine(QPoint(1,1),QPoint(1,h-1));
-    painter.drawLine(QPoint(1,h-1),QPoint(w-2,h-1));
-    painter.drawLine(QPoint(w-2,1),QPoint(w-2,h-1));
+ //   painter.setPen(QPen(Qt::white, 1, Qt::SolidLine));
+  //  painter.drawLine(QPoint(1,1),QPoint(w,1));
+  //  painter.drawLine(QPoint(1,1),QPoint(1,h));
+ //   painter.drawLine(QPoint(1,h),QPoint(w,h));
+  //  painter.drawLine(QPoint(w,1),QPoint(w,h));
   //  painter.drawLine(QPoint(w-20,5),QPoint(w-20,h-10));
 
 

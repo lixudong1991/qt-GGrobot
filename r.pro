@@ -7,7 +7,7 @@
 QT       += core gui
 QT       += sql
 QT       += network
-
+QT       += xml
 RC_ICONS    += robot.ico
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -51,7 +51,13 @@ SOURCES += main.cpp\
     exportdownima.cpp \
     expordownthread.cpp \
     log4z.cpp \
-    routewidget.cpp
+    routewidget.cpp \
+    GGConfig.cpp \
+    GGRobotSession.cpp \
+    GGSmart.cpp \
+    sportsctrthread.cpp \
+    comstatusice.cpp \
+    comstatusi.cpp
 
 HEADERS  += dialog.h \
     head.h \
@@ -82,9 +88,20 @@ HEADERS  += dialog.h \
     exportdownima.h \
     expordownthread.h \
     log4z.h \
-    routewidget.h
+    routewidget.h \
+    HCNetSdk/IShowImage.h \
+    HCNetSdk/IUlirNetDevSDK.h \
+    HCNetSdk/ULPlayer.h \
+    HCNetSdk/IUlirTemperatureSDK.h \
+    GGConfig.h \
+    GGRobotSession.h \
+    GGSmart.h \
+    sportsctrthread.h \
+    comstatusice.h \
+    comstatusi.h
 
 
+INCLUDEPATH +=C:/ZeroC/Ice-3.6.3/include
 
 LIBS += -LD:/HCNetSdk/ -lHCNetSDK \
             -LD:/HCNetSdk/ -lHCCore \
@@ -92,6 +109,10 @@ LIBS += -LD:/HCNetSdk/ -lHCNetSDK \
             -LD:/HCNetSdk/HCNetSDKCom/ -lHCPreview \
             -LD:/HCNetSdk/HCNetSDKCom/ -lHCAlarm \
             -LD:/HCNetSdk/HCNetSDKCom/ -lHCGeneralCfgMgr \
+            -LD:/IRXSdk/ -lShowImage \
+            -LD:/IRXSdk/ -lUlirNetDevSDK \
+            -LD:/IRXSdk/ -lUlirTemperatureSDK \
+            -LC:/ZeroC/Ice-3.6.3/lib/ -lice
 
 FORMS +=
 

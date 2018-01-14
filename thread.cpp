@@ -50,6 +50,11 @@ void  Thread::run()
                data.setPictureType(query.value(8).toInt());
                data.setPictureName(query.value(9).toString());
            }
+           ids.clear();
+           while(query.next())
+           {
+                ids.append(query.value(4).toInt());
+           }
            FtpManager ftpmanager;
            ftpmanager.setHostPort(ftpip, ftpport);
            ftpmanager.setUserInfo(ftpuser, ftppwd);
@@ -57,7 +62,7 @@ void  Thread::run()
            connect(&ftpmanager, SIGNAL(finishe(QString)), this, SLOT(download()));
            ftpmanager.get(FILECACHEPATH+data.getPictureName());
            exec();
-          LOGI("thread1 scanner image -->name: "<<data.getPictureName().toStdString()<<"  type:"<<data.getPictureType()<<"  time:"<<data.getReportTime().toStdString());
+          LOGI("thread1 scanner image -->name: "<<data.getPictureName().toStdString()<<"  type:"<<data.getPictureType()<<"  time:"<<data.getReportTime().toStdString()<<" ids size:"<<ids.size());
        }
        else
        {
@@ -70,8 +75,8 @@ void  Thread::run()
 }
 void  Thread::download()
 {
-    LOGI("thread1 ftpget finish: "<<data.getPictureName().toStdString());
-     emit finish(&data);
+     LOGI("thread1 ftpget finish: "<<data.getPictureName().toStdString());
+     emit finish(&data,&ids);
  }
 void Thread::timeout()
 {

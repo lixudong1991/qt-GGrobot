@@ -59,6 +59,6 @@
 		<file alias="wall">style/wall.png</file>
 		<file alias="content">style/content.png</file>
 		<file alias="export">style/export.png</file>
-		<file alias="ba">style/ba.jpg</file>
+		<file alias="ba">style/ba.png</file>
     </qresource>
 </RCC>

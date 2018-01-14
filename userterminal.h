@@ -50,6 +50,11 @@ public:
   {
       cloudPwd=i;
   }
+  void setInfraredIp(const QString &i)
+  {
+      infraredIp=i;
+  }
+
   void setOwnerUnit(const QString &i)
   {
        ownerUnit=i;
@@ -102,6 +107,10 @@ public:
   {
       return cloudPwd;
   }
+  const QString& getInfraredIp()const
+  {
+      return infraredIp;
+  }
   const QString& getOwnerUnit()const
   {
       return ownerUnit;
@@ -130,6 +139,7 @@ private:
   QString cloudPort;
   QString cloudUser;
   QString cloudPwd;
+  QString infraredIp;
   QString ownerUnit;
   QString remark;
   int posSize;

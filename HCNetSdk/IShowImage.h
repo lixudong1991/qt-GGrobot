@@ -92,7 +92,7 @@ extern "C" {
 	SHOWIMAGE_API char* __stdcall SHOWIMAGE_GetErrorMsg(LONG *pErrorNo);
 
 #ifdef __cplusplus
-}
+};
 #endif
 
 
