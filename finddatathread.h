@@ -3,6 +3,7 @@
 
 #include"head.h"
 #include "substationdata.h"
+#include "preinstallpoint.h"
 class  FindDataThread: public QThread
 {
     Q_OBJECT
@@ -34,6 +35,7 @@ class  FindDataThread: public QThread
         stoppos=s;
     }
     bool  model=true;
+    QHash<int,PreinstallPoint*> *preinstallPointMap;
 signals:
     void  threadEnd(QMap<int,QList<Substationdata*>*>*);
 private slots:
@@ -49,6 +51,7 @@ private:
     QString stoppos;
 
     QMap<int,QList<Substationdata*>*> *datamap;
+
 
 };
 #endif // FINDDATATHREAD_H

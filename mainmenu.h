@@ -13,6 +13,7 @@ signals:
     void showlogindia();
     void showdbset();
     void showdbManage();
+    void showImportAlarm();
 private slots:
 
 private:
@@ -23,6 +24,7 @@ private:
     QAction *login; //
     QAction *dbset; //
     QAction *dbManage;
+  //  QAction *importAlarm;
 
 };
 #endif // MAINMENU_H

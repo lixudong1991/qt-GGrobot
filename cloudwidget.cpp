@@ -4,7 +4,7 @@
 #include <QEvent>
 #include <QHelpEvent>
 #include <QToolTip>
-
+#include <QFileDialog>
 //#define SDK_REALPLAY
 
 #ifdef  SDK_REALPLAY
@@ -94,6 +94,13 @@ CloudWidget::~CloudWidget()
  //  t.wait();
 
 }
+/***********************************************************************************
+*函数名:    	 posinit
+*函数描述:	 图像界面的布局初始化
+*输入参数:
+*输出参数:
+*返回值:
+************************************************************************************/
 void CloudWidget::posinit()
 {    
     QHBoxLayout *mainla=new QHBoxLayout();
@@ -189,27 +196,27 @@ void CloudWidget::posinit()
     nonnectCloud->setLayout(concloud);
 
     QGridLayout *rightcloud=new QGridLayout();
-        rightcloud->addWidget(opencloudw, 0, 0, 1, 3);
-        rightcloud->addWidget(cloudCtrl_up_left,1,0);
-        rightcloud->addWidget(cloudCtrl_up,1,1);
-        rightcloud->addWidget(cloudCtrl_up_right,1,2);
-        rightcloud->addWidget(cloudCtrl_left,2,0);
-        rightcloud->addWidget(cloudCtrl_auto,2,1);
-        rightcloud->addWidget(cloudCtrl_right,2,2);
-        rightcloud->addWidget(cloudCtrl_down_left,3,0);
-        rightcloud->addWidget(cloudCtrl_down,3,1);
-        rightcloud->addWidget(cloudCtrl_down_right,3,2);
-        rightcloud->addWidget(cloudCapture,4,0);
-        rightcloud->addWidget(cloudWiperPwron,4,1);
-        rightcloud->addWidget(cloudRecord,4,2);
-        rightcloud->addWidget(new QLabel(CH("云台速度:")),5,0,1,2);
-        rightcloud->addWidget(cloudSpeed,5,2,1,1);
-        rightcloud->addWidget(new QLabel(CH("焦距: ")),6,0,1,1);
-        rightcloud->addWidget(cloudnormalCamera_focalLeft,6,1,1,1);
-        rightcloud->addWidget(cloudnormalCamera_focalRight,6,2,1,1);
-        rightcloud->addWidget(new QLabel(CH("红外焦距: ")),7,0,1,2);
-        rightcloud->addWidget(infradautoFocus,7,2,1,1);
-        right_cloudCtrl->setLayout(rightcloud);
+    rightcloud->addWidget(opencloudw, 0, 0, 1, 3);
+    rightcloud->addWidget(cloudCtrl_up_left,1,0);
+    rightcloud->addWidget(cloudCtrl_up,1,1);
+    rightcloud->addWidget(cloudCtrl_up_right,1,2);
+    rightcloud->addWidget(cloudCtrl_left,2,0);
+    rightcloud->addWidget(cloudCtrl_auto,2,1);
+    rightcloud->addWidget(cloudCtrl_right,2,2);
+    rightcloud->addWidget(cloudCtrl_down_left,3,0);
+    rightcloud->addWidget(cloudCtrl_down,3,1);
+    rightcloud->addWidget(cloudCtrl_down_right,3,2);
+    rightcloud->addWidget(cloudCapture,4,0);
+    rightcloud->addWidget(cloudWiperPwron,4,1);
+    rightcloud->addWidget(cloudRecord,4,2);
+    rightcloud->addWidget(new QLabel(CH("云台速度:")),5,0,1,2);
+    rightcloud->addWidget(cloudSpeed,5,2,1,1);
+    rightcloud->addWidget(new QLabel(CH("焦距: ")),6,0,1,1);
+    rightcloud->addWidget(cloudnormalCamera_focalLeft,6,1,1,1);
+    rightcloud->addWidget(cloudnormalCamera_focalRight,6,2,1,1);
+    rightcloud->addWidget(new QLabel(CH("红外焦距: ")),7,0,1,2);
+    rightcloud->addWidget(infradautoFocus,7,2,1,1);
+    right_cloudCtrl->setLayout(rightcloud);
 
 
 
@@ -218,7 +225,15 @@ void CloudWidget::posinit()
     rightpatrolView->addWidget(inspecting_Pause_Continue);
     right_patrolView->setLayout(rightpatrolView);
 
+
 }
+/***********************************************************************************
+函数名:    	 posinit
+函数描述:	 图像界面的按钮初始化
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::right_groupinit()
 {
 
@@ -249,29 +264,25 @@ void CloudWidget::right_groupinit()
         cloudSpeed->addItem(QString::number(i));
     }
 
-//    nor=new QRadioButton(CH("普通"));
-//    nor->setChecked(true);
-//    infra=new QRadioButton(CH("红外"));
-//    normal_infra=new QButtonGroup();
-//    normal_infra->addButton(nor,0);
-//    normal_infra->addButton(infra,1);
-
-
-
-
     cloudnormalCamera_focalLeft=new QPushButton(CH("伸"));
     cloudnormalCamera_focalRight=new QPushButton(CH("缩"));
     infradautoFocus=new QPushButton(CH("自动"));
 
-     inspecting_Start_Stop=new QPushButton(CH("开始巡检"));
-     inspecting_Start_Stop->setEnabled(false);
-     inspecting_Pause_Continue=new QPushButton(CH("暂停巡检"));;
-     inspecting_Pause_Continue->setEnabled(false);
-
+    inspecting_Start_Stop=new QPushButton(CH("开始巡检"));
+    inspecting_Start_Stop->setEnabled(false);
+    inspecting_Pause_Continue=new QPushButton(CH("暂停巡检"));;
+    inspecting_Pause_Continue->setEnabled(false);
     slotsinit();
     setButtonstatus(false);
 
 }
+/***********************************************************************************
+函数名:    	 posinit
+函数描述:	 连接按钮的信号和槽
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
  void CloudWidget::slotsinit()
  {
     connect(log_bt,SIGNAL(clicked(bool)),this,SLOT(log_bt_slot()));
@@ -309,9 +320,14 @@ void CloudWidget::right_groupinit()
 
     connect(inspecting_Pause_Continue,SIGNAL(clicked(bool)),this,SLOT(inspecting_Pause_ContinueClick()));
     connect(inspecting_Start_Stop,SIGNAL(clicked(bool)),this,SLOT(inspecting_Start_StopClick()));
-
  }
-
+ /***********************************************************************************
+ 函数名:    	 posinit
+ 函数描述:	 初始化图像界面的Label
+ 输入参数:
+ 输出参数:
+ 返回值:
+ ************************************************************************************/
 void CloudWidget::labelinit()
 {
     normalImageL=new QLabel();
@@ -326,8 +342,6 @@ void CloudWidget::labelinit()
     cloudL=new QLabel();
 
     infoL=new Infowidget();
-
-
     cloudL->setScaledContents(true);
 
 
@@ -338,10 +352,17 @@ void CloudWidget::labelinit()
     infraredVideo->setPalette(pal);
     infraredWid=new QWidget(this);
     infraredL=new  QLabel();
-     positionL=new RouteWidget();
-     positionL->hide();
+    positionL=new RouteWidget();
+    positionL->hide();
 
 }
+/***********************************************************************************
+函数名:    	 setLabelSize
+函数描述:	 设置label的大小
+输入参数:    wid:label的宽度,  hei:label的高度
+输出参数:
+返回值:
+************************************************************************************/
 void  CloudWidget::setLabelSize(int wid,int hei)
 {
     w=wid;
@@ -361,13 +382,18 @@ void  CloudWidget::setLabelSize(int wid,int hei)
     py1=py+PLAYVIDEODLG_HIGH;
     m_pCursorPoint.x=PLAYVIDEODLG_WIDTH-1;
     m_pCursorPoint.y=PLAYVIDEODLG_HIGH-1;
-
-
     infoL->setSize((width-12)/2,h/2-18);
     infoL->hide();
     positionL->setFixedSize((width-15)/2,h/2-12);
     posinit();
 }
+/***********************************************************************************
+函数名:    	 paintEvent
+函数描述:	 在图像界面上画7条白线
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::paintEvent(QPaintEvent *)
 {
   QPainter painter(this);
@@ -381,6 +407,13 @@ void CloudWidget::paintEvent(QPaintEvent *)
    painter.drawLine(QPoint((width-12)/2-4,6),QPoint((width-12)/2-4,h-18));
    painter.drawLine(QPoint(6,(h-18)/2),QPoint(width-12,(h-18)/2));
 }
+/***********************************************************************************
+函数名:    	 log_bt_slot
+函数描述:	 云台登陆,红外摄像头获取端口并设置显示句柄
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::log_bt_slot()
 {
         if(device_logInfo.getLoginID()!=-1)
@@ -396,8 +429,6 @@ void CloudWidget::log_bt_slot()
         }
 
         SHOWIMAGE_SetShowImageWnd(m_sShowPort,(HWND)infraredL->winId());
-
-
         QString ip=term->getCloudIp();
         QString port=term->getCloudPort();
         QString user=term->getCloudUser();
@@ -429,9 +460,16 @@ void CloudWidget::log_bt_slot()
         DwStartDChan=IpAccessCfg.dwStartDChan;
         memset(&m_RawHead,0,sizeof(m_RawHead));
         QMessageBox::information(this,CH("提示 "),CH("连接成功:")+QString::number(loginid));
+        log_bt->setEnabled(false);
 }
 
-
+/***********************************************************************************
+函数名:    	 initTerminal
+函数描述:	 初始化用户设备信息,启动数据扫描线程,ice命令发送线程
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::initTerminal()
 {
         for(const Userterminal &userdevice: *userDevices)
@@ -447,8 +485,6 @@ void CloudWidget::initTerminal()
         connect(&sportT,SIGNAL(execComStatus(int)),this,SLOT(setInspectingStatus(int)));
         sportT.start();
         infoL->show();
-
-
         log_bt->setEnabled(true);
         opencloudw->setEnabled(true);
         inspecting_Start_Stop->setEnabled(true);
@@ -458,11 +494,18 @@ void CloudWidget::initTerminal()
 void CloudWidget::querError()
 {
     QMessageBox::information(this,CH("错误"),CH("网络异常"));
-    exit(0);
+    emit exitprocess();
 }
-
+/***********************************************************************************
+函数名:    	 deviceidChange
+函数描述:	 切换机器,停止云台视频和红外视频,设置ice通信地址和端口,加载地图
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::deviceidChange(int i)
 {
+    log_bt->setEnabled(true);
     term=&(userDevices->at(i));
     t.setTerminalId(term->getTerminalId());
     QString terminIp=term->getTerminalIp();
@@ -489,60 +532,82 @@ void CloudWidget::deviceidChange(int i)
     {
         SHOWIMAGE_FreePort(m_sShowPort);
     }
-
     if(device_logInfo.getLoginID()!=-1)
     {
         NET_DVR_Logout(device_logInfo.getLoginID());
         device_logInfo.setLoginID(-1);
     }
+    t.setPointInfo(term->getPointInfo());
     int width=w*0.868;
     positionL->setBackImg((width-16)/2,h/2-12,userDevices->at(i).getTerminalId());
 }
+/***********************************************************************************
+函数名:    	 setLabelIma
+函数描述:	 加载红外和普通图片并显示,设显示的信息,启动地图上机器当前所处点的闪烁
+输入参数:   dat:当前所处点的数据信息,is:机器已走过的点
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::setLabelIma(Substationdata* dat,QList<int>*is)
 {
-
-   QImage *img=new QImage();
-   if(img->load(FILECACHEPATH+dat->getPictureName()))
-    {
-        switch (dat->getPictureType()) {
-        case 0:
-            normalImageL->setPixmap(QPixmap::fromImage(*img));
-            break;
-        case 1:
-             infraredImageL->setPixmap(QPixmap::fromImage(*img));
-            break;
-        default:
-            break;
-        }
-    }
-  delete  img;
-   QFile(FILECACHEPATH+dat->getPictureName()).remove();
    infoL->setTerminalId(dat->getTerminalId());
    infoL->setReportTime(dat->getReportTime());
-   infoL->setPos(QString::number(dat->getPos()));
-   infoL->setSonPos(QString::number(dat->getSonPos()));
-   switch (dat->getDatatype()) {
-   case 0:
-       infoL->setDatatype(CH("开关状态"));
-       infoL->setData((dat->getData()==0?CH("关"):CH("开")));
-       break;
-   case 1:
-       infoL->setDatatype(CH("油位"));
-       infoL->setData(QString::number(dat->getData()));
-       break;
-   case 2:
-       infoL->setDatatype(CH("红外"));
-       infoL->setData(QString::number(dat->getData()*0.01));
-       break;
-   default:
-       infoL->setDatatype(CH("其它"));
-       infoL->setData(QString::number(dat->getData()));
-       break;
+   QHash<int,PreinstallPoint*> *p=term->getPointInfo();
+   QHash<int,PreinstallPoint*>::const_iterator it=p->find(dat->getSonPos());;
+   QString postr,sonstr,datatype;
+   if(dat->getPos()>=2000)
+   {
+       QImage *img=new QImage();
+       if(img->load(FILECACHEPATH+dat->getPictureName()))
+        {
+            switch (dat->getPictureType()) {
+            case 0:
+                normalImageL->setPixmap(QPixmap::fromImage(*img));
+                break;
+            case 1:
+                 infraredImageL->setPixmap(QPixmap::fromImage(*img));
+                break;
+            default:
+                break;
+            }
+        }
+       delete  img;
+      QFile(FILECACHEPATH+dat->getPictureName()).remove();
+       if(it!=p->cend())
+       {
+           postr=it.value()->getPosName();
+           sonstr=it.value()->getSonPosName();
+           datatype=it.value()->getCheckName();
+       }
+   }else{
+      postr=CH("拐点");
+   }
+   infoL->setPos(postr);
+   infoL->setSonPos(sonstr);
+   infoL->setDatatype(datatype);
+   if(dat->getDatatype()==2)
+   {
+        infoL->setData(QString::number(dat->getData()*0.01));
+        if(dat->getData()>=it.value()->getAlarmTemp())
+        {
+             emit haveAlarm(deviceid->currentIndex());
+        }
+   }
+   else
+   {
+        infoL->setData(CH("正常"));
    }
    infoL->update();
    positionL->startPoint(dat->getPos(),is);
    LOGI("startPoint:"<<dat->getPos());
 }
+/***********************************************************************************
+函数名:    	 PTZControlAll
+函数描述:	 云台控制函数
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::PTZControlAll(LONG lRealHandle, DWORD dwPTZCommand, DWORD dwStop, int Speed)
 {
     if(lRealHandle>=0)
@@ -570,119 +635,201 @@ void CloudWidget::PTZControlAll(LONG lRealHandle, DWORD dwPTZCommand, DWORD dwSt
 
 }
 #define lPlayHandle      lRealPlayHandle
+/***********************************************************************************
+函数名:    	 cloudCtrUp_press
+函数描述:	 云台上按钮按下,开始云台动作
+************************************************************************************/
 void CloudWidget::cloudCtrUp_press()
 {
     PTZControlAll(lPlayHandle,TILT_UP,0,iPTZSpeed);
 }
-
+/***********************************************************************************
+函数名:    	 cloudCtrDown_press
+函数描述:	 云台下按钮按下,开始云台动作
+************************************************************************************/
 void CloudWidget::cloudCtrDown_press()
 {
     PTZControlAll(lPlayHandle,TILT_DOWN,0,iPTZSpeed);
 }
-
+/***********************************************************************************
+函数名:    	 cloudCtrLeft_press
+函数描述:	 云台左按钮按下,开始云台动作
+************************************************************************************/
 void CloudWidget::cloudCtrLeft_press()
 {
     PTZControlAll(lPlayHandle,PAN_LEFT,0,iPTZSpeed);
 }
-
+/***********************************************************************************
+函数名:    	 cloudCtrUp_press
+函数描述:	 云台右按钮按下,开始云台动作
+************************************************************************************/
 void CloudWidget::cloudCtrRight_press()
 {
-
     PTZControlAll(lPlayHandle,PAN_RIGHT,0,iPTZSpeed);
 }
+/***********************************************************************************
+函数名:    	 cloudCtrUp_press
+函数描述:	 云台上按钮松开,停止云台动作
+************************************************************************************/
 void CloudWidget::cloudCtrUp_released()
 {
-
     PTZControlAll(lPlayHandle,TILT_UP,1,iPTZSpeed);
     infradautoFocus_click();
 }
-
+/***********************************************************************************
+函数名:    	 cloudCtrDown_released
+函数描述:	    云台下按钮松开,停止云台动作
+************************************************************************************/
 void CloudWidget::cloudCtrDown_released()
 {
 
     PTZControlAll(lPlayHandle,TILT_DOWN,1,iPTZSpeed);
     infradautoFocus_click();
 }
-
+/***********************************************************************************
+函数名:    	 cloudCtrLeft_released
+函数描述:	     云台左按钮松开,停止云台动作
+************************************************************************************/
 void CloudWidget::cloudCtrLeft_released()
 {
     PTZControlAll(lPlayHandle,PAN_LEFT,1,iPTZSpeed);
     infradautoFocus_click();
 }
-
+/***********************************************************************************
+函数名:    	 cloudCtrRight_released
+函数描述:	     云台右按钮松开,停止云台动作
+************************************************************************************/
 void CloudWidget::cloudCtrRight_released()
 {
     PTZControlAll(lPlayHandle,PAN_RIGHT,1,iPTZSpeed);
     infradautoFocus_click();
 }
+/***********************************************************************************
+函数名:    	 cloudZoomLeft_press
+函数描述:	  云台调焦左,按下
+************************************************************************************/
 void CloudWidget::cloudZoomLeft_press()
 {
     PTZControlAll(lPlayHandle,ZOOM_IN,0,iPTZSpeed);
 }
-
+/***********************************************************************************
+函数名:    	 cloudZoomLeft_released
+函数描述:	  云台调焦左,松开
+************************************************************************************/
 void CloudWidget::cloudZoomLeft_released()
 {
     PTZControlAll(lPlayHandle,ZOOM_IN,1,iPTZSpeed);
 }
-
+/***********************************************************************************
+函数名:    	 cloudZoomRight_press
+函数描述:	  云台调焦左,按下
+************************************************************************************/
 void CloudWidget::cloudZoomRight_press()
 {
     PTZControlAll(lPlayHandle,ZOOM_OUT,0,iPTZSpeed);
 }
-
+/***********************************************************************************
+函数名:    	 cloudZoomRight_released
+函数描述:	  云台调焦右,松开
+************************************************************************************/
 void CloudWidget::cloudZoomRight_released()
 {
     PTZControlAll(lPlayHandle,ZOOM_OUT,1,iPTZSpeed);
 }
-
+/***********************************************************************************
+函数名:    	 cloudCtrl_auto_press
+函数描述:	  云台自动按下
+************************************************************************************/
 void CloudWidget::cloudCtrl_auto_press()
 {
     PTZControlAll(lPlayHandle,PAN_AUTO,0,iPTZSpeed);
 }
+/***********************************************************************************
+函数名:    	 cloudCtrl_up_left_press
+函数描述:	  云台左上,按下
+************************************************************************************/
 void CloudWidget::cloudCtrl_up_left_press()
 {
     PTZControlAll(lPlayHandle,UP_LEFT,0,iPTZSpeed);
 }
+/***********************************************************************************
+函数名:    	 cloudCtrl_up_right_press
+函数描述:	 云台右上,按下
+************************************************************************************/
 void CloudWidget::cloudCtrl_up_right_press()
 {
     PTZControlAll(lPlayHandle,UP_RIGHT,0,iPTZSpeed);
 }
+/***********************************************************************************
+函数名:    	 cloudCtrl_down_left_press
+函数描述:	  云台左下,按下
+************************************************************************************/
 void CloudWidget::cloudCtrl_down_left_press()
 {
     PTZControlAll(lPlayHandle,DOWN_LEFT,0,iPTZSpeed);
 }
-
+/***********************************************************************************
+函数名:    	 cloudCtrl_down_right_press
+函数描述:	 云台右下,按下
+************************************************************************************/
 void CloudWidget::cloudCtrl_down_right_press()
 {
     PTZControlAll(lPlayHandle,DOWN_RIGHT,0,iPTZSpeed);
 
 }
+/***********************************************************************************
+函数名:    	 cloudCtrl_up_right_press
+函数描述:	  云台自动,松开
+************************************************************************************/
 void CloudWidget::cloudCtrl_auto_released()
 {
     PTZControlAll(lPlayHandle,PAN_AUTO,1,iPTZSpeed);
     infradautoFocus_click();
 }
+/***********************************************************************************
+函数名:    	 cloudCtrl_up_left_released
+函数描述:	  云台左上,松开
+************************************************************************************/
 void CloudWidget::cloudCtrl_up_left_released()
 {
     PTZControlAll(lPlayHandle,UP_LEFT,1,iPTZSpeed);
     infradautoFocus_click();
 }
+/***********************************************************************************
+函数名:    	 cloudCtrl_up_right_press
+函数描述:	  云台右上,松开
+************************************************************************************/
 void CloudWidget::cloudCtrl_up_right_released()
 {
     PTZControlAll(lPlayHandle,UP_RIGHT,1,iPTZSpeed);
     infradautoFocus_click();
 }
+/***********************************************************************************
+函数名:    	 cloudCtrl_down_left_released
+函数描述:	  云台左下,松开
+************************************************************************************/
 void CloudWidget::cloudCtrl_down_left_released()
 {
     PTZControlAll(lPlayHandle,DOWN_LEFT,1,iPTZSpeed);
     infradautoFocus_click();
 }
+/***********************************************************************************
+函数名:    	 cloudCtrl_down_right_released
+函数描述:	  云台右下,松开
+************************************************************************************/
 void CloudWidget::cloudCtrl_down_right_released()
 {
     PTZControlAll(lPlayHandle,DOWN_RIGHT,1,iPTZSpeed);
     infradautoFocus_click();
 }
 
+/***********************************************************************************
+函数名:    	 setButtonstatus
+函数描述:	 设置按钮的可用/不可用状态
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::setButtonstatus(bool b)
 {
     cloudnormalCamera_focalLeft->setEnabled(b);
@@ -699,9 +846,16 @@ void CloudWidget::setButtonstatus(bool b)
     cloudCtrl_up_right->setEnabled(b);
     cloudCtrl_down_left->setEnabled(b);
     cloudCtrl_down_right->setEnabled(b);
-    infradautoFocus->setEnabled(b);
+    infradautoFocus->setEnabled(b);  
 }
 
+/***********************************************************************************
+函数名:    	 cloudWiperPwron_click
+函数描述:	 开始/停止雨刷
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void  CloudWidget::cloudWiperPwron_click()
 {
         static bool v=true;
@@ -717,6 +871,13 @@ void  CloudWidget::cloudWiperPwron_click()
         }
         v=!v;
 }
+/***********************************************************************************
+函数名:    	 cloudRecord_click
+函数描述:	 开始/停止云台录像
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void  CloudWidget::cloudRecord_click()
 {
     QString file=SAVEVEDIO+QDateTime::currentDateTime().toString("yyyyMMddhhmmss")+".mp4";
@@ -741,7 +902,13 @@ void  CloudWidget::cloudRecord_click()
     }
     v=!v;
 }
-
+/***********************************************************************************
+函数名:    	 cloudSpeed_Change
+函数描述:	 改变云台速度
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::cloudSpeed_Change(int i)
 {
     iPTZSpeed=i+1;
@@ -795,10 +962,16 @@ static void   CALLBACK g_RealDataCallBack_V30(LONG, DWORD dwDataType, BYTE *pBuf
     }
 }
 #endif
+/***********************************************************************************
+函数名:    	 opencloudClick
+函数描述:	 图像界面图片和视频切换
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void  CloudWidget::opencloudClick()
 {
-
-  QWidget *current_widget = leftupLayout->currentWidget();
+    QWidget *current_widget = leftupLayout->currentWidget();
     if(current_widget != cloudVideo)
     {
         if(device_logInfo.getLoginID()==-1)
@@ -851,14 +1024,27 @@ void  CloudWidget::opencloudClick()
        leftdownLayout->setCurrentWidget(infraredWid);
     }
 }
+/***********************************************************************************
+函数名:    	 funRealStream
+函数描述:	 灰度预览回调
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CALLBACK funRealStream(DWORD dwDataType, char* pDataBuffer, DWORD dwDataSize,DWORD dwUser, short)
 {
     CloudWidget* pThis = (CloudWidget*)dwUser;
     if(pThis == NULL) return;
     pThis->PushRealData(dwDataType,pDataBuffer,dwDataSize);
 }
-
-bool CloudWidget::startGray()//start get continue gray data
+/***********************************************************************************
+函数名:    	 startGray
+函数描述:	 灰度预览开启
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
+bool CloudWidget::startGray()
 {
     if(m_sRealHandle != -1)
     {
@@ -869,22 +1055,26 @@ bool CloudWidget::startGray()//start get continue gray data
     m_sRealHandle = NetDev_Connect(const_cast<char*>(grayIp.toStdString().c_str()),CONNECT_TYPE_ULIRNET);   //
     if(m_sRealHandle == -1)
     {
-        //QMessageBox::information(this,CH("错误"),CH("连接失败"));
         return false;
     }
     //开始获取实时数据  ,TI35、TI65系列设备
     BOOL ret = NetDev_StartRealStream(m_sRealHandle,STREAM_TYPE_GRAYDATA);
     if(ret == FALSE)
     {
-    //    QMessageBox::information(this,CH("错误"),CH("开始获取视频失败"));
         return false;
     }
     //设置实时数据回调  TI35、TI65系列设备
     NetDev_SetRealStreamCallBack(m_sRealHandle,funRealStream,(DWORD)this);
     return true;
 }
-
-void CloudWidget::stopGray()//stop get gray data
+/***********************************************************************************
+函数名:    	 stopGray
+函数描述:	 灰度预览停止
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
+void CloudWidget::stopGray()
 {
     // TODO: 在此添加控件通知处理程序代码
     //停止获取实时数据  TI35、TI65系列设备
@@ -894,10 +1084,27 @@ void CloudWidget::stopGray()//stop get gray data
     m_sRealHandle = -1;
     memset(&m_RawHead,0,sizeof(m_RawHead));
 }
+static bool Temperature_GetFrameInfo(byte *pBuffer,DWORD dwBufSize,byte **pData,DWORD *dwDataSize)
+{
+
+    if(dwBufSize < 512)
+    {
+        return false;
+    }
+
+    *pData = pBuffer;
+    *dwDataSize = dwBufSize-512;//512在尾部，内容基本是测温参数。
+    return true;
+}
+/***********************************************************************************
+函数名:    	 PushRealData
+函数描述:	 灰度预览图像显示,并计算温度显示
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::PushRealData(DWORD dwDataType,char *pDataBuffer,DWORD dwDataSize)
 {
-//	g_dwCount ++;
-//	MYTRACE("HXY:获取总帧数：%d",g_dwCount);
     switch(dwDataType)
     {
     case AVI_HEAD:
@@ -910,10 +1117,12 @@ void CloudWidget::PushRealData(DWORD dwDataType,char *pDataBuffer,DWORD dwDataSi
             SHOWIMAGE_SetImageSize(m_sShowPort,m_RawHead.nDectorImageW,m_RawHead.nDectorImageH);
         }
         break;
-    case GRAY_DATA://解析数据并显示
-
-        if(Temperature_GetFrameInfo(m_RawHead.nCalcType,(byte*)pDataBuffer,dwDataSize,&m_pData,&m_dwDataSize,&m_pFrameHead,&m_dwHeadSize) == TRUE)
+    case GRAY_DATA://解析数据并显
+        if(Temperature_GetFrameInfo((byte*)pDataBuffer,dwDataSize,&m_pData,&m_dwDataSize) == TRUE)
         {
+            m_pImageBuffer = (unsigned char*)pDataBuffer;
+            m_ImageBufferSize = dwDataSize;
+
             SHOWIMAGE_ShowImage(m_sShowPort, m_pData, m_dwDataSize, 100, 0);
             //重新计算温度
             CalculateCurSor();
@@ -924,6 +1133,13 @@ void CloudWidget::PushRealData(DWORD dwDataType,char *pDataBuffer,DWORD dwDataSi
         break;
     }
 }
+/***********************************************************************************
+函数名:    	 infradautoFocus_click
+函数描述:	 灰度预览自动调焦
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
  void CloudWidget::infradautoFocus_click()
  {
      if(m_sRealHandle!=-1)
@@ -931,7 +1147,13 @@ void CloudWidget::PushRealData(DWORD dwDataType,char *pDataBuffer,DWORD dwDataSi
          NetDev_DoAction((short)m_sRealHandle, ULIR_KEY_AUTO_FOCUS);
      }
  }
-
+ /***********************************************************************************
+ 函数名:    	 CalculateCurSor
+ 函数描述:	 根据灰度图计算温度
+ 输入参数:
+ 输出参数:
+ 返回值:
+ ************************************************************************************/
 void CloudWidget::CalculateCurSor()
 {
     if(m_RawHead.nDectorImageW == 0)return;
@@ -947,29 +1169,58 @@ void CloudWidget::CalculateCurSor()
         ptnew.y = m_RawHead.nDectorImageH-1;
     }
     WORD *pTemp = (WORD *)m_pData;
-    m_fCursorTemp = Temperature_GetTempFromGray(pTemp[ptnew.x+m_RawHead.nDectorImageW*ptnew.y],0.96,(byte*)m_pFrameHead,m_dwHeadSize,m_RawHead.nCalcType);
+    m_fCursorTemp = Temperature_Gray2Temp_Once(m_RawHead.nCalcType, pTemp[ptnew.x+m_RawHead.nDectorImageW*ptnew.y], 0.96, m_pImageBuffer, m_ImageBufferSize, 0);
+    NET_DEV_FULLRECTPARAM fullTemp;
+    memset(&fullTemp,0,sizeof(NET_DEV_FULLRECTPARAM));
+    DWORD re;
+    if(NetDev_GetConfig(m_sRealHandle,ULIR_MEASURE_GET_MAXTEMP2,(void*)&fullTemp,sizeof(NET_DEV_FULLRECTPARAM),&re))
+    {
+        m_fullMaxTemp=fullTemp.nMaxtTemp100*0.01;
+        m_fullMinTemp=fullTemp.nMinTemp100*0.01;
+        m_maxx=((double)fullTemp.nMaxx)/m_RawHead.nDectorImageW;
+        m_maxy=((double)fullTemp.nMaxy)/m_RawHead.nDectorImageH;
+        m_minx=((double)fullTemp.nMinx)/m_RawHead.nDectorImageW;
+        m_miny=((double)fullTemp.nMiny)/m_RawHead.nDectorImageH;
+    }
 }
+/***********************************************************************************
+函数名:    	 SetMessage
+函数描述:	 灰度视频上显示温度信息
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::SetMessage()
 {
-    QString  strShowInfo= "<ultemp><CURSOR>";
-    strShowInfo+=QString::number(m_pCursorPoint.x);
-    strShowInfo+=",";
-    strShowInfo+=QString::number(m_pCursorPoint.y);
-    strShowInfo+=",";
-    strShowInfo+=QString::number(m_fCursorTemp);
-    strShowInfo+= "</CURSOR><ultemp>";
-
-    //考虑加入鼠标的温度
+      QString str="<ultemp><pic><max>%1,%2,%3</max><min>%4,%5,%6</min><avg>-0.00<avg></pic>";
+      str=str.arg(m_fullMaxTemp, 0, 'g',4)
+               .arg(m_maxx, 0, 'g',4)
+               .arg(m_maxy, 0, 'g',4)
+               .arg(m_fullMinTemp, 0, 'g',4)
+               .arg(m_minx, 0, 'g',4)
+               .arg(m_miny, 0, 'g',4);
+      QString str1="<object0><name></name><type>2</type><pos>0.01,0.01,0.99,0.99</pos><alarm>0</alarm><max>%1,%2,%3</max><min>%4,%5,%6</min><unit>0</unit></object0>";
+      str1=str1.arg(m_fullMaxTemp, 0, 'g',4)
+               .arg(m_maxx, 0, 'g',4)
+               .arg(m_maxy, 0, 'g',4)
+               .arg(m_fullMinTemp, 0, 'g',4)
+               .arg(m_minx, 0, 'g',4)
+               .arg(m_miny, 0, 'g',4);
+      QString str2="<CURSOR>%1,%2,%3</CURSOR></ultemp>";
+      str2=str2.arg(m_pCursorPoint.x)
+                 .arg(m_pCursorPoint.y)
+                 .arg(m_fCursorTemp, 0, 'g',4);
+    QString  strShowInfo= str+str1+str2;
+//    //考虑加入鼠标的温度
     SHOWIMAGE_SetObjectMessage(m_sShowPort,const_cast<char*>(strShowInfo.toStdString().c_str()));
-//    NET_DEV_FULLRECTPARAM fullTemp;
-//    memset(&fullTemp,0,sizeof(NET_DEV_FULLRECTPARAM));
-//    DWORD re;
-//    if(NetDev_GetConfig(m_sRealHandle,ULIR_MEASURE_GET_MAXTEMP2,(void*)&fullTemp,sizeof(NET_DEV_FULLRECTPARAM),&re))
-//    {
-//        m_fullMaxTemp=fullTemp.nMaxtTemp100*0.01;
-//        m_fullMinTemp=fullTemp.nMinTemp100*0.01;
-//    }
 }
+/***********************************************************************************
+函数名:    	 event
+函数描述:	 鼠标悬停设置温度显示坐标
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 bool CloudWidget::event(QEvent *et)
 {
         if(m_sRealHandle!=-1&&et->type()==QEvent::ToolTip)
@@ -988,6 +1239,13 @@ bool CloudWidget::event(QEvent *et)
         }
         return QWidget::event(et);
 }
+/***********************************************************************************
+函数名:    	 cloudCapture_click
+函数描述:	 云台jpeg图像抓取
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void  CloudWidget::cloudCapture_click()
 {
             QString file=SAVEPICTURE+QDateTime::currentDateTime().toString("yyyyMMddhhmmss")+".jpg";
@@ -998,16 +1256,16 @@ void  CloudWidget::cloudCapture_click()
             if(NET_DVR_CaptureJPEGPicture(device_logInfo.getLoginID(), DwStartDChan+1, &JpgPara, const_cast<char *>(file.toStdString().c_str())))
             {
                  QMessageBox::information(this,CH("提示 "),CH(("抓图成功,文件保存在:"))+qApp->applicationDirPath()+"/"+SAVEPICTURE);
-                LOGI("抓图成功:"<< qApp->applicationDirPath().toStdString().c_str()<<"/"<<file.toStdString().c_str());
+                 LOGI("抓图成功:"<< qApp->applicationDirPath().toStdString().c_str()<<"/"<<file.toStdString().c_str());
             }
             else
             {
                  QMessageBox::information(this,CH("提示 "),CH(("抓图失败")));
                   LOGE("抓图失败");
             }
-  //          char buff[640*480*4] ;
+//           char buff[640*480*4] ;
 //            memset(buff,0,sizeof(buff));
- //           DWORD size=0;
+//           DWORD size=0;
 //            if(m_sRealHandle!=-1)
 //            {
 //                LOGI("红相开始抓图");
@@ -1019,7 +1277,14 @@ void  CloudWidget::cloudCapture_click()
 //                LOGI("红相抓图成功: "<<size);
 //            }
 }
- void CloudWidget::setInspectingStatus(int status)
+/***********************************************************************************
+函数名:    	 setInspectingStatus
+函数描述:	 开始巡检,停止巡检,暂停巡检,继续巡检 按钮切换
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
+void CloudWidget::setInspectingStatus(int status)
  {
      inspecting_Pause_Continue->setEnabled(true);
      inspecting_Start_Stop->setEnabled(true);
@@ -1029,8 +1294,9 @@ void  CloudWidget::cloudCapture_click()
          {
                 if(cmdStart_Stop==0)
                 {
-                    cmdStart_Stop=1;
-                    inspecting_Start_Stop->setText(CH("停止巡检"));
+                     cmdStart_Stop=1;
+                    //inspecting_Start_Stop->setText(CH("停止巡检"));
+                     inspecting_Start_Stop->setText(CH("开始巡检"));
                 }else
                 {
                     cmdStart_Stop=0;
@@ -1052,7 +1318,13 @@ void  CloudWidget::cloudCapture_click()
          QMessageBox::information(this,CH("提示 "),CH("发送命令失败"));
      }
  }
-
+/***********************************************************************************
+ 函数名:    	 inspecting_Start_StopClick
+ 函数描述:	 开始巡检,停止巡检 命令发送
+ 输入参数:
+ 输出参数:
+ 返回值:
+ ************************************************************************************/
 void CloudWidget::inspecting_Start_StopClick()
 {
     if(sportT.isRunning())
@@ -1062,16 +1334,22 @@ void CloudWidget::inspecting_Start_StopClick()
         inspecting_Start_Stop->setEnabled(false);
         if(cmdStart_Stop==0)
         {
-
-            sportT.iceSendCommand(QString(STATUS_STARTAUTO));
+            sportT.iceSendCommand(STATUS_STARTAUTO);
         }
         else
         {
-            sportT.iceSendCommand(QString(STATUS_QUICKBACK));
+         //   sportT.iceSendCommand(QString(STATUS_QUICKBACK));
+            sportT.iceSendCommand(STATUS_STARTAUTO);
         }
     }
 }
-
+/***********************************************************************************
+函数名:    	 inspecting_Pause_ContinueClick
+函数描述:	 暂停巡检,继续巡检 命令发送
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void CloudWidget::inspecting_Pause_ContinueClick()
 {  
     if(sportT.isRunning())
@@ -1081,11 +1359,11 @@ void CloudWidget::inspecting_Pause_ContinueClick()
         inspecting_Start_Stop->setEnabled(false);
         if(cmdStart_Stop==0)
         {
-            sportT.iceSendCommand(QString(STATUS_PAUSEAUTO));
+            sportT.iceSendCommand(STATUS_PAUSEAUTO);
         }else
         {
-           // sportT.iceSendCommand(QString(STATUS_CONTINUEAUTO));
-            sportT.iceSendCommand(QString(STATUS_PAUSEAUTO));
+            sportT.iceSendCommand(STATUS_CONTINUEAUTO);
+            //sportT.iceSendCommand(QString(STATUS_PAUSEAUTO));
         }
     }
 }

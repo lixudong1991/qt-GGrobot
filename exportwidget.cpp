@@ -43,6 +43,13 @@ ExportWidget::~ExportWidget()
     }
     delete data;
 }
+/***********************************************************************************
+函数名:
+函数描述:	界面主要元素初始化
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::initLabel()
 {
     deviceIdL=new QLabel(CH("设备ID: "));
@@ -74,9 +81,9 @@ void ExportWidget::initLabel()
 
     dataTable=new QTableWidget();
     QStringList  HStrList;
-    HStrList.push_back(CH("位置"));
+    HStrList.push_back(CH("设备名称"));
     HStrList.push_back(CH("上报时间"));
-    HStrList.push_back(CH("数据类型"));
+    HStrList.push_back(CH("检测类型"));
     HStrList.push_back(CH("数据"));
     dataTable->horizontalHeader()->setStretchLastSection(true);
     dataTable->horizontalHeader()->setEnabled(false);
@@ -100,17 +107,30 @@ void ExportWidget::initLabel()
 
      downima=new ExportDownima(this);
 }
+/***********************************************************************************
+函数名:
+函数描述:	设置导出报表界面子元素的大小
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::setLabelSize(int w,int h)
 {
    ima->setFixedSize(w/2,h*2/3);
    info->setFixedSize(w/2,h/3);
-   dataTable->horizontalHeader()->resizeSection(0,(w/2-10)/8);
-   dataTable->horizontalHeader()->resizeSection(1,(w/2-10)*3/8);
+   dataTable->horizontalHeader()->resizeSection(0,(w/2-10)*2/8);
+   dataTable->horizontalHeader()->resizeSection(1,(w/2-10)*2/8);
    dataTable->horizontalHeader()->resizeSection(2,(w/2-10)*1/8);
    dataTable->horizontalHeader()->resizeSection(3,(w/2-10)*2/8);
 
 }
-
+/***********************************************************************************
+函数名:
+函数描述:	导出报表界面主要布局初始化
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::initPanal()
 {
     QHBoxLayout *mainhl=new QHBoxLayout(this);
@@ -178,6 +198,13 @@ void ExportWidget::initPanal()
 
 
 }
+/***********************************************************************************
+函数名:
+函数描述:	登录成功之后初始化用户数据,并启动图片下载线程
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::initData()
 {
     for(const Userterminal &userdevice: *userDevices)
@@ -188,12 +215,21 @@ void ExportWidget::initData()
     LOGI("exportdownthread start------------------------------------->");
     downt.start();
 }
+
+/***********************************************************************************
+函数名:
+函数描述:	根据机器人id读取对应的地图位置点信息
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::deviceIdchange(int i)
 {
      beginPos->clear();
      endPos->clear();
-     QString term=userDevices->at(i).getTerminalId();
-     parseXML(QString("map/")+term+".xml");
+     term=&(userDevices->at(i));
+     QString ter=term->getTerminalId();
+     parseXML(QString("map/")+ter+".xml");
      QMapIterator<int,QPointF> iter(points);
      while (iter.hasNext()) {
              iter.next();
@@ -209,49 +245,63 @@ void ExportWidget::deviceIdchange(int i)
          selectbt->setEnabled(false);
      }
 }
+
+/***********************************************************************************
+函数名:
+函数描述:	导出报表界面中表格中填入对应的数据
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::posSizeChange(QString s)
 {
-
          dataTable->clearContents();
          const auto &li=data->value(s.toInt());
          dataTable->setRowCount(li->size());
+         QHash<int,PreinstallPoint*> *p=term->getPointInfo();
+         QHash<int,PreinstallPoint*>::const_iterator it;
          for(int j=0;j<li->size();j++)
          {
              auto &tem=li->at(j);
-             QTableWidgetItem *item0=new QTableWidgetItem(QString::number(tem->getPos()));
+             it=p->find(tem->getSonPos());
+              QString str,datatype,dat;
+             if(it!=p->cend())
+             {
+                 str=it.value()->getPosName();
+                 datatype=it.value()->getCheckName();
+             }
+             if(tem->getDatatype()==2)
+             {
+                 dat=QString::number(tem->getData()*0.01);
+             }else
+             {
+                 dat=CH("正常");
+             }
+             QTableWidgetItem *item0=new QTableWidgetItem(str);
              item0->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+             item0->setBackgroundColor(QColor(255,210,166));
              dataTable->setItem(j,0,item0);
              QTableWidgetItem *item1=new QTableWidgetItem(tem->getReportTime());
              item1->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+             item1->setBackgroundColor(QColor(255,210,166));
              dataTable->setItem(j,1,item1);
-             QString types,dat;
-             switch (tem->getDatatype()) {
-             case 0:
-                 types=CH("开关状态");
-                 //dat=tem->getData()==0?CH("关"):CH("开");
-                 break;
-             case 1:
-                 types=CH("油位");
-//               dat=QString::number(tem->getData());
-                 break;
-             case 2:
-                 types=CH("红外");
-          //       dat=QString::number(tem->getData());
-                 break;
-             default:
-                 types=CH("温度");
-                dat=QString::number(tem->getData()*0.01);
-                 break;
-             }
-         QTableWidgetItem *item2=new QTableWidgetItem(types);
-         item2->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-         dataTable->setItem(j,2,item2);
-         QTableWidgetItem *item3=new QTableWidgetItem(dat);
-         item3->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-         dataTable->setItem(j,3,item3);
+             QTableWidgetItem *item2=new QTableWidgetItem(datatype);
+             item2->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+             item2->setBackgroundColor(QColor(255,210,166));
+             dataTable->setItem(j,2,item2);
+             QTableWidgetItem *item3=new QTableWidgetItem(dat);
+             item3->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+             item3->setBackgroundColor(QColor(255,210,166));
+             dataTable->setItem(j,3,item3);
          }
 }
-
+/***********************************************************************************
+函数名:
+函数描述:	初始化导出报表界面对应元素的事件
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::initsolts()
 {
      connect(deviceId,SIGNAL(currentIndexChanged(int)),this,SLOT(deviceIdchange(int)));
@@ -272,6 +322,15 @@ void ExportWidget::loadingtimeout()
     }*/
     downt.exitexec();
 }
+
+/***********************************************************************************
+函数名:
+函数描述:	点击表格中某一行时下载对应的图片
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
+
  void ExportWidget::showImage(int row,int)
  {
      int pos=posbox->currentText().toInt();
@@ -286,11 +345,17 @@ void ExportWidget::loadingtimeout()
             }
            delete img;
       }else{
-          downt.setName(s);
-          downt.wakeT();
+          downt.downloadFile(s);
           downima->loadingStart(true,CH("正在下载图片"));
       }
  }
+ /***********************************************************************************
+ 函数名:
+ 函数描述:	图片下载完成时在右边显示图片
+ 输入参数:
+ 输出参数:
+ 返回值:
+ ************************************************************************************/
  void ExportWidget::setImage(QString s)
  {
      downima->loadingStart(false,"");
@@ -301,6 +366,13 @@ void ExportWidget::loadingtimeout()
        }
       delete img;
  }
+ /***********************************************************************************
+ 函数名:
+ 函数描述:	 查询按钮事件,只查询不导出报表
+ 输入参数:
+ 输出参数:
+ 返回值:
+ ************************************************************************************/
 void ExportWidget::selectData()
 {
     exportbt->setEnabled(false);
@@ -308,6 +380,13 @@ void ExportWidget::selectData()
     selectDataThr(false,"");
     downima->loadingStart(true,CH("正在查询..."));
 }
+/***********************************************************************************
+函数名:
+函数描述:	启动数据查询线程
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::selectDataThr(bool mode,const QString &file)
 {
     thr.setStartTime(beginTime->text());
@@ -317,9 +396,16 @@ void ExportWidget::selectDataThr(bool mode,const QString &file)
     thr.setStoppos(endPos->currentText());
     thr.setFilename(file);
     thr.model=mode;
+    thr.preinstallPointMap=term->getPointInfo();
     thr.start();
 }
-
+/***********************************************************************************
+函数名:
+函数描述:	导出报表,并查询数据
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::exportCsv()
 {
     QString filename=QFileDialog::getSaveFileName(this,CH("保存文件"),qApp->applicationDirPath() , tr("Files (*.csv)"));
@@ -331,9 +417,16 @@ void ExportWidget::exportCsv()
     exportbt->setEnabled(false);
     selectbt->setEnabled(false);
     selectDataThr(true,filename);
-   downima->loadingStart(true,CH("正在导出..."));
+    downima->loadingStart(true,CH("正在导出..."));
    // qDebug()<<"filename: "<<filename<<"  " <<"startTime: "<<beginTime->text()<<"  " <<"stopTime: "<<endTime->text()<<"\n"<<"startPos: "<<beginPos->currentText()<<"  " <<"stopPos: "<<endPos->currentText()<<"  " <<"deviceId: "<<userDevices->at(deviceId->currentIndex()).getTerminalId()<<"\n";
 }
+/***********************************************************************************
+函数名:
+函数描述:	 数据查询线程查询成功后重新刷新界面
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::getDatamap(QMap<int,QList<Substationdata*>*>* v)
 {
      if(data!=NULL)
@@ -369,6 +462,13 @@ void ExportWidget::getDatamap(QMap<int,QList<Substationdata*>*>* v)
            posSizeChange(posbox->currentText());
        }
 }
+/***********************************************************************************
+函数名:
+函数描述:	 解析地图配置文件读取位置点信息
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void ExportWidget::parseXML(const QString &fname)
 {
     if(fname.isEmpty())

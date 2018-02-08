@@ -9,7 +9,7 @@
 #include "routewidget.h"
 #include "HCNetSdk/HCNetSDK.h"
 #include "HCNetSdk/IShowImage.h"
-#include "HCNetSdk/IUlirTemperatureSDK.h"
+#include "HCNetSdk/UlirTempSDK.h"
 #include "HCNetSdk/IUlirNetDevSDK.h"
 #include "sportsctrthread.h"
 class CloudWidget : public QWidget
@@ -73,13 +73,16 @@ public slots:
     void inspecting_Start_StopClick();
     void inspecting_Pause_ContinueClick();
 
+
     void setInspectingStatus(int);
+
+
 protected:
      void paintEvent(QPaintEvent *event);
      bool event(QEvent *et);
 signals:
-
-
+     void exitprocess();
+     void haveAlarm(int);
 private:
 
     QStackedLayout *leftupLayout;
@@ -130,7 +133,6 @@ private:
     QPushButton *log_bt;
     QComboBox *deviceid;
 
-
     QGroupBox *devices_log;
     QGroupBox *nonnectCloud;
     QGroupBox *right_cloudCtrl;
@@ -169,9 +171,15 @@ private:
     DWORD m_dwDataSize ;
     BYTE * m_pFrameHead ;
     DWORD m_dwHeadSize;
+
+    unsigned char* m_pImageBuffer;
+    unsigned long m_ImageBufferSize;
+
     float m_fCursorTemp;
+
     float m_fullMaxTemp;
     float m_fullMinTemp;
+    float m_maxx,m_maxy,m_minx,m_miny;
 
     int PLAYVIDEODLG_WIDTH=0;
     int PLAYVIDEODLG_HIGH=0;

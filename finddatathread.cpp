@@ -9,13 +9,18 @@ FindDataThread::~FindDataThread()
 {
 
 }
-
+/***********************************************************************************
+函数名:
+函数描述:	导出报表界面数据查询线程
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void FindDataThread::run()
 {
      LOGI("finddatathread start");
     QSqlQuery query;
-    QString sql="SELECT reportTime,pos,datatype,`data`,pictureType,pictureName FROM tbl_substationdata WHERE terminalId='"+deviceId+"' AND reportTime >='"+starttime+"' AND reportTime <='"+stoptime+"' AND pos >="+startpos+" AND  pos <="+stoppos+" AND pos > 2000 ORDER BY pos,reportTime";
-   // qDebug()<<deviceId<<" "<<starttime<<" "<<stoptime<<" "<<startpos<<" "<<stoppos;
+    QString sql="SELECT reportTime,pos,sonPos,datatype,`data`,pictureType,pictureName FROM tbl_substationdata WHERE terminalId='"+deviceId+"' AND writeTime >='"+starttime+"' AND writeTime <='"+stoptime+"' AND pos >="+startpos+" AND  pos <="+stoppos+" AND pos > 2000 ORDER BY pos,writeTime";
     query.exec(sql);
     datamap=new  QMap<int,QList<Substationdata*>*>();
     QMap<int,QList<Substationdata*>*>::iterator mi;
@@ -25,10 +30,11 @@ void FindDataThread::run()
          sub->setReportTime(query.value(0).toString());
          int pos=query.value(1).toInt();
          sub->setPos(pos);
-         sub->setDatatype(query.value(2).toInt());
-         sub->setData(query.value(3).toInt());
-         sub->setPictureType(query.value(4).toInt());
-         sub->setPictureName(query.value(5).toString());
+         sub->setSonPos(query.value(2).toInt());
+         sub->setDatatype(query.value(3).toInt());
+         sub->setData(query.value(4).toInt());
+         sub->setPictureType(query.value(5).toInt());
+         sub->setPictureName(query.value(6).toString());
          mi = datamap->find(pos);
          if(mi != datamap->end())
          {
@@ -53,35 +59,31 @@ void FindDataThread::run()
         QTextStream out(&file);
         LOGI("开始导出文件:"<<name.toStdString());
         out<<CH("机器ID:,")<<deviceId<<",\n";
-        out<<CH("位置,")<<CH("上报时间,")<<CH("数据类型,")<<CH("数据,\n");
+        out<<CH("设备名称,")<<CH("检测点,")<<CH("上报时间,")<<CH("检测类型,")<<CH("数据,\n");
         QMapIterator<int,QList<Substationdata*>*> i(*datamap);
+        QHash<int,PreinstallPoint*>::const_iterator it;
          while (i.hasNext()) {
                  i.next();
                  const auto &li=i.value();
                  for(int j=0;j<li->size();j++)
                  {
-                      auto &tem=li->at(j);
-                      out<<tem->getPos()<<","<<tem->getReportTime()<<",";
-                     QString types,dat;
-                       switch (tem->getDatatype()) {
-                       case 0:
-                         types=CH("开关状态");
-                         dat=tem->getData()==0?CH("关"):CH("开");
-                         break;
-                      case 1:
-                         types=CH("油位");
-                         dat=QString::number(tem->getData());
-                         break;
-                      case 2:
-                         types=CH("红外");
-                         dat=QString::number(tem->getData());
-                         break;
-                      default:
-                         types=CH("其它");
-                         dat=QString::number(tem->getData());
-                         break;
+                      auto &tem=li->at(j);    
+                      it=preinstallPointMap->find(tem->getSonPos());
+                      QString str,sonstr,datatype,dat;
+                      if(it!=preinstallPointMap->cend())
+                      {
+                          str=it.value()->getPosName();
+                          sonstr=it.value()->getSonPosName();
+                          datatype=it.value()->getCheckName();
                       }
-                       out<<types<<","<<dat<<",\n";
+                      if(tem->getDatatype()==2)
+                      {
+                          dat=QString::number(tem->getData()*0.01);
+                      }else
+                      {
+                          dat=CH("正常");
+                      }
+                      out<<str<<","<<sonstr<<","<<tem->getReportTime()<<","<<datatype<<","<<dat<<",\n";
                  }
                }
        file.close();

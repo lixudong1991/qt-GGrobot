@@ -1,5 +1,4 @@
 #include "thread.h"
-#include <QDebug>
 
 Thread::Thread()
 {
@@ -13,7 +12,13 @@ Thread::~Thread()
     exit();
     wait();
 }
-
+/***********************************************************************************
+函数名:
+函数描述:	 图像界面定时扫描线程
+输入参数:
+输出参数:
+返回值:
+************************************************************************************/
 void  Thread::run()
 {
    QSettings ftpconfig("db.ini",QSettings::IniFormat);
@@ -21,17 +26,18 @@ void  Thread::run()
    int ftpport = ftpconfig.value("ftpserver/port").toInt();
    QString ftpuser = ftpconfig.value("ftpserver/user").toString();
    QString ftppwd = ftpconfig.value("ftpserver/pwd").toString();
-   QString time=ftpconfig.value("picture/refurbishtime").toString();
-    LOGI("thread1 scanner space time:"<<time.toStdString()<<" second" );
+   int time=ftpconfig.value("picture/refurbishtime").toInt();
+    LOGI("thread1 scanner space time:"<<time<<" second" );
    while(exit_t)
    {   
        QSqlQuery query;
-       query.prepare("SELECT * FROM tbl_substationdata WHERE terminalId=:id AND reportTime > (SELECT SUBDATE(NOW(),INTERVAL :time SECOND)) ORDER BY reportTime DESC");
+       query.prepare("SELECT * FROM tbl_substationdata WHERE terminalId=:id AND writeTime > (SELECT SUBDATE(NOW(),INTERVAL :time SECOND)) ORDER BY writeTime DESC");
        query.bindValue(":id",terminalId);
-       query.bindValue(":time",time);
+       query.bindValue(":time",QString::number(time+2));
        if(!query.exec())
        {
-          emit queryErr();
+           LOGE("execute select sql error,thread will exit :"<<query.lastError().text().toStdString());
+           emit queryErr();
            break;
        }
 
@@ -55,14 +61,34 @@ void  Thread::run()
            {
                 ids.append(query.value(4).toInt());
            }
-           FtpManager ftpmanager;
-           ftpmanager.setHostPort(ftpip, ftpport);
-           ftpmanager.setUserInfo(ftpuser, ftppwd);
-           ftpmanager.setFilename(data.getPictureName());
-           connect(&ftpmanager, SIGNAL(finishe(QString)), this, SLOT(download()));
-           ftpmanager.get(FILECACHEPATH+data.getPictureName());
-           exec();
-          LOGI("thread1 scanner image -->name: "<<data.getPictureName().toStdString()<<"  type:"<<data.getPictureType()<<"  time:"<<data.getReportTime().toStdString()<<" ids size:"<<ids.size());
+           if(data.getDatatype()==2)
+           {
+               QHash<int,PreinstallPoint*>::const_iterator iter;
+               iter=preinstallPointMap->find(data.getSonPos());
+               if(iter!=preinstallPointMap->cend()&&iter.value()->getAlarmTemp()<=data.getData())
+               {
+                    QString sql="INSERT INTO tbl_alarm VALUE(DEFAULT,";
+                    sql.append(QString::number(data.getDataId()));
+                    sql.append(",DEFAULT,");
+                    sql.append(QString::number(-1));
+                    sql.append(",NOW())");
+                    LOGI("find a Alarm,sql: "<<sql.toStdString());
+                    if(!query.exec(sql))
+                    {
+                        emit queryErr();
+                        LOGE("execute sql error : "<<sql.toStdString()<<" ,thread will exit");
+                        break;
+                    }
+               }
+           }
+          FtpManager ftpmanager;
+          ftpmanager.setHostPort(ftpip, ftpport);
+          ftpmanager.setUserInfo(ftpuser, ftppwd);
+          ftpmanager.setFilename(data.getPictureName());
+          connect(&ftpmanager, SIGNAL(finishe(QString)), this, SLOT(download()));
+          ftpmanager.get(FILECACHEPATH+data.getPictureName());
+          exec();
+          LOGI("thread1 scanner image -->name: "<<data.getPictureName().toStdString()<<"  type:"<<data.getPictureType()<<"  time:"<<data.getReportTime().toStdString()<<" pos:"<<data.getPos());
        }
        else
        {

@@ -51,15 +51,15 @@ public:
     {
         return dataId;
     }
-    const QString getTerminalId()const
+    const QString &getTerminalId()const
     {
         return terminalId;
     }
-    const QString getReportTime()const
+    const QString &getReportTime()const
     {
         return reportTime;
     }
-    const QString getWriteTime()const
+    const QString &getWriteTime()const
     {
         return writeTime;
     }
@@ -83,7 +83,7 @@ public:
     {
         return pictureType;
     }
-    const QString getPictureName()const
+    const QString &getPictureName()const
     {
         return pictureName;
     }

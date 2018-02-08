@@ -10,6 +10,13 @@ RouteWidget::RouteWidget(QWidget *parent) :
     flashTime=new QTimer;
     connect(flashTime,SIGNAL(timeout()),this,SLOT(flashTimeout()));
 }
+/***********************************************************************************
+函数名:    	setBackImg
+函数描述:	设置地图区域的宽和高,加载地图,读取地图上点的坐标配置文件
+输入参数:   w:地图区域的宽,h
+输出参数:
+返回值:
+************************************************************************************/
 void RouteWidget::setBackImg(int w ,int h,const QString &map)
 {
     this->setAutoFillBackground(true);
@@ -31,6 +38,13 @@ void RouteWidget::setBackImg(int w ,int h,const QString &map)
 RouteWidget::~RouteWidget()
 {
 }
+/***************************************************************************************************
+函数名:    	paintEvent
+函数描述:	将已走过的点颜色设置为黄色,当前所处点设置为红色,未走过的点设置为蓝色
+输入参数:
+输出参数:
+返回值:
+****************************************************************************************************/
 void RouteWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
@@ -74,6 +88,13 @@ void RouteWidget::paintEvent(QPaintEvent*)
         painter.drawEllipse(QPointF(wid*p.rx(),hei*(1.0-p.ry())),r,r);
     }
 }
+/********************************************************************************
+函数名:    	startPoint
+函数描述:	启动地图上某个点的闪烁
+输入参数:   pointid:机器人当前所处点的id, ids:机器人已走过点的id集合
+输出参数:
+返回值:
+*********************************************************************************/
  void RouteWidget::startPoint(int pointid,QList<int>*ids)
 {
     if(flashTime->isActive())
@@ -99,12 +120,25 @@ void RouteWidget::paintEvent(QPaintEvent*)
          flashTime->start(500);
     }
  }
+ /*********************************************************************
+ 函数名:    	flashTimeout
+ 函数描述:	每隔0.5秒改变地图上机器人当前所处点的显示状态
+ 输入参数:
+ 输出参数:
+ 返回值:
+ **********************************************************************/
 void RouteWidget::flashTimeout()
 {
     flashstatus=!flashstatus;
     update();
 }
-
+/*************************************************
+函数名:    	parseXML
+函数描述:	解析地图上点的坐标的配置文件
+输入参数:  fname:配置文件的路径
+输出参数:
+返回值:
+*************************************************/
 void RouteWidget::parseXML(const QString &fname)
 {
     if(fname.isEmpty())
@@ -114,7 +148,6 @@ void RouteWidget::parseXML(const QString &fname)
     if(!file.open(QFile::ReadOnly | QFile::Text)) {
         QMessageBox::information(nullptr, QString("error"),
                                  CH("打开地图失败"));
-
         return;
     }
 

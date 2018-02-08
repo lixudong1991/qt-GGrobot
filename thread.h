@@ -6,6 +6,7 @@
 #include <QMutex>
 #include <QThread>
 #include "substationdata.h"
+#include "preinstallpoint.h"
 class  Thread: public QThread
 {
     Q_OBJECT
@@ -17,6 +18,10 @@ class  Thread: public QThread
     {
         QMutexLocker locker(&mutex);
         terminalId=s;
+    }
+    void setPointInfo(QHash<int,PreinstallPoint*> *p)
+    {
+        this->preinstallPointMap=p;
     }
 
  signals:
@@ -33,6 +38,8 @@ private:
     QTimer *timer;
     Substationdata data;
     QList<int> ids;
+    QHash<int,PreinstallPoint*> *preinstallPointMap;
+
     volatile bool exit_t=true;
 };
 

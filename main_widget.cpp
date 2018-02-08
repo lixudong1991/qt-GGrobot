@@ -20,10 +20,14 @@ MainWidget::MainWidget(QWidget *parent)
 
     statked_widget = new QStackedWidget();
     title_widget=new TitleWidget();
+
     Cloud_widget=new CloudWidget();
     Cloud_widget->setUserDevices(userDevices);
     exprot_widget=new ExportWidget();
     exprot_widget->setUserDevices(userDevices);
+
+    alarmwidget=new AlarmWidget();
+    alarmwidget->setUserDevices(userDevices);
 
     login_dialog=new LoginDialog();
     login_dialog->setTreadDevices(userDevices);
@@ -41,6 +45,10 @@ MainWidget::MainWidget(QWidget *parent)
 
     connect(login_dialog,SIGNAL(doLogin()),this,SLOT(doLog()));
 
+    connect(Cloud_widget,SIGNAL(exitprocess()),this,SLOT(close()));
+    connect(Cloud_widget,SIGNAL(haveAlarm(int)),this,SLOT(setAlarmstatus(int)));
+    connect(alarmwidget,SIGNAL(noAlarm()),this,SLOT(resetAlarmstatus()));
+
     QPalette palette;
     palette.setBrush(QPalette::Window, QBrush(Qt::white));
     statked_widget->setPalette(palette);
@@ -49,6 +57,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     statked_widget->addWidget(Cloud_widget);
     statked_widget->addWidget(exprot_widget);
+    statked_widget->addWidget(alarmwidget);
 
     QVBoxLayout *center_layout = new QVBoxLayout();
     center_layout->addWidget(statked_widget);
@@ -62,9 +71,11 @@ MainWidget::MainWidget(QWidget *parent)
     main_layout->setContentsMargins(SHADOW_WIDTH, SHADOW_WIDTH, SHADOW_WIDTH, SHADOW_WIDTH);
 
     setLayout(main_layout);
+
     Cloud_widget->setLabelSize(sc.width(),sc.height()-100);
     Cloud_widget->update();
     exprot_widget->setLabelSize(sc.width(),sc.height()-100);
+    alarmwidget->setLabelSize(sc.width(),sc.height()-100);
 }
 
 MainWidget::~MainWidget()
@@ -78,6 +89,10 @@ void MainWidget::turnPage(int current_page)
         statked_widget->setCurrentWidget(Cloud_widget);
     }
     else if(current_page == 1)
+    {   
+          statked_widget->setCurrentWidget(alarmwidget);
+    }
+    else
     {
         statked_widget->setCurrentWidget(exprot_widget);
     }
@@ -110,8 +125,9 @@ void MainWidget::doLog()
 {
    Cloud_widget->initTerminal();
    exprot_widget->initData();
-    //
+   alarmwidget->initDevices();
 }
+
 void MainWidget::mousePressEvent(QMouseEvent *event)
 {
     //只能是鼠标左键移动和改变大小
@@ -138,11 +154,15 @@ void MainWidget::mouseMoveEvent(QMouseEvent *event)
         move(move_pos - move_point);
     }
 }
-void MainWidget::paintEvent(QPaintEvent *)
+
+void MainWidget::setAlarmstatus(int id)
 {
-    QPainter painter(this);
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(Qt::white);
-    painter.drawPixmap(QRect(SHADOW_WIDTH, SHADOW_WIDTH, this->width()-2*SHADOW_WIDTH, this->height()-2*SHADOW_WIDTH), QPixmap(":/qss/ba"));
+    title_widget->setAlarmBackground(true);
+    alarmwidget->setCurrentDevice(id);
 }
 
+void MainWidget::resetAlarmstatus()
+{
+ //   alarmwidget->setCurrentDevice(device);
+     title_widget->setAlarmBackground(false);
+}

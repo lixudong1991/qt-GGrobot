@@ -49,7 +49,6 @@ SOURCES += main.cpp\
     loginthread.cpp \
     finddatathread.cpp \
     exportdownima.cpp \
-    expordownthread.cpp \
     log4z.cpp \
     routewidget.cpp \
     GGConfig.cpp \
@@ -57,7 +56,13 @@ SOURCES += main.cpp\
     GGSmart.cpp \
     sportsctrthread.cpp \
     comstatusice.cpp \
-    comstatusi.cpp
+    comstatusi.cpp \
+    alarmwidget.cpp \
+    preinstallpoint.cpp \
+    filedownthread.cpp \
+    alarmstatusthread.cpp \
+    alarmquerythread.cpp \
+    alarmsubstation.cpp
 
 HEADERS  += dialog.h \
     head.h \
@@ -86,19 +91,23 @@ HEADERS  += dialog.h \
     loginthread.h \
     finddatathread.h \
     exportdownima.h \
-    expordownthread.h \
     log4z.h \
     routewidget.h \
     HCNetSdk/IShowImage.h \
     HCNetSdk/IUlirNetDevSDK.h \
-    HCNetSdk/ULPlayer.h \
-    HCNetSdk/IUlirTemperatureSDK.h \
     GGConfig.h \
     GGRobotSession.h \
     GGSmart.h \
     sportsctrthread.h \
     comstatusice.h \
-    comstatusi.h
+    comstatusi.h \
+    HCNetSdk/UlirTempSDK.h \
+    alarmwidget.h \
+    preinstallpoint.h \
+    filedownthread.h \
+    alarmstatusthread.h \
+    alarmquerythread.h \
+    alarmsubstation.h
 
 
 INCLUDEPATH +=C:/ZeroC/Ice-3.6.3/include
@@ -111,7 +120,7 @@ LIBS += -LD:/HCNetSdk/ -lHCNetSDK \
             -LD:/HCNetSdk/HCNetSDKCom/ -lHCGeneralCfgMgr \
             -LD:/IRXSdk/ -lShowImage \
             -LD:/IRXSdk/ -lUlirNetDevSDK \
-            -LD:/IRXSdk/ -lUlirTemperatureSDK \
+            -LD:/IRXSdk/ -lUlirTempSDK \
             -LC:/ZeroC/Ice-3.6.3/lib/ -lice
 
 FORMS +=

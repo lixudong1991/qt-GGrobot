@@ -31,5 +31,6 @@ public:
    QString user;
    QString pwd;
    QList<Userterminal> *userDevices;
+   void  alarmTempSave(Userterminal*);
 };
 #endif // LOGINTHREAD_H

@@ -17,16 +17,6 @@
         <file alias="min_hover">img/sysButton/min_hover.png</file>
         <file alias="min_pressed">img/sysButton/min_pressed.png</file>
     </qresource>
-    <qresource prefix="/toolWidget">
-        <file alias="gongNeng">img/toolWidget/gongNeng.png</file>
-        <file alias="jiaSu">img/toolWidget/jiaSu.png</file>
-        <file alias="menZhen">img/toolWidget/menZhen.png</file>
-        <file alias="muMa">img/toolWidget/muMa.png</file>
-        <file alias="qingLi">img/toolWidget/qingLi.png</file>
-        <file alias="tiJian">img/toolWidget/tiJian.png</file>
-        <file alias="expert">img/toolWidget/expert.png</file>
-        <file alias="repair">img/toolWidget/repair.png</file>
-    </qresource>
     <qresource prefix="/mainMenu">
         <file alias="setting">img/mainMenu/setting.png</file>
     </qresource>
@@ -55,10 +45,11 @@
     </qresource>
     <qresource prefix="/qss">
         <file alias="wid">style/widget.qss</file>
-        <file alias="infol">style/bb.jpg</file>
 		<file alias="wall">style/wall.png</file>
 		<file alias="content">style/content.png</file>
 		<file alias="export">style/export.png</file>
+		<file alias="alarm">style/alarm.png</file>
+		<file alias="repair">style/repair.png</file>
 		<file alias="ba">style/ba.png</file>
     </qresource>
 </RCC>

@@ -2,6 +2,7 @@
 #define USERTERMINAL_H
 
 #include "head.h"
+#include "preinstallpoint.h"
 class Userterminal
 {
 public:
@@ -127,6 +128,14 @@ public:
  {
      return posSize;
  }
+ void setPointInfo(QHash<int,PreinstallPoint*> * p)
+ {
+     this->preinstallPointMap=p;
+ }
+ QHash<int,PreinstallPoint*> * getPointInfo()const
+ {
+     return this->preinstallPointMap;
+ }
 private:
   int id;
   QString createDate;
@@ -143,6 +152,8 @@ private:
   QString ownerUnit;
   QString remark;
   int posSize;
+
+  QHash<int,PreinstallPoint*> *preinstallPointMap=nullptr;
 };
 
 #endif // USERTERMINAL_H

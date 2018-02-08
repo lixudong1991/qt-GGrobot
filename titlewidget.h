@@ -10,15 +10,20 @@ public:
     explicit TitleWidget(QWidget *parent = 0);
     void translateLanguage();
     ~TitleWidget();
+    void setAlarmBackground(bool);
 signals:
 
     void showMainMenu();
     void closeWidget();
     void showMin();
     void turnPage(int current_page);
+protected:
+    void paintEvent(QPaintEvent *);
 public slots:
     void turnPage(QString current_page);
 
+private slots:
+    void flashTimeout();
 private:
     QPoint press_point;//鼠标按下去的点
     bool is_move;
@@ -29,6 +34,7 @@ private:
     PushButton *min_button;
     QList<ToolButton *> button_list;
 
+    QTimer *flashTime;
 };
 
 #endif // TITLEWIDGET_H

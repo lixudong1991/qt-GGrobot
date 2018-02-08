@@ -8,7 +8,7 @@
 #include "substationdata.h"
 #include "finddatathread.h"
 #include "exportdownima.h"
-#include "expordownthread.h"
+#include "filedownthread.h"
 #include "push_button.h"
 class ExportWidget : public QWidget
 {
@@ -59,6 +59,7 @@ private:
     QLabel* info;
 
     const QList<Userterminal> *userDevices=NULL;
+    const Userterminal *term;
     QMap<int,QList<Substationdata*>*> *data=NULL;
     QMap<int,QPointF> points;
     FindDataThread thr;
@@ -68,7 +69,7 @@ private:
     void initsolts();
 
     ExportDownima *downima;
-    Expordownthread downt;
+    Filedownthread downt;
 
     void selectDataThr(bool,const QString&);
     void parseXML(const QString &fname);

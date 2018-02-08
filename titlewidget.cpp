@@ -25,7 +25,7 @@ TitleWidget::TitleWidget(QWidget *parent) :
     title_layout->setSpacing(0);
 
     QStringList string_list;
-    string_list<<":/qss/content"<<":/qss/export";
+    string_list<<":/qss/content"<<":/qss/alarm"<<":/qss/export";
     QHBoxLayout *button_layout = new QHBoxLayout();
 
     QSignalMapper *signal_mapper = new QSignalMapper(this);
@@ -35,7 +35,6 @@ TitleWidget::TitleWidget(QWidget *parent) :
         button_list.append(tool_button);
         connect(tool_button, SIGNAL(clicked()), signal_mapper, SLOT(map()));
         signal_mapper->setMapping(tool_button, QString::number(i, 10));
-
         button_layout->addWidget(tool_button, 0, Qt::AlignBottom);
     }
     connect(signal_mapper, SIGNAL(mapped(QString)), this, SLOT(turnPage(QString)));
@@ -52,16 +51,13 @@ TitleWidget::TitleWidget(QWidget *parent) :
 
     translateLanguage();
 
-   /* QPalette pal(palette());
-
-    //璁剧疆鑳屾櫙榛戣壊
-    pal.setColor(QPalette::Background, Qt::black);
-    setAutoFillBackground(true);
-    setPalette(pal);*/
-
     setLayout(main_layout);
     setFixedHeight(100);
     is_move = false;
+
+    flashTime=new QTimer;
+    connect(flashTime,SIGNAL(timeout()),this,SLOT(flashTimeout()));
+
 }
 
 TitleWidget::~TitleWidget()
@@ -75,7 +71,8 @@ void TitleWidget::translateLanguage()
     min_button->setToolTip(CH("最小化"));
 
     button_list.at(0)->setText(CH("图像"));
-    button_list.at(1)->setText(CH("导出报表"));
+    button_list.at(1)->setText(CH("历史告警"));
+    button_list.at(2)->setText(CH("导出报表"));
 }
 void TitleWidget::turnPage(QString current_page)
 {
@@ -95,4 +92,33 @@ void TitleWidget::turnPage(QString current_page)
         }
     }
     emit turnPage(current_index);
+}
+void TitleWidget::setAlarmBackground(bool b)
+{
+    if(b)
+    {
+        flashTime->start(500);
+    }else
+    {
+         flashTime->stop();
+        button_list.at(1)->setIcon(QIcon(":/qss/alarm"));
+    }
+}
+void TitleWidget::flashTimeout()
+{
+    static bool normal=true;
+    if(normal)
+    {
+        button_list.at(1)->setIcon(QIcon(":/qss/repair"));
+    }else{
+        button_list.at(1)->setIcon(QIcon(":/qss/alarm"));
+    }
+    normal=!normal;
+}
+void TitleWidget::paintEvent(QPaintEvent *)
+{
+    QPainter painter(this);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(Qt::white);
+    painter.drawPixmap(QRect(0, 0, this->width(), this->height()), QPixmap(":/qss/ba"));
 }

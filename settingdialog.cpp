@@ -55,7 +55,6 @@ SettingDialog::SettingDialog(QWidget *parent)
     ftppwd->setEchoMode(QLineEdit::Password);
     ftppwd->setFixedHeight(25);
 
-
     pictimeConfigL=new QLabel(CH("Ë¢ÐÂÊ±¼ä(Ãë):"));
     pictimeConfig=new QLineEdit();
     pictimeConfig->setFixedHeight(25);
