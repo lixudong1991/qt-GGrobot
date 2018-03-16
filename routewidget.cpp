@@ -32,6 +32,7 @@ void RouteWidget::setBackImg(int w ,int h,const QString &map)
     hei=h;
     r=h*0.01;
     parseXML(QString("map/")+map+".xml");
+    fristPiontId=points.keys().first();
     update();
 }
 
@@ -64,7 +65,7 @@ void RouteWidget::paintEvent(QPaintEvent*)
     {
         return;
     }
-    painter.setBrush(Qt::yellow);
+    painter.setBrush(Qt::green);
     QMap<int,QPointF>::iterator mi;
     for(int i=0;i<afterPoints.size()-1;i++)
     {
@@ -77,7 +78,7 @@ void RouteWidget::paintEvent(QPaintEvent*)
     }
     if(flashstatus)
     {
-      painter.setBrush(Qt::red);
+      painter.setBrush(Qt::yellow);
     }else{
       painter.setBrush(Qt::blue);
     }
@@ -104,9 +105,14 @@ void RouteWidget::paintEvent(QPaintEvent*)
     }
     if(!points.isEmpty())
     {
-        for(int i=0;i<ids->size();i++)
+        if(pointid==fristPiontId)
         {
+            afterPoints.clear();
+        }else{
+           for(int i=0;i<ids->size();i++)
+           {
               afterPoints.append(ids->at(i));
+           }
         }
         QMap<int,QPointF>::iterator mi;
         mi=points.find(pointid);
@@ -142,12 +148,11 @@ void RouteWidget::flashTimeout()
 void RouteWidget::parseXML(const QString &fname)
 {
     if(fname.isEmpty())
-        return;
+    return;
 
     QFile file(fname);
     if(!file.open(QFile::ReadOnly | QFile::Text)) {
-        QMessageBox::information(nullptr, QString("error"),
-                                 CH("打开地图失败"));
+        QMessageBox::information(nullptr, QString("error"),CH("打开地图失败"));
         return;
     }
 
@@ -157,15 +162,13 @@ void RouteWidget::parseXML(const QString &fname)
     if(!domDocument.setContent(&file, false, &error, &row, &column)) {
         QMessageBox::information(nullptr, QString("Error"),
                                  QString("parse file failed at line row and column") +
-                                 QString::number(row, 10) + QString(",") +
-                                 QString::number(column, 10));
+                                 QString::number(row, 10) + QString(",") + QString::number(column, 10));
         file.close();
         return;
     }
 
     if(domDocument.isNull()) {
-        QMessageBox::information(nullptr, QString("title"),
-                                 QString("document is null!"));
+        QMessageBox::information(nullptr, QString("title"),QString("document is null!"));
 
         file.close();
         return;

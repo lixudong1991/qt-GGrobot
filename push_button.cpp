@@ -9,7 +9,6 @@ PushButton::PushButton(QWidget *parent)
 
 PushButton::~PushButton()
 {
-
 }
 
 void PushButton::setPicName(QString pic_name)

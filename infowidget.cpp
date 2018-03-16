@@ -4,6 +4,8 @@
 #include <QBrush>
 #include <QPen>
 #include <QPoint>
+#include "log4z.h"
+using namespace zsummer::log4z;
 #define CH(a) QString::fromLocal8Bit(a)
 Infowidget::Infowidget(QWidget *parent) :
     QWidget(parent)
@@ -23,7 +25,6 @@ Infowidget::~Infowidget()
 ************************************************************************************/
 void Infowidget::paintEvent(QPaintEvent *)
 {
-   // w=h=200;
     QPainterPath path;
     path.setFillRule(Qt::WindingFill);
     path.addRect(0, 0, w,h);
@@ -31,25 +32,62 @@ void Infowidget::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.fillPath(path, QBrush(Qt::black));
 
+    painter.setPen(QPen(Qt::white, 2, Qt::SolidLine));
+    float weith=w*3/5;
+    float weith1=w*2/5;
+    painter.drawLine(weith,0,weith,h);
     painter.setPen(QPen(Qt::blue, 2, Qt::SolidLine));
-    painter.setFont(QFont("Times",15,QFont::Black));
+    painter.setFont(QFont("Times",13,QFont::Black));
 
-    painter.drawText(QRect(w/3,13,w/3,20),Qt::AlignCenter,CH("机器人信息"));
-    int hei=h-5;
+    float fonthei=h*0.063;
+    painter.drawText(QRectF(weith/3,h*0.041,weith/3,fonthei),Qt::AlignCenter,CH("检测数据"));
+    painter.setFont(QFont("Times",11,QFont::Black));
+    painter.drawText(QRectF(weith+weith1/4,h*0.037,weith1/2,fonthei),Qt::AlignCenter,CH("机器人信息"));
+    float hei=h-fonthei/4;
     painter.setPen(QPen(Qt::green, 1, Qt::SolidLine));
-    painter.setFont(QFont("Times",12,QFont::Bold));
+    painter.setFont(QFont("Times",11,QFont::Bold));
 
-    painter.drawText(QRect(w/4+10,hei/8+20,w/2,20),Qt::AlignLeft,CH("机器人ID: "));
-    painter.drawText(QRect(w/4+10,hei*2/8+20,w,20),Qt::AlignLeft,CH("上报时间: "));
-    painter.drawText(QRect(w/4+10,hei*3/8+20,w,20),Qt::AlignLeft,CH("设备名称: "));
-    painter.drawText(QRect(w/4+10,hei*4/8+20,w,20),Qt::AlignLeft,CH("检测点  : "));
-    painter.drawText(QRect(w/4+10,hei*5/8+20,w,20),Qt::AlignLeft,CH("检测类型: "));
-    painter.drawText(QRect(w/4+10,hei*6/8+20,w,20),Qt::AlignLeft,CH("数据    : "));
+    float wei=weith/6;
+    painter.drawText(QRectF(wei,hei/8+fonthei,weith*2/5,fonthei),Qt::AlignLeft,CH("机器人ID:"));
+    painter.drawText(QRectF(wei,hei*2/8+fonthei,weith*2/5,fonthei),Qt::AlignLeft,CH("上报时间:"));
+    painter.drawText(QRectF(wei,hei*3/8+fonthei,weith*2/5,fonthei),Qt::AlignLeft,CH("设备名称:"));
+    painter.drawText(QRectF(wei,hei*4/8+fonthei,weith*2/5,fonthei),Qt::AlignLeft,CH("检 测 点:"));
+    painter.drawText(QRectF(wei,hei*5/8+fonthei,weith*2/5,fonthei),Qt::AlignLeft,CH("检测类型:"));
+    painter.drawText(QRectF(wei,hei*6/8+fonthei,weith*2/5,fonthei),Qt::AlignLeft,CH("数    据:"));
 
-    painter.drawText(QRect(w/2,hei/8+20,w/2,20),Qt::AlignLeft,terminalId);
-    painter.drawText(QRect(w/2,hei*2/8+20,w,20),Qt::AlignLeft,reportTime);
-    painter.drawText(QRect(w/2,hei*3/8+20,w,20),Qt::AlignLeft,pos);
-    painter.drawText(QRect(w/2,hei*4/8+20,w,20),Qt::AlignLeft,sonPos);
-    painter.drawText(QRect(w/2,hei*5/8+20,w,20),Qt::AlignLeft,datatype);
-    painter.drawText(QRect(w/2,hei*6/8+20,w,20),Qt::AlignLeft,data);
+    float we=weith/2-h*0.094;
+    painter.drawText(QRectF(we,hei/8+fonthei,weith*3/5,fonthei),Qt::AlignLeft,terminalId);
+    painter.drawText(QRectF(we,hei*2/8+fonthei,weith*3/5,fonthei),Qt::AlignLeft,reportTime);
+    painter.drawText(QRectF(we,hei*3/8+fonthei,weith*3/5,fonthei),Qt::AlignLeft,pos);
+    painter.drawText(QRectF(we,hei*4/8+fonthei,weith*3/5,fonthei),Qt::AlignLeft,sonPos);
+    painter.drawText(QRectF(we,hei*5/8+fonthei,weith*3/5,fonthei),Qt::AlignLeft,datatype);
+    painter.drawText(QRectF(we,hei*6/8+fonthei,weith*3/5,fonthei),Qt::AlignLeft,data);
+
+     painter.setFont(QFont("Times",10,QFont::Bold));
+//    float wei1=weith+weith1/7;
+//    float fonthei1=fonthei*2/3;
+//    painter.drawText(QRectF(wei1,hei/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电      流:"));
+//    painter.drawText(QRectF(wei1,hei*2/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电      压:"));
+//    painter.drawText(QRectF(wei1,hei*3/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("剩 余电 量:"));
+//    painter.drawText(QRectF(wei1,hei*4/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("机器人状态:"));
+//    painter.drawText(QRectF(wei1,hei*5/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("前  雷  达:"));
+//    painter.drawText(QRectF(wei1,hei*6/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("后  雷  达:"));
+//    painter.drawText(QRectF(wei1,hei*7/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("前 磁导 航:"));
+//    painter.drawText(QRectF(wei1,hei*8/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("后 磁导 航:"));
+//    painter.drawText(QRectF(wei1,hei*9/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("地标读卡器:"));
+//    painter.drawText(QRectF(wei1,hei*10/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("自动门状态:"));
+//    painter.drawText(QRectF(wei1,hei*11/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("充电器状态: "));
+      float wei1=weith+weith1/6;
+      float fonthei1=fonthei*1.5;
+      painter.drawText(QRectF(wei1,hei/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电  流:"));
+      painter.drawText(QRectF(wei1,hei*2/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电  压:"));
+      painter.drawText(QRectF(wei1,hei*3/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电  量:"));
+      painter.drawText(QRectF(wei1,hei*4/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("状  态:"));
+
+       float we1=weith+weith1/2;
+      painter.drawText(QRectF(we1,hei/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,electricitys);
+      painter.drawText(QRectF(we1,hei*2/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,voltage);
+      painter.drawText(QRectF(we1,hei*3/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,electricResidue);
+      painter.drawText(QRectF(we1,hei*4/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft, robotStatus);
+
 }

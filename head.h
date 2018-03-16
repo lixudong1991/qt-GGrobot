@@ -69,21 +69,18 @@
 #define SAVEVEDIO    QString("vedios/")
 #define SAVEPICTURE    QString("pictures/")
 
-
 #define STATUS_DAIJI "status_to_daiji" //待机模式设置
 #define STATUS_STARTAUTO "status_to_kaishizixun" //开始自动巡检
 #define STATUS_PAUSEAUTO "status_to_zantingzixun" //暂停自动巡检
 #define STATUS_CONTINUEAUTO "status_to_jixuzixun" //继续自动巡检
 #define STATUS_QUICKBACK "status_to_fanhang" //快速返航（停止自动巡检）
-#define STATUS_DEBUG "statusto_tiaoshi" //调试模式设置
+#define STATUS_DEBUG "status_to_tiaoshi" //调试模式设置
 #define CTR_GOROWARD "ctr_goforward" //前进
 #define CTR_GOBACK "ctr_goback" //后退
 #define XCTR_GOBACK "xctr_stop" //后退
 #define CTR_GOLEFT "ctr_goleft" //左转
 #define CTR_GORIGHT "ctr_goright" //右转
-
-
-
+#define STATUS_TEXUN "status_to_texun" //
 
 using namespace zsummer::log4z;
 

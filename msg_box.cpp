@@ -28,12 +28,10 @@ MsgBox::MsgBox(QWidget *parent)
     title_layout->setSpacing(5);
     title_layout->setContentsMargins(10, 0, 5, 20);
 
-    //?????????
     msg_label = new QLabel();
     msg_label->setFixedSize(45, 45);
     msg_label->setScaledContents(true);
 
-    //??????????????QLabel???????§Ø???????????
     ask_label = new QLabel();
     ask_label->setWordWrap(true);
 
@@ -90,7 +88,6 @@ void MsgBox::setInfo(QString title_info, QString info, QPixmap pixmap, bool is_o
     ask_label->setText(info);
     msg_label->setPixmap(pixmap);
 
-    //?????????????
     ok_button->setHidden(is_ok_hidden);
     if(is_ok_hidden)
     {

@@ -1701,9 +1701,7 @@ bool LogerManager::setLoggerLimitsize(LoggerId id, unsigned int limitsize)
 bool LogerManager::setLoggerName(LoggerId id, const char * name)
 {
     if (id <0 || id > _lastId) return false;
-    //the name by main logger is the process name and it's can't change. 
-//    if (id == LOG4Z_MAIN_LOGGER_ID) return false; 
-    
+
     if (name == NULL || strlen(name) == 0) 
     {
         return false;
@@ -1734,7 +1732,6 @@ bool LogerManager::updateConfig()
 {
     if (_configFile.empty())
     {
-        //LOGW("log4z update config file error. filename is empty.");
         return false;
     }
     Log4zFileHandler f;

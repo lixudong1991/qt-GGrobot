@@ -2,6 +2,7 @@
 #define SUBSTATIONDATA_H
 
 #include <QString>
+#include "statusdata.h"
 class Substationdata
 {
 public:
@@ -87,17 +88,26 @@ public:
     {
         return pictureName;
     }
+    void setRobotStatus(StatusData *st)
+    {
+        status=st;
+    }
+    StatusData* getRobotStatus()const
+    {
+        return status;
+    }
 private:
     int dataId;
     QString terminalId;
     QString reportTime;
     QString writeTime;
-    int pos;
+    int pos=0;
     int sonPos;
     int datatype;
     int data;
     int pictureType;
     QString pictureName;
+    StatusData *status=nullptr;
 };
 
 #endif // SUBSTATIONDATA_H

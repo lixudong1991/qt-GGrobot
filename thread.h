@@ -34,6 +34,7 @@ private slots:
     void run();
 private:
     QString terminalId;
+    QString beginTime;
     QMutex mutex;
     QTimer *timer;
     Substationdata data;

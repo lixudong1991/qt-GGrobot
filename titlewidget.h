@@ -24,6 +24,7 @@ public slots:
 
 private slots:
     void flashTimeout();
+
 private:
     QPoint press_point;//鼠标按下去的点
     bool is_move;

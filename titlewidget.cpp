@@ -1,4 +1,6 @@
 #include "titlewidget.h"
+#include <mmsystem.h>
+#pragma comment(lib,"WinMM.Lib")
 TitleWidget::TitleWidget(QWidget *parent) :
     QWidget(parent)
 {
@@ -57,7 +59,18 @@ TitleWidget::TitleWidget(QWidget *parent) :
 
     flashTime=new QTimer;
     connect(flashTime,SIGNAL(timeout()),this,SLOT(flashTimeout()));
+}
+static BOOL MByteToWChar(LPCSTR lpcszStr, LPWSTR lpwszStr, DWORD dwSize)
+{
+    // Get the required size of the buffer that receives the Unicode
+    // string.
+    DWORD dwMinSize;
+    dwMinSize = MultiByteToWideChar(CP_ACP, 0, lpcszStr, -1, NULL, 0);
+    //assert(dwSize >= dwMinSize);
 
+    // Convert headers from ASCII to Unicode.
+    MultiByteToWideChar(CP_ACP, 0, lpcszStr, -1, lpwszStr, dwMinSize);
+    return TRUE;
 }
 
 TitleWidget::~TitleWidget()
@@ -98,22 +111,33 @@ void TitleWidget::setAlarmBackground(bool b)
     if(b)
     {
         flashTime->start(500);
+        std::string s = "alarm.wav";
+        wchar_t wText[30] = { 0 };
+        MByteToWChar(s.c_str(), wText, sizeof(wText) / sizeof(wText[0]));
+        PlaySound(wText, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     }else
     {
-         flashTime->stop();
+        flashTime->stop();
+        PlaySound(NULL, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
         button_list.at(1)->setIcon(QIcon(":/qss/alarm"));
     }
 }
 void TitleWidget::flashTimeout()
 {
     static bool normal=true;
+    static int sec=1;
     if(normal)
     {
         button_list.at(1)->setIcon(QIcon(":/qss/repair"));
     }else{
         button_list.at(1)->setIcon(QIcon(":/qss/alarm"));
     }
+    if(sec==10)
+    {
+         PlaySound(NULL, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+    }
     normal=!normal;
+    sec++;
 }
 void TitleWidget::paintEvent(QPaintEvent *)
 {

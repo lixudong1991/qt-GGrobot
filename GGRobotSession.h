@@ -18,8 +18,8 @@
 // </auto-generated>
 //
 
-#ifndef __E__vspro_TESTice_TESTice_generated_GGRobotSession_h__
-#define __E__vspro_TESTice_TESTice_generated_GGRobotSession_h__
+#ifndef __d__documents_visual_studio_2015_Projects_ConsoleApplication1_ConsoleApplication1_generated_GGRobotSession_h__
+#define __d__documents_visual_studio_2015_Projects_ConsoleApplication1_ConsoleApplication1_generated_GGRobotSession_h__
 
 #include <IceUtil/PushDisableWarnings.h>
 #include <Ice/ProxyF.h>
@@ -40,6 +40,7 @@
 #include <Ice/BuiltinSequences.h>
 #include <Glacier2/Session.h>
 #include <GGSmart.h>
+#include <comstatusice.h>
 #include <IceUtil/UndefSysMacros.h>
 
 #ifndef ICE_IGNORE_VERSION
@@ -167,73 +168,73 @@ class RobotCallback : virtual public ::IceProxy::Ice::Object
 {
 public:
 
-    void doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg)
+    void doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg)
     {
-        doOrder(__p_msg, 0);
+        doOrder(__p_recv, __p_msg, 0);
     }
-    void doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx)
+    void doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx)
     {
-        doOrder(__p_msg, &__ctx);
+        doOrder(__p_recv, __p_msg, &__ctx);
     }
 #ifdef ICE_CPP11
     ::Ice::AsyncResultPtr
-    begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::IceInternal::Function<void ()>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception = ::IceInternal::Function<void (const ::Ice::Exception&)>(), const ::IceInternal::Function<void (bool)>& __sent = ::IceInternal::Function<void (bool)>())
+    begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::IceInternal::Function<void ()>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception = ::IceInternal::Function<void (const ::Ice::Exception&)>(), const ::IceInternal::Function<void (bool)>& __sent = ::IceInternal::Function<void (bool)>())
     {
-        return begin_doOrder(__p_msg, 0, new ::IceInternal::Cpp11FnOnewayCallbackNC(__response, __exception, __sent));
+        return begin_doOrder(__p_recv, __p_msg, 0, new ::IceInternal::Cpp11FnOnewayCallbackNC(__response, __exception, __sent));
     }
     ::Ice::AsyncResultPtr
-    begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __completed, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __sent = ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>())
+    begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __completed, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __sent = ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>())
     {
-        return begin_doOrder(__p_msg, 0, ::Ice::newCallback(__completed, __sent), 0);
+        return begin_doOrder(__p_recv, __p_msg, 0, ::Ice::newCallback(__completed, __sent), 0);
     }
     ::Ice::AsyncResultPtr
-    begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx, const ::IceInternal::Function<void ()>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception = ::IceInternal::Function<void (const ::Ice::Exception&)>(), const ::IceInternal::Function<void (bool)>& __sent = ::IceInternal::Function<void (bool)>())
+    begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx, const ::IceInternal::Function<void ()>& __response, const ::IceInternal::Function<void (const ::Ice::Exception&)>& __exception = ::IceInternal::Function<void (const ::Ice::Exception&)>(), const ::IceInternal::Function<void (bool)>& __sent = ::IceInternal::Function<void (bool)>())
     {
-        return begin_doOrder(__p_msg, &__ctx, new ::IceInternal::Cpp11FnOnewayCallbackNC(__response, __exception, __sent), 0);
+        return begin_doOrder(__p_recv, __p_msg, &__ctx, new ::IceInternal::Cpp11FnOnewayCallbackNC(__response, __exception, __sent), 0);
     }
     ::Ice::AsyncResultPtr
-    begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __completed, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __sent = ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>())
+    begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __completed, const ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>& __sent = ::IceInternal::Function<void (const ::Ice::AsyncResultPtr&)>())
     {
-        return begin_doOrder(__p_msg, &__ctx, ::Ice::newCallback(__completed, __sent));
+        return begin_doOrder(__p_recv, __p_msg, &__ctx, ::Ice::newCallback(__completed, __sent));
     }
 #endif
 
-    ::Ice::AsyncResultPtr begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg)
+    ::Ice::AsyncResultPtr begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg)
     {
-        return begin_doOrder(__p_msg, 0, ::IceInternal::__dummyCallback, 0);
+        return begin_doOrder(__p_recv, __p_msg, 0, ::IceInternal::__dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx)
+    ::Ice::AsyncResultPtr begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx)
     {
-        return begin_doOrder(__p_msg, &__ctx, ::IceInternal::__dummyCallback, 0);
+        return begin_doOrder(__p_recv, __p_msg, &__ctx, ::IceInternal::__dummyCallback, 0);
     }
 
-    ::Ice::AsyncResultPtr begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::CallbackPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
+    ::Ice::AsyncResultPtr begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::CallbackPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
     {
-        return begin_doOrder(__p_msg, 0, __del, __cookie);
+        return begin_doOrder(__p_recv, __p_msg, 0, __del, __cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx, const ::Ice::CallbackPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
+    ::Ice::AsyncResultPtr begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx, const ::Ice::CallbackPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
     {
-        return begin_doOrder(__p_msg, &__ctx, __del, __cookie);
+        return begin_doOrder(__p_recv, __p_msg, &__ctx, __del, __cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::GGSmart::Callback_RobotCallback_doOrderPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
+    ::Ice::AsyncResultPtr begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::GGSmart::Callback_RobotCallback_doOrderPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
     {
-        return begin_doOrder(__p_msg, 0, __del, __cookie);
+        return begin_doOrder(__p_recv, __p_msg, 0, __del, __cookie);
     }
 
-    ::Ice::AsyncResultPtr begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx, const ::GGSmart::Callback_RobotCallback_doOrderPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
+    ::Ice::AsyncResultPtr begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context& __ctx, const ::GGSmart::Callback_RobotCallback_doOrderPtr& __del, const ::Ice::LocalObjectPtr& __cookie = 0)
     {
-        return begin_doOrder(__p_msg, &__ctx, __del, __cookie);
+        return begin_doOrder(__p_recv, __p_msg, &__ctx, __del, __cookie);
     }
 
     void end_doOrder(const ::Ice::AsyncResultPtr&);
     
 private:
 
-    void doOrder(const ::GGSmart::GGOrderMsgPtr&, const ::Ice::Context*);
-    ::Ice::AsyncResultPtr begin_doOrder(const ::GGSmart::GGOrderMsgPtr&, const ::Ice::Context*, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& __cookie = 0);
+    void doOrder(const ::interfaceICE::ComStatusICEPrx&, const ::GGSmart::GGOrderMsgPtr&, const ::Ice::Context*);
+    ::Ice::AsyncResultPtr begin_doOrder(const ::interfaceICE::ComStatusICEPrx&, const ::GGSmart::GGOrderMsgPtr&, const ::Ice::Context*, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& __cookie = 0);
     
 public:
     
@@ -634,7 +635,7 @@ public:
     virtual const ::std::string& ice_id(const ::Ice::Current& = ::Ice::Current()) const;
     static const ::std::string& ice_staticId();
 
-    virtual void doOrder_async(const ::GGSmart::AMD_RobotCallback_doOrderPtr&, const ::GGSmart::GGOrderMsgPtr&, const ::Ice::Current& = ::Ice::Current()) = 0;
+    virtual void doOrder_async(const ::GGSmart::AMD_RobotCallback_doOrderPtr&, const ::interfaceICE::ComStatusICEPrx&, const ::GGSmart::GGOrderMsgPtr&, const ::Ice::Current& = ::Ice::Current()) = 0;
     ::Ice::DispatchStatus ___doOrder(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual ::Ice::DispatchStatus __dispatch(::IceInternal::Incoming&, const ::Ice::Current&);

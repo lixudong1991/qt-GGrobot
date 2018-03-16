@@ -46,13 +46,14 @@ void FtpManager::finished()
         m_file.write(pReply->readAll());
         m_file.flush();
         m_file.close();
+        LOGI("Ftpmanager emit finishe:"<<name.toStdString());
     }
         break;
     default:
         LOGE("QNetworkReply::Error:"<<pReply->error());
         break;
     } 
-     LOGI("Ftpmanager emit finishe:"<<name.toStdString());
+
     emit finishe(name);
     pReply->deleteLater();   
 }

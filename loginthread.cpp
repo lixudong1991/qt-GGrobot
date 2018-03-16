@@ -75,7 +75,6 @@ bool LoginThread::createDbConnect()
     db.setDatabaseName(dbna);
     if(!db.open())
     {
-    //    QMessageBox::critical(this,CH("´íÎó"),db.lastError().text());
         return false;
     }
     return true;
@@ -126,7 +125,6 @@ void  LoginThread::alarmTempSave(Userterminal* term)
          pos->setPos(list.at(6).toInt());
          pos->setSonPos(list.at(7).toInt());
          p->insert(pos->getSonPos(),pos);
-     //    LOGI(pos->getPosName().toStdString()<<", "<<pos->getSonPosName().toStdString()<<", "<<pos->getCheckName().toStdString()<<", "<<pos->getCheckType()<<", "<<pos->getAlarmTemp()<<", "<<pos->getPos()<<", "<<pos->getSonPos());
      }
      LOGI("p size: "<<p->size());
      file.close();

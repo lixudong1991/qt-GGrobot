@@ -13,7 +13,6 @@ ExportDownima::ExportDownima(QWidget *parent)
 
 ExportDownima::~ExportDownima()
 {
-
 }
 /***********************************************************************************
 函数名:
@@ -27,7 +26,6 @@ void ExportDownima::timeout()
     timer->stop();
     LOGE("-----------loading timeout-----------");
     loading_widget->start(false);
-   // QMessageBox::critical(this,"error",CH("程序错误"));
     emit error();
     this->close();
 }
@@ -44,7 +42,7 @@ void ExportDownima::loadingStart(bool b,const QString &mess)
     {//CH("正在下载图片")
          loading_widget->setAccount(mess);
          loading_widget->start(true);
-         timer->start(60000);
+         timer->start(120000);
          this->exec();
     }
     else{

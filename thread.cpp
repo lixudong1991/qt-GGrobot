@@ -1,5 +1,5 @@
 #include "thread.h"
-
+#include <QSqlError>
 Thread::Thread()
 {
     timer=new QTimer(this);
@@ -28,19 +28,57 @@ void  Thread::run()
    QString ftppwd = ftpconfig.value("ftpserver/pwd").toString();
    int time=ftpconfig.value("picture/refurbishtime").toInt();
     LOGI("thread1 scanner space time:"<<time<<" second" );
+   QSqlQuery query;
+   if(query.exec("SELECT NOW()")&&query.next())
+   {
+        beginTime=query.value(0).toDateTime().toString(DATEFORMAT);
+        LOGI("thread1 scanner beginTime:"<<beginTime.toStdString() );
+   }
    while(exit_t)
    {   
-       QSqlQuery query;
+       QString statussql="SELECT * FROM tbl_statusdata WHERE terminalId='";
+       statussql.append(terminalId);
+       statussql.append("' AND writeTime >= '");
+       statussql.append(beginTime);
+       statussql.append("' ORDER BY writeTime DESC");
+       if(query.exec(statussql)&&query.next())
+       {
+            StatusData *statu=data.getRobotStatus();
+            if(statu!=nullptr)
+            {
+                delete statu;
+            }
+            statu=new StatusData();
+            statu->setId(query.value(0).toInt());
+            statu->setTerminalId(query.value(1).toString());
+            statu->setReportTime(query.value(2).toDateTime().toString(DATEFORMAT));
+            statu->setWriteTime(query.value(3).toDateTime().toString(DATEFORMAT));
+            statu->setElectricitys(query.value(4).toInt());
+            statu->setVoltage(query.value(5).toInt());
+            statu->setElectricResidue(query.value(6).toInt());
+            statu->setRobotStatus(query.value(7).toInt());
+            statu->setRadarFront(query.value(8).toInt());
+            statu->setMagnetismFront(query.value(9).toInt());
+            statu->setMagnetismBack(query.value(10).toInt());
+            statu->setCardReader(query.value(11).toInt());
+            statu->setAutoDoor(query.value(12).toInt());
+            statu->setCharger(query.value(13).toInt());
+            data.setRobotStatus(statu);
+            LOGI("StatusData id:"<<statu->getId());
+       }
        query.prepare("SELECT * FROM tbl_substationdata WHERE terminalId=:id AND writeTime > (SELECT SUBDATE(NOW(),INTERVAL :time SECOND)) ORDER BY writeTime DESC");
        query.bindValue(":id",terminalId);
-       query.bindValue(":time",QString::number(time+2));
+       query.bindValue(":time",QString::number(time+1));
        if(!query.exec())
        {
-           LOGE("execute select sql error,thread will exit :"<<query.lastError().text().toStdString());
-           emit queryErr();
-           break;
+           LOGE("execute select sql error : "<<query.lastError().text().toStdString());
+           if(query.lastError().type()==QSqlError::ConnectionError)
+           {
+                 emit queryErr();
+                 LOGE("thread exit");
+                 break;
+           }
        }
-
        if(query.next())
        {
            {
@@ -75,23 +113,28 @@ void  Thread::run()
                     LOGI("find a Alarm,sql: "<<sql.toStdString());
                     if(!query.exec(sql))
                     {
-                        emit queryErr();
-                        LOGE("execute sql error : "<<sql.toStdString()<<" ,thread will exit");
-                        break;
+                        LOGE("execute sql  : "<<sql.toStdString()<<" error:  "<<query.lastError().text().toStdString());
                     }
                }
            }
-          FtpManager ftpmanager;
-          ftpmanager.setHostPort(ftpip, ftpport);
-          ftpmanager.setUserInfo(ftpuser, ftppwd);
-          ftpmanager.setFilename(data.getPictureName());
-          connect(&ftpmanager, SIGNAL(finishe(QString)), this, SLOT(download()));
-          ftpmanager.get(FILECACHEPATH+data.getPictureName());
-          exec();
+           if(data.getPos()>=2000)
+           {
+               FtpManager ftpmanager;
+               ftpmanager.setHostPort(ftpip, ftpport);
+               ftpmanager.setUserInfo(ftpuser, ftppwd);
+               ftpmanager.setFilename(data.getPictureName());
+               connect(&ftpmanager, SIGNAL(finishe(QString)), this, SLOT(download()));
+               ftpmanager.get(FILECACHEPATH+data.getPictureName());
+               exec();
+           }else{
+               emit finish(&data,&ids);
+               exec();
+           }
           LOGI("thread1 scanner image -->name: "<<data.getPictureName().toStdString()<<"  type:"<<data.getPictureType()<<"  time:"<<data.getReportTime().toStdString()<<" pos:"<<data.getPos());
        }
        else
        {
+           emit finish(&data,&ids);
            exec();
        }
 

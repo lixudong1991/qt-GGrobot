@@ -24,5 +24,8 @@ typedef enum{
 	NOSTATUS
 }ButtonStatus;
 
+struct InspectCard{
+
+};
 
 #endif // COMMON_H

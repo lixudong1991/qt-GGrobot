@@ -5,14 +5,15 @@
 #include <QHelpEvent>
 #include <QToolTip>
 #include <QFileDialog>
+#include "statusdata.h"
 //#define SDK_REALPLAY
 
 #ifdef  SDK_REALPLAY
 #include "HCNetSdk/plaympeg4.h"
 #define RESOLUTION  480*270
-LONG lPort; //全局的播放库port号
+static LONG lPort; //全局的播放库port号
 #endif
-HWND hWnd;
+static HWND hWnd;
 
 CloudWidget::CloudWidget(QWidget *parent) :
     QWidget(parent)
@@ -53,11 +54,14 @@ CloudWidget::CloudWidget(QWidget *parent) :
     NET_DVR_Init();
     NET_DVR_SetConnectTime(2000, 1);
     NET_DVR_SetReconnect(10000, true);
-    NetDev_Init();   ////初始化sdk
+    NetDev_Init();
+
+    //初始化sdk
     if(!SHOWIMAGE_Init())
-     {
+    {
           LOGE("SHOWIMAGE_Init() error");
-     }//灰图显示sdk初始化
+    }
+    //灰图显示sdk初始化
 }
 
 
@@ -90,9 +94,6 @@ CloudWidget::~CloudWidget()
    }
 
    SHOWIMAGE_Cleanup();
-  // t.tExit();
- //  t.wait();
-
 }
 /***********************************************************************************
 *函数名:    	 posinit
@@ -125,14 +126,12 @@ void CloudWidget::posinit()
     cloudLay->setContentsMargins(0,0,0,0);
     cloudVideo->setLayout(cloudLay);
 
-
     QVBoxLayout *leftupla=new QVBoxLayout();
     leftupla->addWidget(normalImageL);
     leftupla->setContentsMargins(0,0,0,0);
     normalWid->setLayout(leftupla);
 
     leftla->addLayout(leftupLayout,0,0);  //左上
-
 
     leftdownLayout=new QStackedLayout();
     leftdownLayout->addWidget(infraredWid);
@@ -146,14 +145,12 @@ void CloudWidget::posinit()
     infraLay->setContentsMargins(0,0,0,0);
     infraredVideo->setLayout(infraLay);
 
-
     QVBoxLayout *leftdownla=new QVBoxLayout();
     leftdownla->addWidget(infraredImageL);
     leftdownla->setContentsMargins(0,0,0,0);
     infraredWid->setLayout(leftdownla);
 
     leftla->addLayout( leftdownLayout,1,0);  //左下
-
 
     QVBoxLayout *infoLay=new QVBoxLayout();
     infoLay->addWidget(infoL);
@@ -178,7 +175,7 @@ void CloudWidget::posinit()
     devices_log->setFixedSize(wid,wid*0.382);
     nonnectCloud->setFixedSize(wid,wid*0.382);
     right_cloudCtrl->setFixedSize(wid,wid*1.911);
-    right_patrolView->setFixedSize(wid,wid*0.641);
+    right_patrolView->setFixedSize(wid,wid*0.941);
 
     rightla->addWidget(devices_log);
     rightla->addWidget(right_patrolView);
@@ -218,14 +215,11 @@ void CloudWidget::posinit()
     rightcloud->addWidget(infradautoFocus,7,2,1,1);
     right_cloudCtrl->setLayout(rightcloud);
 
-
-
     QVBoxLayout *rightpatrolView=new QVBoxLayout();
     rightpatrolView->addWidget(inspecting_Start_Stop);
     rightpatrolView->addWidget(inspecting_Pause_Continue);
+    rightpatrolView->addWidget(inspecting_special);
     right_patrolView->setLayout(rightpatrolView);
-
-
 }
 /***********************************************************************************
 函数名:    	 posinit
@@ -236,13 +230,11 @@ void CloudWidget::posinit()
 ************************************************************************************/
 void CloudWidget::right_groupinit()
 {
-
     log_bt=new QPushButton(CH("连接"));
     log_bt->setEnabled(false);
     deviceid=new QComboBox();
     opencloudw=new QPushButton(CH("显示视频"));
     opencloudw->setEnabled(false);
-
 
     cloudCtrl_up=new QPushButton(CH("上"));
     cloudCtrl_down=new QPushButton(CH("下"));
@@ -257,8 +249,11 @@ void CloudWidget::right_groupinit()
     cloudWiperPwron=new QPushButton(CH("开雨刷"));
     cloudRecord=new QPushButton(CH("录像"));
 
-
     cloudSpeed=new QComboBox();
+
+
+    downima=new ExportDownima(this);
+
     for(int i=1;i<8;i++)
     {
         cloudSpeed->addItem(QString::number(i));
@@ -270,11 +265,15 @@ void CloudWidget::right_groupinit()
 
     inspecting_Start_Stop=new QPushButton(CH("开始巡检"));
     inspecting_Start_Stop->setEnabled(false);
-    inspecting_Pause_Continue=new QPushButton(CH("暂停巡检"));;
+    inspecting_Pause_Continue=new QPushButton(CH("暂停巡检"));
     inspecting_Pause_Continue->setEnabled(false);
+    inspecting_special=new QPushButton(CH("特定巡检"));
+    inspecting_special->setEnabled(false);
+
+    cardsW=new InspectingCardW(this);
+
     slotsinit();
     setButtonstatus(false);
-
 }
 /***********************************************************************************
 函数名:    	 posinit
@@ -320,6 +319,10 @@ void CloudWidget::right_groupinit()
 
     connect(inspecting_Pause_Continue,SIGNAL(clicked(bool)),this,SLOT(inspecting_Pause_ContinueClick()));
     connect(inspecting_Start_Stop,SIGNAL(clicked(bool)),this,SLOT(inspecting_Start_StopClick()));
+    connect(inspecting_special,SIGNAL(clicked(bool)),this,SLOT(inspecting_special_Click()));
+
+    connect(cardsW,SIGNAL(checkCards(QList<int>*)),this,SLOT(inspect_send(QList<int>*)));
+
  }
  /***********************************************************************************
  函数名:    	 posinit
@@ -343,7 +346,6 @@ void CloudWidget::labelinit()
 
     infoL=new Infowidget();
     cloudL->setScaledContents(true);
-
 
     infraredImageL=new QLabel();
     infraredImageL->setScaledContents(true);
@@ -482,13 +484,16 @@ void CloudWidget::initTerminal()
         positionL->show();
         deviceidChange(deviceid->currentIndex());
         t.tStart();
-        connect(&sportT,SIGNAL(execComStatus(int)),this,SLOT(setInspectingStatus(int)));
+        connect(&sportServerT,SIGNAL(comStatus(int,int)),this,SLOT());
+        connect(&sportT,SIGNAL(execComStatus(QString)),this,SLOT(setInspectingStatus(QString)));
+        sportServerT.start();
         sportT.start();
         infoL->show();
         log_bt->setEnabled(true);
         opencloudw->setEnabled(true);
         inspecting_Start_Stop->setEnabled(true);
         inspecting_Pause_Continue->setEnabled(true);
+        inspecting_special->setEnabled(true);
 }
 
 void CloudWidget::querError()
@@ -537,6 +542,7 @@ void CloudWidget::deviceidChange(int i)
         NET_DVR_Logout(device_logInfo.getLoginID());
         device_logInfo.setLoginID(-1);
     }
+    initCardsW();
     t.setPointInfo(term->getPointInfo());
     int width=w*0.868;
     positionL->setBackImg((width-16)/2,h/2-12,userDevices->at(i).getTerminalId());
@@ -578,9 +584,10 @@ void CloudWidget::setLabelIma(Substationdata* dat,QList<int>*is)
            postr=it.value()->getPosName();
            sonstr=it.value()->getSonPosName();
            datatype=it.value()->getCheckName();
+           infoL->setData(CH("正常"));
        }
-   }else{
-      postr=CH("拐点");
+   }else if(dat->getPos()>=1000&&dat->getPos()<2000){
+      postr=CH("拐点");  
    }
    infoL->setPos(postr);
    infoL->setSonPos(sonstr);
@@ -593,13 +600,40 @@ void CloudWidget::setLabelIma(Substationdata* dat,QList<int>*is)
              emit haveAlarm(deviceid->currentIndex());
         }
    }
-   else
+   StatusData *st=dat->getRobotStatus();
+   if(st!=nullptr)
    {
-        infoL->setData(CH("正常"));
+       infoL->setElectricitys(QString::number(st->getElectricitys()*10)+" mA");
+       infoL->setVoltage(QString::number(st->getVoltage()*0.01)+" V");
+       infoL->setElectricResidue(QString::number(st->getElectricResidue())+" %");
+       int s=st->getRobotStatus();
+       QString stastr;
+       switch (s) {
+       case RobotStatus::OFF:
+            stastr=CH("待机模式");
+           break;
+       case RobotStatus::DEBUG:
+            stastr=CH("调试模式");
+           break;
+       case RobotStatus::AUTO:
+            stastr=CH("自动巡检");
+           break;
+       case RobotStatus::SPECIAL:
+            stastr=CH("特巡");
+           break;
+       case RobotStatus::BACK:
+            stastr=CH("返航");
+           break;
+       default:
+           break;
+       }
+       infoL->setRobotStatus(stastr);
    }
    infoL->update();
-   positionL->startPoint(dat->getPos(),is);
-   LOGI("startPoint:"<<dat->getPos());
+   if(dat->getPos()!=0)
+   {
+        positionL->startPoint(dat->getPos(),is);
+   } 
 }
 /***********************************************************************************
 函数名:    	 PTZControlAll
@@ -634,7 +668,7 @@ void CloudWidget::PTZControlAll(LONG lRealHandle, DWORD dwPTZCommand, DWORD dwSt
     }
 
 }
-#define lPlayHandle      lRealPlayHandle
+#define lPlayHandle  lRealPlayHandle
 /***********************************************************************************
 函数名:    	 cloudCtrUp_press
 函数描述:	 云台上按钮按下,开始云台动作
@@ -1005,7 +1039,6 @@ void  CloudWidget::opencloudClick()
     }
     else
     {
-
         if(lRealPlayHandle!=-1)
         {
                 NET_DVR_StopRealPlay(lRealPlayHandle);
@@ -1076,7 +1109,6 @@ bool CloudWidget::startGray()
 ************************************************************************************/
 void CloudWidget::stopGray()
 {
-    // TODO: 在此添加控件通知处理程序代码
     //停止获取实时数据  TI35、TI65系列设备
     NetDev_StopRealStream(m_sRealHandle);
     //断开连接
@@ -1210,7 +1242,7 @@ void CloudWidget::SetMessage()
       str2=str2.arg(m_pCursorPoint.x)
                  .arg(m_pCursorPoint.y)
                  .arg(m_fCursorTemp, 0, 'g',4);
-    QString  strShowInfo= str+str1+str2;
+     QString  strShowInfo= str+str1+str2;
 //    //考虑加入鼠标的温度
     SHOWIMAGE_SetObjectMessage(m_sShowPort,const_cast<char*>(strShowInfo.toStdString().c_str()));
 }
@@ -1244,7 +1276,7 @@ bool CloudWidget::event(QEvent *et)
 函数描述:	 云台jpeg图像抓取
 输入参数:
 输出参数:
-返回值:
+ 返回值:
 ************************************************************************************/
 void  CloudWidget::cloudCapture_click()
 {
@@ -1261,21 +1293,8 @@ void  CloudWidget::cloudCapture_click()
             else
             {
                  QMessageBox::information(this,CH("提示 "),CH(("抓图失败")));
-                  LOGE("抓图失败");
+                 LOGE("抓图失败");
             }
-//           char buff[640*480*4] ;
-//            memset(buff,0,sizeof(buff));
-//           DWORD size=0;
-//            if(m_sRealHandle!=-1)
-//            {
-//                LOGI("红相开始抓图");
-//                if(NetDev_CaptureJPEGPicture(m_sRealHandle,buff,sizeof(buff) , &size)==0)
-//                {
-//                     QMessageBox::information(this,CH("提示 "),CH("红相抓图失败"));
-//                     return;
-//                }
-//                LOGI("红相抓图成功: "<<size);
-//            }
 }
 /***********************************************************************************
 函数名:    	 setInspectingStatus
@@ -1284,39 +1303,18 @@ void  CloudWidget::cloudCapture_click()
 输出参数:
 返回值:
 ************************************************************************************/
-void CloudWidget::setInspectingStatus(int status)
+void CloudWidget::setInspectingStatus(QString cmd)
  {
+    if(cmd==STATUS_TEXUN)
+    {
+          cardsW->setMsginfo(4);
+    }else{
      inspecting_Pause_Continue->setEnabled(true);
      inspecting_Start_Stop->setEnabled(true);
-     if(status==0)
-     {
-         if(sportid==0)
-         {
-                if(cmdStart_Stop==0)
-                {
-                     cmdStart_Stop=1;
-                    //inspecting_Start_Stop->setText(CH("停止巡检"));
-                     inspecting_Start_Stop->setText(CH("开始巡检"));
-                }else
-                {
-                    cmdStart_Stop=0;
-                    inspecting_Start_Stop->setText(CH("开始巡检"));
-                }
-         }else{
-             if(cmdPause_Continue==0)
-             {
-                 cmdPause_Continue=1;
-                 inspecting_Pause_Continue->setText(CH("继续巡检"));
-             }else
-             {
-                  cmdPause_Continue=0;
-                  inspecting_Pause_Continue->setText(CH("暂停巡检"));
-             }
-         }
-     }else
-     {
-         QMessageBox::information(this,CH("提示 "),CH("发送命令失败"));
-     }
+     inspecting_special->setEnabled(true);
+     downima->loadingStart(false,"");
+     QMessageBox::information(this,CH("提示 "),CH("发送命令失败"));
+    }
  }
 /***********************************************************************************
  函数名:    	 inspecting_Start_StopClick
@@ -1325,22 +1323,21 @@ void CloudWidget::setInspectingStatus(int status)
  输出参数:
  返回值:
  ************************************************************************************/
-void CloudWidget::inspecting_Start_StopClick()
-{
-    if(sportT.isRunning())
-    {
-        sportid=0;
+void CloudWidget::inspecting_Start_StopClick(){
+    if( sportT.isRunning() ) {
+        sportid = 0;
         inspecting_Pause_Continue->setEnabled(false);
         inspecting_Start_Stop->setEnabled(false);
-        if(cmdStart_Stop==0)
-        {
+        inspecting_special->setEnabled(false);
+        if( cmdStart_Stop == 0 ){
+            downima->loadingStart(true,CH("开始自动巡检"));
             sportT.iceSendCommand(STATUS_STARTAUTO);
         }
         else
         {
-         //   sportT.iceSendCommand(QString(STATUS_QUICKBACK));
-            sportT.iceSendCommand(STATUS_STARTAUTO);
-        }
+            downima->loadingStart(true,CH("快速返航"));
+            sportT.iceSendCommand(STATUS_QUICKBACK);
+        }      
     }
 }
 /***********************************************************************************
@@ -1357,14 +1354,100 @@ void CloudWidget::inspecting_Pause_ContinueClick()
         sportid=1;
         inspecting_Pause_Continue->setEnabled(false);
         inspecting_Start_Stop->setEnabled(false);
-        if(cmdStart_Stop==0)
+        inspecting_special->setEnabled(false);
+        if(cmdPause_Continue==0)
         {
+            downima->loadingStart(true,CH("暂停自动巡检"));
             sportT.iceSendCommand(STATUS_PAUSEAUTO);
-        }else
+        }
+        else
         {
+             downima->loadingStart(true,CH("继续自动巡检"));
             sportT.iceSendCommand(STATUS_CONTINUEAUTO);
-            //sportT.iceSendCommand(QString(STATUS_PAUSEAUTO));
         }
     }
+}
+void CloudWidget::inspecting_special_Click()
+{
+//    if(sportT.isRunning())
+//    {
+//        sportT.iceSendCommand(STATUS_TEXUN,"2022,2032,2041,2052,2062");
+//    }
+    cardsW->show();
+}
+void CloudWidget::inspect_send(QList<int> *l)
+{
+        QString cardsstr;
+        for(int i:*l)
+        {
+           cardsstr.append(QString::number(cardsNum.at(i))).append(",");
+        }
+        if(cardsstr.length()>0)
+        {
+            cardsstr.remove(cardsstr.length()-1,1);
+            if(sportT.isRunning())
+             {
+                    sportT.iceSendCommand(STATUS_TEXUN,cardsstr);
+             }
+        }
+}
+ void CloudWidget::initCardsW()
+ {
+        QStringList cardtable;
+        cardsNum.clear();
+        QMap<int,QString> m;
+
+        QHash<int,PreinstallPoint*> *p=term->getPointInfo();
+        QHash<int,PreinstallPoint*>::const_iterator it;
+        for(it=p->cbegin();it!=p->cend();++it)
+        {
+            m.insert(it.value()->getPos(),it.value()->getPosName()+QString::number(it.value()->getPos()));
+        }
+        QMapIterator<int,QString> iter(m);
+        while (iter.hasNext())
+        {
+                iter.next();
+                cardtable.append(iter.value());
+                cardsNum.append(iter.key());
+        }
+        cardsW->setTableData(cardtable);
+ }
+void CloudWidget::cmdStatus(int c, int s)
+{
+    LOGI("cloudwidget cmd: "<<c<<" status: "<<s);
+    if(c==15)
+    {
+            cardsW->setMsginfo(s);
+    }else
+    {
+        inspecting_Pause_Continue->setEnabled(true);
+        inspecting_Start_Stop->setEnabled(true);
+        inspecting_special->setEnabled(true);
+        downima->loadingStart(false,"");
+        if(sportid==0)
+        {
+               if(cmdStart_Stop==0)
+               {
+                    cmdStart_Stop=1;
+                    inspecting_Start_Stop->setText(CH("开始巡检"));
+               }else
+               {
+                   cmdStart_Stop=0;
+                   inspecting_Start_Stop->setText(CH("快速返航"));
+               }
+        }else{
+            if(cmdPause_Continue==0)
+            {
+                cmdPause_Continue=1;
+                inspecting_Pause_Continue->setText(CH("继续巡检"));
+            }else
+            {
+                 cmdPause_Continue=0;
+                 inspecting_Pause_Continue->setText(CH("暂停巡检"));
+            }
+       }
+       QMessageBox::information(this,CH("提示 "),CH("发送命令成功"));
+  }
+
 }
 
