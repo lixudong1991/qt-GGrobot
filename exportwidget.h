@@ -61,8 +61,9 @@ private:
     const QList<Userterminal> *userDevices=NULL;
     const Userterminal *term;
     QMap<int,QList<Substationdata*>*> *data=NULL;
-    QMap<int,QPointF> points;
     FindDataThread thr;
+    QMap<QString,QString> posNames;
+    QMap<int,QString> posNumbers;
 
     void initLabel();
     void initPanal();
@@ -72,7 +73,7 @@ private:
     Filedownthread downt;
 
     void selectDataThr(bool,const QString&);
-    void parseXML(const QString &fname);
+   // void parseXML(const QString &fname);
 };
 
 #endif // EXPORTWIDGET_H

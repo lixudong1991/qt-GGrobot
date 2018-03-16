@@ -117,12 +117,13 @@ void
 }
 
 void
-IceProxy::GGSmart::RobotCallback::doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context* __ctx)
+IceProxy::GGSmart::RobotCallback::doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context* __ctx)
 {
     ::IceInternal::Outgoing __og(this, __GGSmart__RobotCallback__doOrder_name, ::Ice::Normal, __ctx);
     try
     {
         ::IceInternal::BasicStream* __os = __og.startWriteParams(::Ice::DefaultFormat);
+        __os->write(__p_recv);
         __os->write(__p_msg);
         __os->writePendingObjects();
         __og.endWriteParams();
@@ -135,13 +136,14 @@ IceProxy::GGSmart::RobotCallback::doOrder(const ::GGSmart::GGOrderMsgPtr& __p_ms
 }
 
 ::Ice::AsyncResultPtr
-IceProxy::GGSmart::RobotCallback::begin_doOrder(const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context* __ctx, const ::IceInternal::CallbackBasePtr& __del, const ::Ice::LocalObjectPtr& __cookie)
+IceProxy::GGSmart::RobotCallback::begin_doOrder(const ::interfaceICE::ComStatusICEPrx& __p_recv, const ::GGSmart::GGOrderMsgPtr& __p_msg, const ::Ice::Context* __ctx, const ::IceInternal::CallbackBasePtr& __del, const ::Ice::LocalObjectPtr& __cookie)
 {
     ::IceInternal::OutgoingAsyncPtr __result = new ::IceInternal::OutgoingAsync(this, __GGSmart__RobotCallback__doOrder_name, __del, __cookie);
     try
     {
         __result->prepare(__GGSmart__RobotCallback__doOrder_name, ::Ice::Normal, __ctx);
         ::IceInternal::BasicStream* __os = __result->startWriteParams(::Ice::DefaultFormat);
+        __os->write(__p_recv);
         __os->write(__p_msg);
         __os->writePendingObjects();
         __result->endWriteParams();
@@ -487,14 +489,16 @@ GGSmart::RobotCallback::___doOrder(::IceInternal::Incoming& __inS, const ::Ice::
 {
     __checkMode(::Ice::Normal, __current.mode);
     ::IceInternal::BasicStream* __is = __inS.startReadParams();
+    ::interfaceICE::ComStatusICEPrx __p_recv;
     ::GGSmart::GGOrderMsgPtr __p_msg;
+    __is->read(__p_recv);
     __is->read(__p_msg);
     __is->readPendingObjects();
     __inS.endReadParams();
     ::GGSmart::AMD_RobotCallback_doOrderPtr __cb = new IceAsync::GGSmart::AMD_RobotCallback_doOrder(__inS);
     try
     {
-        doOrder_async(__cb, __p_msg, __current);
+        doOrder_async(__cb, __p_recv, __p_msg, __current);
     }
     catch(const ::std::exception& __ex)
     {

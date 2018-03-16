@@ -5,7 +5,7 @@
 AlarmQueryThread::AlarmQueryThread()
 {
 
-}
+} 
 void AlarmQueryThread::run()
 {
     QSqlQuery query;
@@ -59,6 +59,42 @@ void AlarmQueryThread::run()
             datas->append(data);
         }
         LOGI("AlarmQueryThread Datas Size "<<datas->size());
+    }
+    if(model&&!name.isEmpty()&&datas!=nullptr&&datas->size()!=0)
+    {
+        QFile file(name);
+        if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            LOGE("导出文件错误: "<<file.errorString().toStdString());
+            emit queryfinish(datas);
+            return;
+        }
+        QTextStream out(&file);
+        LOGI("开始导出文件:"<<name.toStdString());
+        out<<CH("设备名称,")<<CH("检测点,")<<CH("上报时间,")<<CH("检测类型,")<<CH("数据,")<<CH("状态,")<<CH("处理时间,")<<CH("操作用户,\n");
+        QHash<int,PreinstallPoint*>::const_iterator it;
+        for(const AlarmSubstation *dat:*datas)
+        {
+            const Substationdata *subdat=dat->getData();
+            it=preinstallPointMap->find(subdat->getSonPos());
+            QString str,sonstr,datatype,str1,str2, str0=CH("未处理");
+            if(it!=preinstallPointMap->cend())
+            {
+                str=it.value()->getPosName();
+                sonstr=it.value()->getSonPosName();
+                datatype=it.value()->getCheckName();
+            }
+            if(dat->getStatus()!=0)
+            {
+              str0=CH("已处理");
+              str1=dat->getChangeTime();
+              str2=dat->getUserName();
+            }
+            out<<str<<","<<sonstr<<","<<subdat->getReportTime()<<","<<datatype<<","<<QString::number(subdat->getData()*0.01)<<","<<str0<<",";
+            out<<str1<<","<<str2<<",\n";
+        }
+       file.close();
+       LOGI("导出文件成功:"<<name.toStdString());
     }
     emit queryfinish(datas);
 }

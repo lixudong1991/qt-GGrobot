@@ -63,7 +63,6 @@ private:
 
    QList<Userterminal> *userDevices;
 
-
 };
 
 #endif // MAINWIDGET_H

@@ -12,6 +12,9 @@
 #include "HCNetSdk/UlirTempSDK.h"
 #include "HCNetSdk/IUlirNetDevSDK.h"
 #include "sportsctrthread.h"
+#include "sportreceiveicethread.h"
+#include "exportdownima.h"
+#include "inspectingcardw.h"
 class CloudWidget : public QWidget
 {
     Q_OBJECT
@@ -72,11 +75,13 @@ public slots:
 
     void inspecting_Start_StopClick();
     void inspecting_Pause_ContinueClick();
+    void inspecting_special_Click();
 
+    void setInspectingStatus(QString);
 
-    void setInspectingStatus(int);
+    void inspect_send(QList<int> *);
 
-
+    void cmdStatus(int,int);
 protected:
      void paintEvent(QPaintEvent *event);
      bool event(QEvent *et);
@@ -129,6 +134,7 @@ private:
 
     QPushButton *inspecting_Start_Stop;
     QPushButton *inspecting_Pause_Continue;
+    QPushButton *inspecting_special;
 
     QPushButton *log_bt;
     QComboBox *deviceid;
@@ -192,9 +198,17 @@ private:
     void SetMessage();
 
     SportsCtrThread sportT;
+    SportReceiveICEthread sportServerT;
+
     int sportid=0;
     int cmdStart_Stop=0;
     int cmdPause_Continue=0;
+    enum RobotStatus{OFF=1,DEBUG,AUTO,SPECIAL,BACK};
+
+    ExportDownima *downima;
+    InspectingCardW *cardsW;
+    QList<int> cardsNum;
+    void initCardsW();
 };
 
 #endif // CLOUDWIDGET_H

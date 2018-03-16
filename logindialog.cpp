@@ -1,4 +1,4 @@
-#include "logindialog.h"
+ #include "logindialog.h"
 
 LoginDialog::LoginDialog(QWidget *parent)
     : Dialog(parent)
@@ -47,13 +47,9 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(&logt,SIGNAL(logstatus(int)),this,SLOT(logstatus(int)));
     setLayout(main_layout);
     translateLanguage();
-
-
-
 }
 LoginDialog::~LoginDialog()
 {
-
 }
 void LoginDialog::inittitlewid()
 {
@@ -111,7 +107,6 @@ void LoginDialog::initloginwid()
 
     QHBoxLayout *h_layout = new QHBoxLayout();
     h_layout->addWidget(remember_check_box);
- //   h_layout->addWidget(auto_login_check_box);
     h_layout->addStretch();
     h_layout->setSpacing(40);
     h_layout->setContentsMargins(0, 0, 0, 0);
@@ -143,7 +138,6 @@ void LoginDialog::initloginwid()
 }
 void LoginDialog::translateLanguage()
 {
-
     close_button->setToolTip(CH("关闭"));
 
     account_label->setText(CH("用户名:"));
@@ -151,9 +145,6 @@ void LoginDialog::translateLanguage()
 
     login_button->setText(CH("登录"));
     remember_check_box->setText(CH("记住密码"));
-   // auto_login_check_box->setText(CH("自动登录"));
-
-
 }
 /***********************************************************************************
 函数名:

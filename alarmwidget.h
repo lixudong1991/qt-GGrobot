@@ -26,13 +26,14 @@ signals:
     void noAlarm();
 private slots:
     void selectbt_click();
+    void exportCsv();
     void managebt_click();
     void showImage(int,int);
     void setImage(QString);
     void deviceIdchange(int i);
     void queryDatas(QList<AlarmSubstation*> *);
     void updateStatus(int);
-    void checkAll(int);
+    void checkAll();
 private:
     QLabel *deviceIdL;
     QComboBox *deviceId;
@@ -42,6 +43,8 @@ private:
     QDateTimeEdit *endTime;
 
     QPushButton *selectbt;
+    QPushButton *exportbt;
+
     QTableWidget* dataTable;
     QLabel* ima;
 

@@ -1,7 +1,6 @@
 #ifndef SPORTSCTRTHREAD_H
 #define SPORTSCTRTHREAD_H
 #include "head.h"
-#include <QThread>
 #include <QMutexLocker>
 #include <QMutex>
 #include <QThread>
@@ -20,22 +19,29 @@ public:
     {
         arg=a;
     }
-    void iceSendCommand(const QString &c )
+    void iceSendCommand(const QString &c)
     {
         mutex.lock();
         com=c;
         cond.wakeOne();
         mutex.unlock();
     }
-signals:
-    void execComStatus(int);
+    void iceSendCommand(const QString &c,const QString &card)
+    {
+        mutex.lock();
+        com=c;
+        cards=card;
+        cond.wakeOne();
+        mutex.unlock();
+    }
 protected:
    void run();
-public slots:
-   void cmdstatusslot(int,int);
+signals:
+    void execComStatus(QString);
 private:
     QString arg;
     QString com;
+    QString cards;
     QWaitCondition cond;
     QMutex mutex;
     volatile bool exit_t=true;

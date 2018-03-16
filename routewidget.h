@@ -23,6 +23,7 @@ private:
     void parseXML(const QString &fname);
     int wid=0,hei=0;
     double r=0;
+    int fristPiontId;
 };
 
 #endif // ROUTEWIDGET_H

@@ -1,5 +1,6 @@
 #include "alarmwidget.h"
 #include <QHeaderView>
+#include <QFileDialog>
 AlarmWidget::AlarmWidget(QWidget *parent) :
     QWidget(parent)
 {
@@ -24,8 +25,9 @@ void AlarmWidget::initPanal()
     endTime->setDisplayFormat(DATEFORMAT);
 
     selectbt=new QPushButton(CH("查询历史告警"));
+    exportbt=new QPushButton(CH("导出历史告警"));
     selectbt->setEnabled(false);
-    dataTable=new QTableWidget();
+    exportbt->setEnabled(false);
 
     dataTable=new QTableWidget();
     QStringList  HStrList;
@@ -45,8 +47,7 @@ void AlarmWidget::initPanal()
     dataTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     dataTable->setColumnCount(HStrList.count());
     dataTable->setHorizontalHeaderLabels(HStrList);
-    dataTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    dataTable->verticalHeader()->setVisible(false);
+    dataTable->verticalHeader()->setVisible(true);
 
     ima=new QLabel();
     ima->setScaledContents(true);
@@ -55,6 +56,7 @@ void AlarmWidget::initPanal()
     managebt->setEnabled(false);
     selectall=new QCheckBox();
     selectall->setEnabled(false);
+
 }
  void AlarmWidget::initLayout()
  {
@@ -85,6 +87,7 @@ void AlarmWidget::initPanal()
 
     QHBoxLayout *btl=new QHBoxLayout();
     btl->addStretch();
+    btl->addWidget(exportbt);
     btl->addWidget(selectbt);
 
     lac->addLayout(boxlayout);
@@ -112,14 +115,14 @@ void AlarmWidget::initDevices()
     {
         deviceId->addItem(userdevice.getTerminalId());
     }
-    LOGI("alarmdownthread start------------------------------------->");
+    LOGI("alarmdownthread start------------------------------------->");   
     deviceIdchange(deviceId->currentIndex());
     downt.start();
 }
 void AlarmWidget::setLabelSize(int w,int h)
 {
-   ima->setFixedSize(w*4/10,h*2/3);
-   int wid=dataTable->width();
+   ima->setFixedSize(w/2,h*2/3);
+   int wid=w/2;
    dataTable->horizontalHeader()->resizeSection(0,wid*2/11);
    dataTable->horizontalHeader()->resizeSection(1,wid*2/11);
    dataTable->horizontalHeader()->resizeSection(2,wid*2/10);
@@ -133,8 +136,9 @@ void AlarmWidget::setLabelSize(int w,int h)
 void AlarmWidget::deviceIdchange(int i)
 {
     selectbt->setEnabled(true);
+    exportbt->setEnabled(true);
     term=&(userDevices->at(i));
-  //  selectbt_click();
+    queryt.preinstallPointMap=term->getPointInfo();
 }
 
 /***********************************************************************************
@@ -144,7 +148,6 @@ void AlarmWidget::deviceIdchange(int i)
 输出参数:
 返回值:
 ************************************************************************************/
-
  void AlarmWidget::showImage(int row,int)
  {
      QString s=datas->at(row)->getData()->getPictureName();
@@ -159,7 +162,6 @@ void AlarmWidget::deviceIdchange(int i)
            delete img;
       }else{
           downt.downloadFile(s);
-  //        downima->loadingStart(true,CH("正在下载图片"));
       }
  }
  /***********************************************************************************
@@ -171,7 +173,6 @@ void AlarmWidget::deviceIdchange(int i)
  ************************************************************************************/
  void AlarmWidget::setImage(QString s)
  {
-   //  downima->loadingStart(false,"");
      QImage *img=new QImage();
       if(img->load(EXPORTPATH+s))
       {
@@ -184,6 +185,7 @@ void AlarmWidget::initsolts()
     connect(dataTable,SIGNAL(cellClicked(int,int)),this,SLOT(showImage(int,int)));
     connect(&downt,SIGNAL(finish(QString)),this,SLOT(setImage(QString)));
     connect(selectbt,SIGNAL(clicked(bool)),this,SLOT(selectbt_click()));
+    connect(exportbt,SIGNAL(clicked(bool)),this,SLOT(exportCsv()));
     connect(&queryt,SIGNAL(queryfinish(QList<AlarmSubstation*>*)),this,SLOT(queryDatas(QList<AlarmSubstation*>*)));
     connect(selectall,SIGNAL(stateChanged(int)),this,SLOT(checkAll(int)));
     connect(&updatet,SIGNAL(updatastatus(int)),this,SLOT(updateStatus(int)));
@@ -196,14 +198,37 @@ void AlarmWidget::selectbt_click()
     queryt.setStartTime(beginTime->text());
     queryt.setStopTime(endTime->text());
     queryt.queryall=false;
+    queryt.model=false;
     queryt.start();
     selectbt->setEnabled(false);
+    exportbt->setEnabled(false);
+}
+void AlarmWidget::exportCsv()
+{
+    QString filename=QFileDialog::getSaveFileName(this,CH("保存文件"),qApp->applicationDirPath() , tr("Files (*.csv)"));
+    if( filename.isEmpty())
+    {
+        QMessageBox::information(this,"info",CH("请输入文件名"));
+        return;
+    }
+    exportbt->setEnabled(false);
+    selectbt->setEnabled(false);
+    queryt.setDeviceId(deviceId->currentText());
+    queryt.setStartTime(beginTime->text());
+    queryt.setStopTime(endTime->text());
+    queryt.setFilename(filename);
+    queryt.queryall=false;
+    queryt.model=true;
+    queryt.start();
 }
  void AlarmWidget::queryDatas(QList<AlarmSubstation*> * dats)
  {
-        this->datas=dats;
+       this->datas=dats;
+       QMessageBox::information(this,"info",CH("导出成功"));
        dataTable->clearContents();
        selectbt->setEnabled(true);
+       exportbt->setEnabled(true);
+
        selectall->setEnabled(false);
        managebt->setEnabled(false);
         if(datas==nullptr)
@@ -320,7 +345,7 @@ void AlarmWidget::selectbt_click()
     setCurrentDevice(deviceId->currentIndex());
  }
 
-void AlarmWidget::checkAll(int)
+void AlarmWidget::checkAll()
 {
     int len=datas->size();
     auto sta=selectall->checkState();
@@ -332,8 +357,11 @@ void AlarmWidget::checkAll(int)
 void AlarmWidget::setCurrentDevice(int i)
 {
     deviceId->setCurrentIndex(i);
+    endTime->setDateTime(QDateTime::currentDateTime());
     queryt.setDeviceId(userDevices->at(i).getTerminalId());
     queryt.queryall=true;
+    queryt.model=false;
     queryt.start();
     selectbt->setEnabled(false);
+    exportbt->setEnabled(false);
 }

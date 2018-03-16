@@ -24,7 +24,6 @@ ExportWidget::ExportWidget(QWidget *parent) :
         dir.mkpath(EXPORTPATH);
     }
 }
-
 ExportWidget::~ExportWidget()
 {
     if(data==NULL)
@@ -54,10 +53,9 @@ void ExportWidget::initLabel()
 {
     deviceIdL=new QLabel(CH("设备ID: "));
     deviceId=new QComboBox();
-    //deviceId->setEditable(true);
 
     beginTimeL=new QLabel(CH("开始时间: "));
-    beginTime=new QDateTimeEdit(QDate(2017,12,10));
+    beginTime=new QDateTimeEdit(QDateTime::currentDateTime());
     beginTime->setDisplayFormat(DATEFORMAT);
 
     endTimeL=new QLabel(CH("结束时间: "));
@@ -71,9 +69,6 @@ void ExportWidget::initLabel()
     endPos=new QComboBox();
     endPos->setEditable(true);
 
-
-
-
     exportbt=new QPushButton(CH("导出csv"));
     selectbt=new QPushButton(CH("查询"));
     exportbt->setEnabled(false);
@@ -82,6 +77,7 @@ void ExportWidget::initLabel()
     dataTable=new QTableWidget();
     QStringList  HStrList;
     HStrList.push_back(CH("设备名称"));
+    HStrList.push_back(CH("检测点"));
     HStrList.push_back(CH("上报时间"));
     HStrList.push_back(CH("检测类型"));
     HStrList.push_back(CH("数据"));
@@ -95,10 +91,8 @@ void ExportWidget::initLabel()
 
     dataTable->verticalHeader()->setVisible(true);
 
-
-
     posbox=new QComboBox();
-    posbox->setFixedWidth(50);
+
     ter_id=new QLabel(CH("位置:"));
 
      ima=new QLabel();
@@ -118,11 +112,12 @@ void ExportWidget::setLabelSize(int w,int h)
 {
    ima->setFixedSize(w/2,h*2/3);
    info->setFixedSize(w/2,h/3);
-   dataTable->horizontalHeader()->resizeSection(0,(w/2-10)*2/8);
-   dataTable->horizontalHeader()->resizeSection(1,(w/2-10)*2/8);
-   dataTable->horizontalHeader()->resizeSection(2,(w/2-10)*1/8);
-   dataTable->horizontalHeader()->resizeSection(3,(w/2-10)*2/8);
-
+   dataTable->horizontalHeader()->resizeSection(0,(w/2-10)*1/5);
+   dataTable->horizontalHeader()->resizeSection(1,(w/2-10)*1/5);
+   dataTable->horizontalHeader()->resizeSection(2,(w/2-10)*1/5);
+   dataTable->horizontalHeader()->resizeSection(3,(w/2-10)*1/7);
+   dataTable->horizontalHeader()->resizeSection(4,(w/2-10)*1/7);
+   posbox->setFixedWidth(w/12);
 }
 /***********************************************************************************
 函数名:
@@ -146,9 +141,8 @@ void ExportWidget::initPanal()
     boxa->setLayout(lac);
 
     QHBoxLayout *boxlayout=new QHBoxLayout();
+
     QGridLayout *boxla=new QGridLayout();
-
-
     boxla->addWidget(deviceIdL,0,0);
     boxla->addWidget(deviceId,0,1);
     boxla->addWidget(beginTimeL,1,0);
@@ -175,12 +169,10 @@ void ExportWidget::initPanal()
     lac->addLayout(boxlayout);
     lac->addLayout(btl);
 
-
-
-
     QGroupBox *databox=new QGroupBox(CH("数据"));
     QVBoxLayout *datala=new QVBoxLayout();
     QHBoxLayout *titlela=new QHBoxLayout();
+
     titlela->addStretch();
     titlela->addWidget(ter_id);
     titlela->addWidget(posbox);
@@ -195,8 +187,6 @@ void ExportWidget::initPanal()
     rightLa->addWidget(ima);
 
     rightLa->addWidget(info);
-
-
 }
 /***********************************************************************************
 函数名:
@@ -228,14 +218,23 @@ void ExportWidget::deviceIdchange(int i)
      beginPos->clear();
      endPos->clear();
      term=&(userDevices->at(i));
-     QString ter=term->getTerminalId();
-     parseXML(QString("map/")+ter+".xml");
-     QMapIterator<int,QPointF> iter(points);
-     while (iter.hasNext()) {
-             iter.next();
-             beginPos->addItem(QString::number(iter.key()));
-             endPos->addItem(QString::number(iter.key()));
+     QHash<int,PreinstallPoint*> *p=term->getPointInfo();
+     QHashIterator<int,PreinstallPoint*> piter(*p);
+     while (piter.hasNext()) {
+             piter.next();
+             PreinstallPoint * ppoint=piter.value();
+             QString names=ppoint->getPosName()+QString::number(ppoint->getPos());
+             posNames.insert(names,QString::number(ppoint->getPos()));
+             posNumbers.insert(ppoint->getPos(),names);
      }
+     QMapIterator<QString,QString> iter(posNames);
+     while (iter.hasNext())
+     {
+       iter.next();
+       beginPos->addItem(iter.key());
+       endPos->addItem(iter.key());
+     }
+
      if(beginPos->count()!=0)
      {
          exportbt->setEnabled(true);
@@ -256,7 +255,7 @@ void ExportWidget::deviceIdchange(int i)
 void ExportWidget::posSizeChange(QString s)
 {
          dataTable->clearContents();
-         const auto &li=data->value(s.toInt());
+         const auto &li=data->value(posNames.find(s).value().toInt());
          dataTable->setRowCount(li->size());
          QHash<int,PreinstallPoint*> *p=term->getPointInfo();
          QHash<int,PreinstallPoint*>::const_iterator it;
@@ -264,10 +263,11 @@ void ExportWidget::posSizeChange(QString s)
          {
              auto &tem=li->at(j);
              it=p->find(tem->getSonPos());
-              QString str,datatype,dat;
+             QString str,sonstr,datatype,dat;
              if(it!=p->cend())
              {
                  str=it.value()->getPosName();
+                 sonstr=it.value()->getSonPosName();
                  datatype=it.value()->getCheckName();
              }
              if(tem->getDatatype()==2)
@@ -281,18 +281,26 @@ void ExportWidget::posSizeChange(QString s)
              item0->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
              item0->setBackgroundColor(QColor(255,210,166));
              dataTable->setItem(j,0,item0);
-             QTableWidgetItem *item1=new QTableWidgetItem(tem->getReportTime());
+
+             QTableWidgetItem *item1=new QTableWidgetItem(sonstr);
              item1->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
              item1->setBackgroundColor(QColor(255,210,166));
              dataTable->setItem(j,1,item1);
-             QTableWidgetItem *item2=new QTableWidgetItem(datatype);
+
+             QTableWidgetItem *item2=new QTableWidgetItem(tem->getReportTime());
              item2->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
              item2->setBackgroundColor(QColor(255,210,166));
              dataTable->setItem(j,2,item2);
-             QTableWidgetItem *item3=new QTableWidgetItem(dat);
+
+             QTableWidgetItem *item3=new QTableWidgetItem(datatype);
              item3->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
              item3->setBackgroundColor(QColor(255,210,166));
              dataTable->setItem(j,3,item3);
+
+             QTableWidgetItem *item4=new QTableWidgetItem(dat);
+             item4->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+             item4->setBackgroundColor(QColor(255,210,166));
+             dataTable->setItem(j,4,item4);
          }
 }
 /***********************************************************************************
@@ -314,12 +322,6 @@ void ExportWidget::initsolts()
 }
 void ExportWidget::loadingtimeout()
 {
-  /*  if(downt.isRunning())
-    {
-        downt.terminate();
-        LOGE("exportdownthread terminate");
-        downt.wait();
-    }*/
     downt.exitexec();
 }
 
@@ -333,7 +335,7 @@ void ExportWidget::loadingtimeout()
 
  void ExportWidget::showImage(int row,int)
  {
-     int pos=posbox->currentText().toInt();
+     int pos=posNames.find(posbox->currentText()).value().toInt();
      QString s=data->value(pos)->at(row)->getPictureName();
      QFile file(EXPORTPATH+s);
       if(file.exists())
@@ -392,8 +394,8 @@ void ExportWidget::selectDataThr(bool mode,const QString &file)
     thr.setStartTime(beginTime->text());
     thr.setStopTime(endTime->text());
     thr.setDeviceId(userDevices->at(deviceId->currentIndex()).getTerminalId());
-    thr.setStartpos(beginPos->currentText());
-    thr.setStoppos(endPos->currentText());
+    thr.setStartpos(posNames.find(beginPos->currentText()).value());
+    thr.setStoppos(posNames.find(endPos->currentText()).value());
     thr.setFilename(file);
     thr.model=mode;
     thr.preinstallPointMap=term->getPointInfo();
@@ -418,7 +420,6 @@ void ExportWidget::exportCsv()
     selectbt->setEnabled(false);
     selectDataThr(true,filename);
     downima->loadingStart(true,CH("正在导出..."));
-   // qDebug()<<"filename: "<<filename<<"  " <<"startTime: "<<beginTime->text()<<"  " <<"stopTime: "<<endTime->text()<<"\n"<<"startPos: "<<beginPos->currentText()<<"  " <<"stopPos: "<<endPos->currentText()<<"  " <<"deviceId: "<<userDevices->at(deviceId->currentIndex()).getTerminalId()<<"\n";
 }
 /***********************************************************************************
 函数名:
@@ -443,7 +444,7 @@ void ExportWidget::getDatamap(QMap<int,QList<Substationdata*>*>* v)
           }
           delete data;
        }
-       dataTable->clearContents();
+        dataTable->clearContents();
         data=v;
         downima->loadingStart(false,"");
         QMessageBox::information(this,"info",CH("导出成功"));
@@ -454,117 +455,11 @@ void ExportWidget::getDatamap(QMap<int,QList<Substationdata*>*>* v)
        QMapIterator<int,QList<Substationdata*>*> i(*data);
        while (i.hasNext()) {
                i.next();
-               posbox->addItem(QString::number(i.key()));
+               posbox->addItem(posNumbers.find(i.key()).value());
        }
        if(posbox->count()!=0)
        {
            connect(posbox,SIGNAL(currentIndexChanged(QString)),this,SLOT(posSizeChange(QString)));
            posSizeChange(posbox->currentText());
        }
-}
-/***********************************************************************************
-函数名:
-函数描述:	 解析地图配置文件读取位置点信息
-输入参数:
-输出参数:
-返回值:
-************************************************************************************/
-void ExportWidget::parseXML(const QString &fname)
-{
-    if(fname.isEmpty())
-        return;
-
-    QFile file(fname);
-    if(!file.open(QFile::ReadOnly | QFile::Text)) {
-        QMessageBox::information(nullptr, QString("error"),
-                                 CH("打开地图失败"));
-
-        return;
-    }
-
-    QDomDocument domDocument;
-    QString error;
-    int row = 0, column = 0;
-    if(!domDocument.setContent(&file, false, &error, &row, &column)) {
-        QMessageBox::information(nullptr, QString("Error"),
-                                 QString("parse file failed at line row and column") +
-                                 QString::number(row, 10) + QString(",") +
-                                 QString::number(column, 10));
-        file.close();
-        return;
-    }
-
-    if(domDocument.isNull()) {
-        QMessageBox::information(nullptr, QString("title"),
-                                 QString("document is null!"));
-
-        file.close();
-        return;
-    }
-
-    const QDomElement domElement = domDocument.documentElement();
-
-    const QString domElementTagName = domElement.tagName();
-
-    if (domElementTagName != "routemap") {
-        QMessageBox::information(nullptr, QString("title"),
-                                 QString("Root Name is wrong!"));
-        file.close();
-        return;
-    }
-    const QDomNodeList pointList = domElement.childNodes();
-    for(int i=0;i<pointList.count();i++)
-    {
-        const QDomNode p =pointList.item(i);
-        if(!p.isNull())
-        {
-            QDomElement elementson = p.toElement();
-            if(!elementson.isNull()) {
-                if (elementson.hasAttribute("id"))
-                {
-                    int pid=elementson.attributeNode("id").value().toInt();
-                    if(pid>=2000)
-                    {
-                        const QDomNode fristNode =elementson.firstChild();
-                        const QDomNode lastNode =elementson.lastChild();
-                        if(!fristNode.isNull()&&!lastNode.isNull())
-                        {
-                            const QDomElement fristElement = fristNode.toElement();
-                            const QDomElement lastElement = lastNode.toElement();
-                            if(!fristElement.isNull()&&!lastElement.isNull())
-                            {
-                                int xp=-1,yp=-1;
-                                const QString tagname=fristElement.tagName();
-                                const QString tagval=fristElement.text();
-                                if(!tagval.isEmpty())
-                                {
-                                    if(tagname=="x")
-                                    {
-                                        xp=tagval.toInt();
-                                    }else{
-                                        yp=tagval.toInt();
-                                    }
-                                }
-                                const QString tagname1=lastElement.tagName();
-                                const QString tagval1=lastElement.text();
-                                if(!tagval1.isEmpty())
-                                {
-                                    if(tagname1=="x")
-                                    {
-                                        xp=tagval1.toInt();
-                                    }else{
-                                        yp=tagval1.toInt();
-                                    }
-                                }
-                                if(xp!=-1&&yp!=-1)
-                                {
-                                    points.insert(pid,QPointF(((double)xp)/1000.0,((double)yp)/1000.0));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

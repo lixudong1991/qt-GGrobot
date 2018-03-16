@@ -18,8 +18,8 @@
 // </auto-generated>
 //
 
-#ifndef __E__vspro_TESTice_TESTice_generated_GGSmart_h__
-#define __E__vspro_TESTice_TESTice_generated_GGSmart_h__
+#ifndef __d__documents_visual_studio_2015_Projects_ConsoleApplication1_ConsoleApplication1_generated_GGSmart_h__
+#define __d__documents_visual_studio_2015_Projects_ConsoleApplication1_ConsoleApplication1_generated_GGSmart_h__
 
 #include <IceUtil/PushDisableWarnings.h>
 #include <Ice/ProxyF.h>

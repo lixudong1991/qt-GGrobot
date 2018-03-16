@@ -3,13 +3,13 @@
 MainWidget::MainWidget(QWidget *parent)
     : QDialog(parent)
 {
-    ILog4zManager::getRef().start();
+
     setWindowFlags(Qt::FramelessWindowHint);
  //   setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_NoBackground);
     setWindowIcon(QIcon(":/qss/wall"));
     mouse_press = false;
-
+    title_widget=new TitleWidget();
 
     QDesktopWidget *d=QApplication::desktop();
     QRect sc=d->screenGeometry();
@@ -17,9 +17,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     userDevices=new QList<Userterminal>();
 
-
     statked_widget = new QStackedWidget();
-    title_widget=new TitleWidget();
 
     Cloud_widget=new CloudWidget();
     Cloud_widget->setUserDevices(userDevices);
@@ -76,6 +74,7 @@ MainWidget::MainWidget(QWidget *parent)
     Cloud_widget->update();
     exprot_widget->setLabelSize(sc.width(),sc.height()-100);
     alarmwidget->setLabelSize(sc.width(),sc.height()-100);
+
 }
 
 MainWidget::~MainWidget()
@@ -135,7 +134,6 @@ void MainWidget::mousePressEvent(QMouseEvent *event)
     {
         mouse_press = true;
     }
-
     //´°¿ÚÒÆ¶¯¾àÀë
     move_point = event->globalPos() - pos();
 }
@@ -163,6 +161,5 @@ void MainWidget::setAlarmstatus(int id)
 
 void MainWidget::resetAlarmstatus()
 {
- //   alarmwidget->setCurrentDevice(device);
      title_widget->setAlarmBackground(false);
 }

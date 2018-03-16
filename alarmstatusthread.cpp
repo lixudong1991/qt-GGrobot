@@ -23,9 +23,9 @@ void AlarmStatusThread::run()
       if(query.exec(sql))
       {
           emit updatastatus(0);
-           LOGI("AlarmStatusThread sql"<<sql.toStdString()<<"  success");
+          LOGI("AlarmStatusThread sql"<<sql.toStdString()<<"  success");
       }else{
           emit updatastatus(-1);
-           LOGI("AlarmStatusThread sql"<<sql.toStdString()<<"  failed");
+          LOGE("AlarmStatusThread sql"<<sql.toStdString()<<"  failed");
       }
 }

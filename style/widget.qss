@@ -36,3 +36,12 @@ QGroupBox::title {
     subcontrol-position: top center;
     color:white;
 }
+QProgressBar {
+    border: 2px solid grey;
+    border-radius: 5px;
+}
+
+QProgressBar::chunk {
+    background-color: #05B8CC;
+    width: 20px;
+}

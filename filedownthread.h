@@ -30,7 +30,6 @@ signals:
      void finish(QString);
 private slots:
      void download();
-   //  void error(QNetworkReply::NetworkError);
  protected:
     void run();
 private:

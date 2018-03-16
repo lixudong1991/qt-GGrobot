@@ -8,6 +8,7 @@ QT       += core gui
 QT       += sql
 QT       += network
 QT       += xml
+
 RC_ICONS    += robot.ico
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -62,7 +63,11 @@ SOURCES += main.cpp\
     filedownthread.cpp \
     alarmstatusthread.cpp \
     alarmquerythread.cpp \
-    alarmsubstation.cpp
+    alarmsubstation.cpp \
+    statusdata.cpp \
+    icecommunicatorfactory.cpp \
+    sportreceiveicethread.cpp \
+    inspectingcardw.cpp
 
 HEADERS  += dialog.h \
     head.h \
@@ -107,21 +112,25 @@ HEADERS  += dialog.h \
     filedownthread.h \
     alarmstatusthread.h \
     alarmquerythread.h \
-    alarmsubstation.h
+    alarmsubstation.h \
+    statusdata.h \
+    icecommunicatorfactory.h \
+    sportreceiveicethread.h \
+    inspectingcardw.h
 
 
-INCLUDEPATH +=C:/ZeroC/Ice-3.6.3/include
+INCLUDEPATH +=D:/ice/include
 
-LIBS += -LD:/HCNetSdk/ -lHCNetSDK \
-            -LD:/HCNetSdk/ -lHCCore \
-            -LD:/HCNetSdk/ -lPlayCtrl \
-            -LD:/HCNetSdk/HCNetSDKCom/ -lHCPreview \
-            -LD:/HCNetSdk/HCNetSDKCom/ -lHCAlarm \
-            -LD:/HCNetSdk/HCNetSDKCom/ -lHCGeneralCfgMgr \
-            -LD:/IRXSdk/ -lShowImage \
-            -LD:/IRXSdk/ -lUlirNetDevSDK \
-            -LD:/IRXSdk/ -lUlirTempSDK \
-            -LC:/ZeroC/Ice-3.6.3/lib/ -lice
+LIBS += -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/ -lHCNetSDK \
+            -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/ -lHCCore \
+            -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/ -lPlayCtrl \
+            -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/HCNetSDKCom/ -lHCPreview \
+            -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/HCNetSDKCom/ -lHCAlarm \
+            -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/HCNetSDKCom/ -lHCGeneralCfgMgr \
+            -LE:/qtproject/r/HCNetSdk/lib/IRXSdk/ -lShowImage \
+            -LE:/qtproject/r/HCNetSdk/lib/IRXSdk/ -lUlirNetDevSDK \
+            -LE:/qtproject/r/HCNetSdk/lib/IRXSdk/ -lUlirTempSDK \
+            -LD:/ice/lib/ -lice
 
 FORMS +=
 
