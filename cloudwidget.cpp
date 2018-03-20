@@ -168,7 +168,7 @@ void CloudWidget::posinit()
     devices_log=new QGroupBox(CH("设备"));
     nonnectCloud=new QGroupBox(CH("云台"));
     right_cloudCtrl=new QGroupBox(CH("云台控制"));
-    right_patrolView=new QGroupBox(CH("自动巡检"));
+    right_patrolView=new QGroupBox(CH("巡检"));
 
     int wid=w*0.132-10;
 
