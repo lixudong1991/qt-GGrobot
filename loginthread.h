@@ -27,7 +27,7 @@ public:
    QString username;
    QString password;
    QString dbna;
-
+   QMutex mutex;
    QString user;
    QString pwd;
    QList<Userterminal> *userDevices;

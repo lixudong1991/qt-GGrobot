@@ -168,7 +168,7 @@ void CloudWidget::posinit()
     devices_log=new QGroupBox(CH("设备"));
     nonnectCloud=new QGroupBox(CH("云台"));
     right_cloudCtrl=new QGroupBox(CH("云台控制"));
-    right_patrolView=new QGroupBox(CH("巡检"));
+    right_patrolView=new QGroupBox(CH("巡检控制"));
 
     int wid=w*0.132-10;
 
@@ -484,7 +484,7 @@ void CloudWidget::initTerminal()
         positionL->show();
         deviceidChange(deviceid->currentIndex());
         t.tStart();
-        connect(&sportServerT,SIGNAL(comStatus(int,int)),this,SLOT());
+        connect(&sportServerT,SIGNAL(comStatus(int,int)),this,SLOT(cmdStatus(int,int)));
         connect(&sportT,SIGNAL(execComStatus(QString)),this,SLOT(setInspectingStatus(QString)));
         sportServerT.start();
         sportT.start();
@@ -1388,6 +1388,7 @@ void CloudWidget::inspect_send(QList<int> *l)
             if(sportT.isRunning())
              {
                     sportT.iceSendCommand(STATUS_TEXUN,cardsstr);
+                     LOGI("checkcard:"<<cardsstr.toStdString());
              }
         }
 }

@@ -30,14 +30,18 @@ void LoginThread::run()
     query.prepare("select userid from tbl_users where userName=:user and userPwd=:pwd");
     query.bindValue(":user",user);
     query.bindValue(":pwd",pwd);
-    query.exec();
-    if(query.next())
+    bool tem=false;
+    mutex.lock();
+    tem=query.exec();
+    mutex.unlock();
+    if(tem&&query.next())
     {
         int userid=query.value(0).toInt();
-        QSqlQuery query;
         query.prepare("select * from tbl_userterminal where userid=:id");
         query.bindValue(":id",userid);
+        mutex.lock();
         query.exec();
+        mutex.unlock();
         while(query.next())
         {
             Userterminal userdevice;

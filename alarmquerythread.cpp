@@ -1,6 +1,7 @@
 #include "alarmquerythread.h"
 #include <QSqlQuery>
 #include <QVariant>
+#include <QMutex>
 #include "head.h"
 AlarmQueryThread::AlarmQueryThread()
 {
@@ -8,6 +9,7 @@ AlarmQueryThread::AlarmQueryThread()
 } 
 void AlarmQueryThread::run()
 {
+
     QSqlQuery query;
     QString sql="SELECT alarm.*,substationid.*,`user`.userName FROM tbl_alarm AS alarm "
                 "JOIN tbl_substationdata AS substationid ON alarm.`substationid`= substationid.`dataId` "
@@ -30,7 +32,11 @@ void AlarmQueryThread::run()
         datas=nullptr;
     }
     LOGI("AlarmQueryThread sql: "<<sql.toStdString());
-    if(query.exec(sql))
+    bool tem=false;
+    mutex.lock();
+    tem=query.exec(sql);
+    mutex.unlock();
+    if(tem)
     {
         datas=new QList<AlarmSubstation*>();
         while(query.next())

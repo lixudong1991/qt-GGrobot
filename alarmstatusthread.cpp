@@ -1,5 +1,6 @@
 #include "alarmstatusthread.h"
 #include "head.h"
+
 AlarmStatusThread::AlarmStatusThread()
 {
 
@@ -20,7 +21,11 @@ void AlarmStatusThread::run()
           sql.append(alarmids.at(i)+",");
       }
       sql.append(alarmids.last()+")");
-      if(query.exec(sql))
+      bool tem=false;
+      mutex.lock();
+      tem=query.exec(sql);
+      mutex.unlock();
+      if( tem)
       {
           emit updatastatus(0);
           LOGI("AlarmStatusThread sql"<<sql.toStdString()<<"  success");

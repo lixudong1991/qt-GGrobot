@@ -2,6 +2,7 @@
 #define ALARMSTATUSTHREAD_H
 
 #include <QThread>
+#include <QMutex>
 class AlarmStatusThread : public QThread
 {
     Q_OBJECT
@@ -23,6 +24,7 @@ protected:
 private:
     int userid;
     QStringList alarmids;
+     QMutex mutex;
 };
 
 #endif // ALARMSTATUSTHREAD_H
