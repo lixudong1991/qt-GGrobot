@@ -1,6 +1,6 @@
 #ifndef FINDDATATHREAD_H
 #define FINDDATATHREAD_H
-
+#include <QMutex>
 #include"head.h"
 #include "substationdata.h"
 #include "preinstallpoint.h"
@@ -49,7 +49,7 @@ private:
     QString stoptime;
     QString startpos;
     QString stoppos;
-
+    QMutex mutex;
     QMap<int,QList<Substationdata*>*> *datamap;
 
 

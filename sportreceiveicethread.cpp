@@ -14,12 +14,12 @@ SportReceiveICEthread::~SportReceiveICEthread()
     Ice::CommunicatorPtr ic=IceCommunicatorFactory::getInstance()->communicator();
     Ice::ObjectAdapterPtr adapter =IceCommunicatorFactory::getInstance()->adapter();
      try {
-         ComstatusI *cm=new ComstatusI();
+          ComstatusI *cm=new ComstatusI();
           Ice::ObjectPtr object=cm;
           connect(cm,SIGNAL(cmdStatus(int,int)),this,SLOT(cmdstatusslot(int,int)));
           adapter->add (object, ic->stringToIdentity ("CmdStatus"));
           adapter->activate();
-        //  exec();
+          exec();
           ic->waitForShutdown();
       }
       catch (const Ice::Exception& ex) {

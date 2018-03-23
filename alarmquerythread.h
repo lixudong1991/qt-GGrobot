@@ -2,6 +2,7 @@
 #define ALARMQUERYTHREAD_H
 #include <QList>
 #include <QThread>
+#include <QMutex>
 #include "alarmsubstation.h"
 #include "preinstallpoint.h"
 class AlarmQueryThread : public QThread
@@ -37,6 +38,7 @@ private:
     QString starttime;
     QString stoptime;
     QString name;
+    QMutex mutex;
     QList<AlarmSubstation*> *datas=nullptr;
 };
 

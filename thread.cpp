@@ -29,11 +29,13 @@ void  Thread::run()
    int time=ftpconfig.value("picture/refurbishtime").toInt();
     LOGI("thread1 scanner space time:"<<time<<" second" );
    QSqlQuery query;
+   mutex.lock();
    if(query.exec("SELECT NOW()")&&query.next())
    {
         beginTime=query.value(0).toDateTime().toString(DATEFORMAT);
         LOGI("thread1 scanner beginTime:"<<beginTime.toStdString() );
    }
+   mutex.unlock();
    while(exit_t)
    {   
        QString statussql="SELECT * FROM tbl_statusdata WHERE terminalId='";
@@ -41,7 +43,11 @@ void  Thread::run()
        statussql.append("' AND writeTime >= '");
        statussql.append(beginTime);
        statussql.append("' ORDER BY writeTime DESC");
-       if(query.exec(statussql)&&query.next())
+       bool tem=false;
+       mutex.lock();
+       tem=query.exec(statussql);
+       mutex.unlock();
+       if (tem&&query.next())
        {
             StatusData *statu=data.getRobotStatus();
             if(statu!=nullptr)
@@ -69,7 +75,10 @@ void  Thread::run()
        query.prepare("SELECT * FROM tbl_substationdata WHERE terminalId=:id AND writeTime > (SELECT SUBDATE(NOW(),INTERVAL :time SECOND)) ORDER BY writeTime DESC");
        query.bindValue(":id",terminalId);
        query.bindValue(":time",QString::number(time+1));
-       if(!query.exec())
+       mutex.lock();
+       tem=query.exec();
+       mutex.unlock();
+       if(!tem)
        {
            LOGE("execute select sql error : "<<query.lastError().text().toStdString());
            if(query.lastError().type()==QSqlError::ConnectionError)
@@ -111,7 +120,10 @@ void  Thread::run()
                     sql.append(QString::number(-1));
                     sql.append(",NOW())");
                     LOGI("find a Alarm,sql: "<<sql.toStdString());
-                    if(!query.exec(sql))
+                    mutex.lock();
+                    tem=query.exec(sql);
+                    mutex.unlock();
+                    if(!tem)
                     {
                         LOGE("execute sql  : "<<sql.toStdString()<<" error:  "<<query.lastError().text().toStdString());
                     }

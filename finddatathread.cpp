@@ -21,32 +21,38 @@ void FindDataThread::run()
      LOGI("finddatathread start");
     QSqlQuery query;
     QString sql="SELECT reportTime,pos,sonPos,datatype,`data`,pictureType,pictureName FROM tbl_substationdata WHERE terminalId='"+deviceId+"' AND writeTime >='"+starttime+"' AND writeTime <='"+stoptime+"' AND pos >="+startpos+" AND  pos <="+stoppos+" AND pos > 2000 ORDER BY pos,writeTime";
-    query.exec(sql);
+    bool tem=false;
+    mutex.lock();
+    tem=query.exec(sql);
+    mutex.unlock();
     datamap=new  QMap<int,QList<Substationdata*>*>();
     QMap<int,QList<Substationdata*>*>::iterator mi;
-    while(query.next())
+    if( tem)
     {
-         Substationdata *sub=new Substationdata();
-         sub->setReportTime(query.value(0).toString());
-         int pos=query.value(1).toInt();
-         sub->setPos(pos);
-         sub->setSonPos(query.value(2).toInt());
-         sub->setDatatype(query.value(3).toInt());
-         sub->setData(query.value(4).toInt());
-         sub->setPictureType(query.value(5).toInt());
-         sub->setPictureName(query.value(6).toString());
-         mi = datamap->find(pos);
-         if(mi != datamap->end())
-         {
-             mi.value()->append(sub);
-         }else
-         {
-             QList<Substationdata*>* li=new QList<Substationdata*>();
-             li->append(sub);
-             datamap->insert(pos,li);
-         }
+        while(query.next())
+        {
+             Substationdata *sub=new Substationdata();
+             sub->setReportTime(query.value(0).toString());
+             int pos=query.value(1).toInt();
+             sub->setPos(pos);
+             sub->setSonPos(query.value(2).toInt());
+             sub->setDatatype(query.value(3).toInt());
+             sub->setData(query.value(4).toInt());
+             sub->setPictureType(query.value(5).toInt());
+             sub->setPictureName(query.value(6).toString());
+             mi = datamap->find(pos);
+             if(mi != datamap->end())
+             {
+                 mi.value()->append(sub);
+             }else
+             {
+                 QList<Substationdata*>* li=new QList<Substationdata*>();
+                 li->append(sub);
+                 datamap->insert(pos,li);
+             }
+        }
     }
-    LOGI("datamap size:"<<datamap->size());
+     LOGI("datamap size:"<<datamap->size());
     if(model&&!name.isEmpty())
     {
          QFile file(name);

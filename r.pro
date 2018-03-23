@@ -119,18 +119,18 @@ HEADERS  += dialog.h \
     inspectingcardw.h
 
 
-INCLUDEPATH +=D:/ice/include
+INCLUDEPATH +=C:/ZeroC/Ice-3.6.3/include
 
-LIBS += -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/ -lHCNetSDK \
-            -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/ -lHCCore \
-            -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/ -lPlayCtrl \
-            -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/HCNetSDKCom/ -lHCPreview \
-            -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/HCNetSDKCom/ -lHCAlarm \
-            -LE:/qtproject/r/HCNetSdk/lib/HCNetSdk/HCNetSDKCom/ -lHCGeneralCfgMgr \
-            -LE:/qtproject/r/HCNetSdk/lib/IRXSdk/ -lShowImage \
-            -LE:/qtproject/r/HCNetSdk/lib/IRXSdk/ -lUlirNetDevSDK \
-            -LE:/qtproject/r/HCNetSdk/lib/IRXSdk/ -lUlirTempSDK \
-            -LD:/ice/lib/ -lice
+LIBS += -LE:/qtPro/r/HCNetSdk/lib/HCNetSdk/ -lHCNetSDK \
+            -LE:/qtPro/r/HCNetSdk/lib/HCNetSdk/ -lHCCore \
+            -LE:/qtPro/r/HCNetSdk/lib/HCNetSdk/ -lPlayCtrl \
+            -LE:/qtPro/r/HCNetSdk/lib/HCNetSdk/HCNetSDKCom/ -lHCPreview \
+            -LE:/qtPro/r/HCNetSdk/lib/HCNetSdk/HCNetSDKCom/ -lHCAlarm \
+            -LE:/qtPro/r/HCNetSdk/lib/HCNetSdk/HCNetSDKCom/ -lHCGeneralCfgMgr \
+            -LE:/qtPro/r/HCNetSdk/lib/IRXSdk/ -lShowImage \
+            -LE:/qtPro/r/HCNetSdk/lib/IRXSdk/ -lUlirNetDevSDK \
+            -LE:/qtPro/r/HCNetSdk/lib/IRXSdk/ -lUlirTempSDK \
+            -LC:/ZeroC/Ice-3.6.3/lib/ -lice
 
 FORMS +=
 
