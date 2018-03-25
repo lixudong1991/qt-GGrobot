@@ -16,19 +16,6 @@ IceCommunicatorFactory::IceCommunicatorFactory()
 IceCommunicatorFactory::~IceCommunicatorFactory()
 {
 }
-void IceCommunicatorFactory::init()
-{
-    try
-    {
-         ic= Ice::initialize();
-         adapte  =  ic->createObjectAdapterWithEndpoints ("CmdStatusAdapter", "default -p 10000");
-    }
-    catch(const Ice::Exception &e)
-    {
-            LOGE("ice ≥ı ºªØ ß∞‹ : "<<e.what());
-    }
-
-}
 
 IceCommunicatorFactory* IceCommunicatorFactory::instance=new IceCommunicatorFactory();
 
@@ -44,18 +31,4 @@ Ice::CommunicatorPtr  IceCommunicatorFactory::communicator()
 Ice::ObjectAdapterPtr  IceCommunicatorFactory::adapter()
 {
     return adapte;
-}
-void  IceCommunicatorFactory::destory()
-{
-    if(adapte)
-    {
-         adapte->destroy();
-         LOGI("IceCommunicatorFactory  adapter destory");
-    }
-    if(ic)
-    {
-         ic->destroy();
-         LOGI("IceCommunicatorFactory  ic destory" );
-    }
-    LOGI("IceCommunicatorFactory +++++++++++");
 }

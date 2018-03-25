@@ -9,6 +9,7 @@
 #include "alarmsubstation.h"
 #include "alarmquerythread.h"
 #include "alarmstatusthread.h"
+#include "exportdownima.h"
 class AlarmWidget : public QWidget
 {
     Q_OBJECT
@@ -52,6 +53,7 @@ private:
     QCheckBox *selectall;
 
     Filedownthread downt;
+    ExportDownima *downima;
     const QList<Userterminal> *userDevices=NULL;
     const Userterminal *term;
     void initPanal();

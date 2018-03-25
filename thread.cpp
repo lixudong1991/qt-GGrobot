@@ -47,13 +47,16 @@ void  Thread::run()
        mutex.lock();
        tem=query.exec(statussql);
        mutex.unlock();
+       data.setDataId(-1);
+       StatusData *statu=data.getRobotStatus();
+       if(statu!=nullptr)
+       {
+           delete statu;
+       }
+       data.setRobotStatus(nullptr);
        if (tem&&query.next())
        {
-            StatusData *statu=data.getRobotStatus();
-            if(statu!=nullptr)
-            {
-                delete statu;
-            }
+
             statu=new StatusData();
             statu->setId(query.value(0).toInt());
             statu->setTerminalId(query.value(1).toString());

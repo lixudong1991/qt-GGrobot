@@ -556,6 +556,40 @@ void CloudWidget::deviceidChange(int i)
 ************************************************************************************/
 void CloudWidget::setLabelIma(Substationdata* dat,QList<int>*is)
 {
+    StatusData *st=dat->getRobotStatus();
+    if(st!=nullptr)
+    {
+        infoL->setElectricitys(QString::number(st->getElectricitys()*10)+" mA");
+        infoL->setVoltage(QString::number(st->getVoltage()*0.01)+" V");
+        infoL->setElectricResidue(QString::number(st->getElectricResidue())+" %");
+        int s=st->getRobotStatus();
+        QString stastr;
+        switch (s) {
+        case RobotStatus::OFF:
+             stastr=CH("待机模式");
+            break;
+        case RobotStatus::DEBUG:
+             stastr=CH("调试模式");
+            break;
+        case RobotStatus::AUTO:
+             stastr=CH("自动巡检");
+            break;
+        case RobotStatus::SPECIAL:
+             stastr=CH("特巡");
+            break;
+        case RobotStatus::BACK:
+             stastr=CH("返航");
+            break;
+        default:
+            break;
+        }
+        infoL->setRobotStatus(stastr);
+    }
+   if(dat->getDataId()==-1)
+   {
+        infoL->update();
+        return;
+   }
    infoL->setTerminalId(dat->getTerminalId());
    infoL->setReportTime(dat->getReportTime());
    QHash<int,PreinstallPoint*> *p=term->getPointInfo();
@@ -599,35 +633,6 @@ void CloudWidget::setLabelIma(Substationdata* dat,QList<int>*is)
         {
              emit haveAlarm(deviceid->currentIndex());
         }
-   }
-   StatusData *st=dat->getRobotStatus();
-   if(st!=nullptr)
-   {
-       infoL->setElectricitys(QString::number(st->getElectricitys()*10)+" mA");
-       infoL->setVoltage(QString::number(st->getVoltage()*0.01)+" V");
-       infoL->setElectricResidue(QString::number(st->getElectricResidue())+" %");
-       int s=st->getRobotStatus();
-       QString stastr;
-       switch (s) {
-       case RobotStatus::OFF:
-            stastr=CH("待机模式");
-           break;
-       case RobotStatus::DEBUG:
-            stastr=CH("调试模式");
-           break;
-       case RobotStatus::AUTO:
-            stastr=CH("自动巡检");
-           break;
-       case RobotStatus::SPECIAL:
-            stastr=CH("特巡");
-           break;
-       case RobotStatus::BACK:
-            stastr=CH("返航");
-           break;
-       default:
-           break;
-       }
-       infoL->setRobotStatus(stastr);
    }
    infoL->update();
    if(dat->getPos()!=0)

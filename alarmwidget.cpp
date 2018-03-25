@@ -29,6 +29,8 @@ void AlarmWidget::initPanal()
     selectbt->setEnabled(false);
     exportbt->setEnabled(false);
 
+    downima=new ExportDownima(this);
+
     dataTable=new QTableWidget();
     QStringList  HStrList;
     HStrList.push_back(CH("设备名称"));
@@ -162,6 +164,7 @@ void AlarmWidget::deviceIdchange(int i)
            delete img;
       }else{
           downt.downloadFile(s);
+          downima->loadingStart(true,CH("正在下载图片"));
       }
  }
  /***********************************************************************************
@@ -173,6 +176,7 @@ void AlarmWidget::deviceIdchange(int i)
  ************************************************************************************/
  void AlarmWidget::setImage(QString s)
  {
+     downima->loadingStart(false,"");
      QImage *img=new QImage();
       if(img->load(EXPORTPATH+s))
       {
@@ -224,11 +228,9 @@ void AlarmWidget::exportCsv()
  void AlarmWidget::queryDatas(QList<AlarmSubstation*> * dats)
  {
        this->datas=dats;
-       QMessageBox::information(this,"info",CH("导出成功"));
        dataTable->clearContents();
        selectbt->setEnabled(true);
        exportbt->setEnabled(true);
-
        selectall->setEnabled(false);
        managebt->setEnabled(false);
         if(datas==nullptr)

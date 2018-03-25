@@ -28,7 +28,6 @@ void SportsCtrThread::run()
         if(!exit_t)
         {
             mutex.unlock();
-          //   IceCommunicatorFactory::getInstance()->destory();
             LOGI("sportsctrThread exit");
             break;
         }
@@ -46,7 +45,7 @@ void SportsCtrThread::run()
                else
                {
                   robotCtr->begin_doOrder(comprx,ctrmsg);
-                  LOGI("Ice send "<<com.toStdString()<<"  Command success ");
+                  LOGI("Ice send "<<com.toStdString()<<"  Command success");
                }
          } catch (const Ice::Exception &ex){
             LOGE("Ice send "<<com.toStdString()<<"  Command Exception: "<<ex.what());

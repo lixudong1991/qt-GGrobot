@@ -8,8 +8,6 @@ public:
     static  IceCommunicatorFactory * getInstance();
     Ice::CommunicatorPtr communicator();
     Ice::ObjectAdapterPtr adapter();
-    void init();
-    void destory();
     ~IceCommunicatorFactory();
 private:
     IceCommunicatorFactory();
