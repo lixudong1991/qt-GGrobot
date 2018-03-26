@@ -519,6 +519,7 @@ void CloudWidget::deviceidChange(int i)
     arg.append(terminIp);
     arg.append(" -p ");
     arg.append(terminPort);
+    arg.append(" -t 5000");
     LOGI(arg.toStdString().c_str());
     sportT.setProxyArg(arg);
     if(lRealPlayHandle!=-1)
@@ -1310,16 +1311,20 @@ void  CloudWidget::cloudCapture_click()
 ************************************************************************************/
 void CloudWidget::setInspectingStatus(QString cmd)
  {
-    if(cmd==STATUS_TEXUN)
-    {
-          cardsW->setMsginfo(4);
-    }else{
-     inspecting_Pause_Continue->setEnabled(true);
-     inspecting_Start_Stop->setEnabled(true);
-     inspecting_special->setEnabled(true);
-     downima->loadingStart(false,"");
-     QMessageBox::information(this,CH("提示 "),CH("发送命令失败"));
-    }
+//    if(cmd==STATUS_TEXUN)
+//    {
+//          cardsW->setMsginfo(4);
+//    }else{
+//     inspecting_Pause_Continue->setEnabled(true);
+//     inspecting_Start_Stop->setEnabled(true);
+//     inspecting_special->setEnabled(true);
+//     downima->loadingStart(false,"");
+//     QMessageBox::information(this,CH("提示 "),CH("发送命令失败"));
+//    }
+    inspecting_Pause_Continue->setEnabled(true);
+        inspecting_Start_Stop->setEnabled(true);
+        inspecting_special->setEnabled(true);
+        downima->loadingStart(false,"");
  }
 /***********************************************************************************
  函数名:    	 inspecting_Start_StopClick
@@ -1334,14 +1339,15 @@ void CloudWidget::inspecting_Start_StopClick(){
         inspecting_Pause_Continue->setEnabled(false);
         inspecting_Start_Stop->setEnabled(false);
         inspecting_special->setEnabled(false);
-        if( cmdStart_Stop == 0 ){
-            downima->loadingStart(true,CH("开始自动巡检"));
+        if( cmdStart_Stop == 0 ){        
             sportT.iceSendCommand(STATUS_STARTAUTO);
+            downima->loadingStart(true,CH("开始自动巡检"));
         }
         else
         {
-            downima->loadingStart(true,CH("快速返航"));
+
             sportT.iceSendCommand(STATUS_QUICKBACK);
+            downima->loadingStart(true,CH("快速返航"));
         }      
     }
 }
@@ -1362,13 +1368,16 @@ void CloudWidget::inspecting_Pause_ContinueClick()
         inspecting_special->setEnabled(false);
         if(cmdPause_Continue==0)
         {
-            downima->loadingStart(true,CH("暂停自动巡检"));
+
             sportT.iceSendCommand(STATUS_PAUSEAUTO);
+            downima->loadingStart(true,CH("暂停自动巡检"));
+
         }
         else
         {
-             downima->loadingStart(true,CH("继续自动巡检"));
+
             sportT.iceSendCommand(STATUS_CONTINUEAUTO);
+             downima->loadingStart(true,CH("继续自动巡检"));
         }
     }
 }
@@ -1402,7 +1411,6 @@ void CloudWidget::inspect_send(QList<int> *l)
         QStringList cardtable;
         cardsNum.clear();
         QMap<int,QString> m;
-
         QHash<int,PreinstallPoint*> *p=term->getPointInfo();
         QHash<int,PreinstallPoint*>::const_iterator it;
         for(it=p->cbegin();it!=p->cend();++it)
@@ -1435,11 +1443,11 @@ void CloudWidget::cmdStatus(int c, int s)
                if(cmdStart_Stop==0)
                {
                     cmdStart_Stop=1;
-                    inspecting_Start_Stop->setText(CH("开始巡检"));
+                    inspecting_Start_Stop->setText(CH("快速返航"));
                }else
                {
                    cmdStart_Stop=0;
-                   inspecting_Start_Stop->setText(CH("快速返航"));
+                   inspecting_Start_Stop->setText(CH("开始巡检"));
                }
         }else{
             if(cmdPause_Continue==0)

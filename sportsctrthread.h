@@ -23,6 +23,7 @@ public:
     {
         mutex.lock();
         com=c;
+        sendCard=false;
         cond.wakeOne();
         mutex.unlock();
     }
@@ -31,6 +32,7 @@ public:
         mutex.lock();
         com=c;
         cards=card;
+        sendCard=true;
         cond.wakeOne();
         mutex.unlock();
     }
@@ -45,6 +47,7 @@ private:
     QWaitCondition cond;
     QMutex mutex;
     volatile bool exit_t=true;
+    bool sendCard=false;
 };
 
 #endif // SPORTSCTRTHREAD_H

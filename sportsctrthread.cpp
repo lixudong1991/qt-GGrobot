@@ -33,10 +33,14 @@ void SportsCtrThread::run()
         }
         try {
                Ice::ObjectPrx base = ic->stringToProxy(arg.toStdString());
-               GGSmart::RobotCallbackPrx robotCtr= GGSmart::RobotCallbackPrx::checkedCast(base);
+               GGSmart::RobotCallbackPrx robotCtr= GGSmart::RobotCallbackPrx::checkedCast(base->ice_timeout(5000));
                ctrmsg->OderType=com.toStdString();
-               ctrmsg->ExData.insert(std::make_pair("card",cards.toStdString()));
-               LOGI("sportsctrThread------:"<<cards.toStdString());
+               ctrmsg->ExData.erase("card");
+               if(sendCard)
+               {
+                      ctrmsg->ExData.insert(std::make_pair("card",cards.toStdString()));
+               }
+                LOGI("sendcommand :"<<com.toStdString()<<" sportsctrThread------:"<<cards.toStdString());
                if(!robotCtr)
                {
                   LOGE("Ice send "<<com.toStdString()<<"  Command error Proxy ");
@@ -46,9 +50,10 @@ void SportsCtrThread::run()
                {
                   robotCtr->begin_doOrder(comprx,ctrmsg);
                   LOGI("Ice send "<<com.toStdString()<<"  Command success");
+                  emit execComStatus(com);
                }
          } catch (const Ice::Exception &ex){
-            LOGE("Ice send "<<com.toStdString()<<"  Command Exception: "<<ex.what());
+            LOGE("Ice send "<<com.toStdString()<< "  Command Exception: "<<ex.what());
             emit execComStatus(com);
         }
         mutex.unlock();

@@ -12,7 +12,7 @@ QT       += xml
 RC_ICONS    += robot.ico
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = r
+TARGET = RobotOperation
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
