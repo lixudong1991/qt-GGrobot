@@ -195,6 +195,13 @@ void AlarmWidget::initsolts()
     connect(&updatet,SIGNAL(updatastatus(int)),this,SLOT(updateStatus(int)));
     connect(managebt,SIGNAL(clicked(bool)),this,SLOT(managebt_click()));
     connect(deviceId,SIGNAL(currentIndexChanged(int)),SLOT(deviceIdchange(int)));
+    connect(downima,SIGNAL(error()),this,SLOT(loadingtimeout()));
+}
+void AlarmWidget::loadingtimeout()
+{
+    downt.exitexec();
+    downima->loadingStart(false,"");
+    QMessageBox::critical(this,CH("´íÎó"),CH("ÏÂÔØÍ¼Æ¬³ö´í"));
 }
 void AlarmWidget::selectbt_click()
 {

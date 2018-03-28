@@ -30,7 +30,7 @@ void FtpManager::get(const QString &fileName)
     QNetworkReply *pReply = m_manager.get(QNetworkRequest(m_pUrl));
     connect(pReply, SIGNAL(finished()), this, SLOT(finished()));
     connect(pReply, SIGNAL(downloadProgress(qint64, qint64)), this, SIGNAL(downloadProgress(qint64, qint64)));
-    connect(pReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SIGNAL(error(QNetworkReply::NetworkError)));
+    connect(pReply, SIGNAL(error(QNetworkReply::NetworkError)), this,SIGNAL(error(QNetworkReply::NetworkError)));
 
 }
 
@@ -57,4 +57,3 @@ void FtpManager::finished()
     emit finishe(name);
     pReply->deleteLater();   
 }
-

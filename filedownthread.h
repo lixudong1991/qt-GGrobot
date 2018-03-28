@@ -21,13 +21,12 @@ class  Filedownthread: public QThread
     }
     void exitexec()
     {
-        LOGI("exportdownthread download timeout:"<<filename.toStdString());
-        emit finish(filename);
+        LOGI("Filedownthread download timeout:"<<filename.toStdString());
         exit();
     }
-
 signals:
      void finish(QString);
+     void error();
 private slots:
      void download();
  protected:

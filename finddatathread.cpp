@@ -24,10 +24,28 @@ void FindDataThread::run()
     bool tem=false;
     mutex.lock();
     tem=query.exec(sql);
+    if(!tem)
+    {
+        QSettings ftpconfig("db.ini",QSettings::IniFormat);
+        QSqlDatabase db=QSqlDatabase::addDatabase("QMYSQL");
+        db.setHostName(ftpconfig.value("database/ip").toString());
+        db.setPort(ftpconfig.value("database/port").toInt());
+        db.setUserName(ftpconfig.value("database/user").toString());
+        db.setPassword(ftpconfig.value("database/pwd").toString());
+        db.setDatabaseName(ftpconfig.value("database/db").toString());
+        if(!db.open())
+         {
+             LOGE("重新创建数据库连接失败 FindDataThread exit");
+             mutex.unlock();
+             return;
+         }
+         LOGE("重新创建数据库连接成功");
+         tem=query.exec(sql);
+    }
     mutex.unlock();
     datamap=new  QMap<int,QList<Substationdata*>*>();
     QMap<int,QList<Substationdata*>*>::iterator mi;
-    if( tem)
+    if(tem)
     {
         while(query.next())
         {

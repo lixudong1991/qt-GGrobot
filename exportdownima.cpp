@@ -42,7 +42,7 @@ void ExportDownima::loadingStart(bool b,const QString &mess)
     {//CH("ÕýÔÚÏÂÔØÍ¼Æ¬")
          loading_widget->setAccount(mess);
          loading_widget->start(true);
-         timer->start(120000);
+         timer->start(15000);
          this->exec();
     }
     else{

@@ -50,6 +50,6 @@
 		<file alias="export">style/export.png</file>
 		<file alias="alarm">style/alarm.png</file>
 		<file alias="repair">style/repair.png</file>
-		<file alias="ba">style/ba.png</file>
+		<file alias="ba">style/ba.jpg</file>
     </qresource>
 </RCC>

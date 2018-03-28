@@ -323,6 +323,8 @@ void ExportWidget::initsolts()
 void ExportWidget::loadingtimeout()
 {
     downt.exitexec();
+    downima->loadingStart(false,"");
+    QMessageBox::critical(this,CH("´íÎó"),CH("ÏÂÔØÍ¼Æ¬³ö´í"));
 }
 
 /***********************************************************************************

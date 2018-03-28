@@ -35,6 +35,7 @@ private slots:
     void queryDatas(QList<AlarmSubstation*> *);
     void updateStatus(int);
     void checkAll();
+    void loadingtimeout();
 private:
     QLabel *deviceIdL;
     QComboBox *deviceId;

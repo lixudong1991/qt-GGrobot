@@ -2,7 +2,6 @@
 
 Filedownthread::Filedownthread()
 {
-
 }
 Filedownthread::~Filedownthread()
 {

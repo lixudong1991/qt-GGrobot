@@ -33,6 +33,7 @@ private slots:
  protected:
     void run();
 private:
+     bool createDbConnect();
     QString terminalId;
     QString beginTime;
     QMutex mutex;

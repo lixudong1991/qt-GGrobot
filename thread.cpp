@@ -46,6 +46,24 @@ void  Thread::run()
        bool tem=false;
        mutex.lock();
        tem=query.exec(statussql);
+       if(!tem)
+       {
+           QSqlDatabase db=QSqlDatabase::addDatabase("QMYSQL");
+           db.setHostName(ftpconfig.value("database/ip").toString());
+           db.setPort(ftpconfig.value("database/port").toInt());
+           db.setUserName(ftpconfig.value("database/user").toString());
+           db.setPassword(ftpconfig.value("database/pwd").toString());
+           db.setDatabaseName(ftpconfig.value("database/db").toString());
+           if(!db.open())
+            {
+                mutex.unlock();
+                LOGE("重新创建数据库连接失败");
+                exec();
+                continue;
+            }
+            tem=query.exec(statussql);
+            LOGE("重新创建数据库连接成功");
+       }
        mutex.unlock();
        data.setDataId(-1);
        StatusData *statu=data.getRobotStatus();
@@ -73,7 +91,7 @@ void  Thread::run()
             statu->setAutoDoor(query.value(12).toInt());
             statu->setCharger(query.value(13).toInt());
             data.setRobotStatus(statu);
-            LOGI("StatusData id:"<<statu->getId());
+           // LOGI("StatusData id:"<<statu->getId());
        }
        query.prepare("SELECT * FROM tbl_substationdata WHERE terminalId=:id AND writeTime > (SELECT SUBDATE(NOW(),INTERVAL :time SECOND)) ORDER BY writeTime DESC");
        query.bindValue(":id",terminalId);
@@ -82,16 +100,10 @@ void  Thread::run()
        tem=query.exec();
        mutex.unlock();
        if(!tem)
-       {
-           LOGE("execute select sql error : "<<query.lastError().text().toStdString());
-           if(query.lastError().type()==QSqlError::ConnectionError)
-           {
-                 emit queryErr();
-                 LOGE("thread exit");
-                 break;
-           }
+        {
+                 LOGE("execute select sql error : "<<query.lastError().text().toStdString());
        }
-       if(query.next())
+       if(tem&&query.next())
        {
            {
                QMutexLocker locker(&mutex);
@@ -140,11 +152,10 @@ void  Thread::run()
                ftpmanager.setFilename(data.getPictureName());
                connect(&ftpmanager, SIGNAL(finishe(QString)), this, SLOT(download()));
                ftpmanager.get(FILECACHEPATH+data.getPictureName());
-               exec();
            }else{
                emit finish(&data,&ids);
-               exec();
            }
+          exec();
           LOGI("thread1 scanner image -->name: "<<data.getPictureName().toStdString()<<"  type:"<<data.getPictureType()<<"  time:"<<data.getReportTime().toStdString()<<" pos:"<<data.getPos());
        }
        else
