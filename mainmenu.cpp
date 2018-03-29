@@ -20,7 +20,6 @@ void MainMenu::createActions()
     connect(login, SIGNAL(triggered()), this, SIGNAL(showlogindia()));
     connect(dbset, SIGNAL(triggered()), this, SIGNAL(showdbset()));
     connect(dbManage, SIGNAL(triggered()), this, SIGNAL(showdbManage()));
-  //  connect(importAlarm, SIGNAL(triggered()), this, SIGNAL(showImportAlarm()));
 }
 void MainMenu::translateActions()
 {

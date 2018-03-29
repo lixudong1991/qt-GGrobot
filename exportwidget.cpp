@@ -59,7 +59,7 @@ void ExportWidget::initLabel()
     beginTime->setDisplayFormat(DATEFORMAT);
 
     endTimeL=new QLabel(CH("结束时间: "));
-    endTime=new QDateTimeEdit(QDateTime::currentDateTime());
+    endTime=new QDateTimeEdit(QDateTime::currentDateTime().addDays(1));
     endTime->setDisplayFormat(DATEFORMAT);
 
     beginPosL=new QLabel(CH("开始位置: "));
@@ -227,12 +227,12 @@ void ExportWidget::deviceIdchange(int i)
              posNames.insert(names,QString::number(ppoint->getPos()));
              posNumbers.insert(ppoint->getPos(),names);
      }
-     QMapIterator<QString,QString> iter(posNames);
+     QMapIterator<int,QString> iter(posNumbers);
      while (iter.hasNext())
      {
        iter.next();
-       beginPos->addItem(iter.key());
-       endPos->addItem(iter.key());
+       beginPos->addItem(iter.value());
+       endPos->addItem(iter.value());
      }
 
      if(beginPos->count()!=0)
@@ -457,7 +457,13 @@ void ExportWidget::getDatamap(QMap<int,QList<Substationdata*>*>* v)
        QMapIterator<int,QList<Substationdata*>*> i(*data);
        while (i.hasNext()) {
                i.next();
-               posbox->addItem(posNumbers.find(i.key()).value());
+               auto it=posNumbers.find(i.key());
+               if(it!=posNumbers.end())
+               {
+                      posbox->addItem(it.value());
+               }else{
+                   LOGE("card : "<<QString::number(i.key()).toStdString()<<" resource data not found");
+               }
        }
        if(posbox->count()!=0)
        {

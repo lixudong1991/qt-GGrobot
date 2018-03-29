@@ -17,11 +17,11 @@ void AlarmWidget::initPanal()
     deviceIdL=new QLabel(CH("设备ID: "));
     deviceId=new QComboBox();
     beginTimeL=new QLabel(CH("开始时间: "));
-    beginTime=new QDateTimeEdit(QDate(2017,12,10));
+    beginTime=new QDateTimeEdit(QDateTime::currentDateTime());
     beginTime->setDisplayFormat(DATEFORMAT);
 
     endTimeL=new QLabel(CH("结束时间: "));
-    endTime=new QDateTimeEdit(QDateTime::currentDateTime());
+    endTime=new QDateTimeEdit(QDateTime::currentDateTime().addDays(1));
     endTime->setDisplayFormat(DATEFORMAT);
 
     selectbt=new QPushButton(CH("查询历史告警"));

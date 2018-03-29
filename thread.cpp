@@ -91,7 +91,6 @@ void  Thread::run()
             statu->setAutoDoor(query.value(12).toInt());
             statu->setCharger(query.value(13).toInt());
             data.setRobotStatus(statu);
-           // LOGI("StatusData id:"<<statu->getId());
        }
        query.prepare("SELECT * FROM tbl_substationdata WHERE terminalId=:id AND writeTime > (SELECT SUBDATE(NOW(),INTERVAL :time SECOND)) ORDER BY writeTime DESC");
        query.bindValue(":id",terminalId);
@@ -152,10 +151,11 @@ void  Thread::run()
                ftpmanager.setFilename(data.getPictureName());
                connect(&ftpmanager, SIGNAL(finishe(QString)), this, SLOT(download()));
                ftpmanager.get(FILECACHEPATH+data.getPictureName());
+               exec();
            }else{
                emit finish(&data,&ids);
+               exec();
            }
-          exec();
           LOGI("thread1 scanner image -->name: "<<data.getPictureName().toStdString()<<"  type:"<<data.getPictureType()<<"  time:"<<data.getReportTime().toStdString()<<" pos:"<<data.getPos());
        }
        else
@@ -163,7 +163,6 @@ void  Thread::run()
            emit finish(&data,&ids);
            exec();
        }
-
    }
     LOGI("thread1 exit");
 
@@ -179,7 +178,6 @@ void Thread::timeout()
 }
 void Thread::tStart()
 {
-//    qDebug()<<CH("Ïß³ÌÆô¶¯");
     LOGI("thread1 start------------------------------------------------------------------------------------------------>");
     start();
     QSettings timeconfig("db.ini",QSettings::IniFormat);
