@@ -18,7 +18,7 @@ FindDataThread::~FindDataThread()
 ************************************************************************************/
 void FindDataThread::run()
 {
-     LOGI("finddatathread start");
+    LOGI("finddatathread start");
     QSqlQuery query;
     QString sql="SELECT reportTime,pos,sonPos,datatype,`data`,pictureType,pictureName FROM tbl_substationdata WHERE terminalId='"+deviceId+"' AND writeTime >='"+starttime+"' AND writeTime <='"+stoptime+"' AND pos >="+startpos+" AND  pos <="+stoppos+" AND pos > 2000 ORDER BY pos,writeTime";
     bool tem=false;
@@ -26,13 +26,14 @@ void FindDataThread::run()
     tem=query.exec(sql);
     if(!tem)
     {
+        LOGE("execute sql  : "<<sql.toStdString()<<" error:  "<<query.lastError().text().toStdString());
         QSettings ftpconfig("db.ini",QSettings::IniFormat);
         QSqlDatabase db=QSqlDatabase::addDatabase("QMYSQL");
         db.setHostName(ftpconfig.value("database/ip").toString());
         db.setPort(ftpconfig.value("database/port").toInt());
         db.setUserName(ftpconfig.value("database/user").toString());
         db.setPassword(ftpconfig.value("database/pwd").toString());
-        db.setDatabaseName(ftpconfig.value("database/db").toString());
+        db.setDatabaseName(ftpconfig.value("database/db").toString());      
         if(!db.open())
          {
              LOGE("重新创建数据库连接失败 FindDataThread exit");
@@ -62,7 +63,8 @@ void FindDataThread::run()
              if(mi != datamap->end())
              {
                  mi.value()->append(sub);
-             }else
+             }
+             else
              {
                  QList<Substationdata*>* li=new QList<Substationdata*>();
                  li->append(sub);
@@ -70,7 +72,7 @@ void FindDataThread::run()
              }
         }
     }
-     LOGI("datamap size:"<<datamap->size());
+    LOGI("datamap size:"<<datamap->size());
     if(model&&!name.isEmpty())
     {
          QFile file(name);

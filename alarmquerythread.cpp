@@ -37,6 +37,7 @@ void AlarmQueryThread::run()
     tem=query.exec(sql);
     if(!tem)
     {
+        LOGE("execute sql  : "<<sql.toStdString()<<" error:  "<<query.lastError().text().toStdString());
         QSettings ftpconfig("db.ini",QSettings::IniFormat);
         QSqlDatabase db=QSqlDatabase::addDatabase("QMYSQL");
         db.setHostName(ftpconfig.value("database/ip").toString());

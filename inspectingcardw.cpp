@@ -26,6 +26,7 @@ InspectingCardW::InspectingCardW(QWidget *parent) :
     cardTable->verticalHeader()->setVisible(true);
     cardTable->horizontalHeader()->resizeSection(0,180);
     cardTable->horizontalHeader()->resizeSection(1,50);
+
      tablewid=new QWidget(this);
      loading_widget = new LoadingWidget(this);
      msgW=new QWidget(this);
@@ -104,7 +105,6 @@ void  InspectingCardW::execbtClick()
                 login_stacked_layout->setCurrentWidget(loading_widget);
                 loading_widget->start(true);
                 getChecks();
-
         }else{
                 execbt->setText(CH("¿ªÊ¼Ö´ĞĞ"));
                 login_stacked_layout->setCurrentWidget(tablewid);

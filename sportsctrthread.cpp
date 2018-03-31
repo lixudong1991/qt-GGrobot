@@ -44,7 +44,7 @@ void SportsCtrThread::run()
                if(!robotCtr)
                {
                   LOGE("Ice send "<<com.toStdString()<<"  Command error Proxy ");
-                  emit execComStatus(com);
+                  emit execComStatus("error");
                }
                else
                {
@@ -54,7 +54,7 @@ void SportsCtrThread::run()
                }
          } catch (const Ice::Exception &ex){
             LOGE("Ice send "<<com.toStdString()<< "  Command Exception: "<<ex.what());
-            emit execComStatus(com);
+            emit execComStatus("error");
         }
         mutex.unlock();
     }

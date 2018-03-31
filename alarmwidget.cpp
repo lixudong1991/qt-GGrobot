@@ -113,6 +113,7 @@ void AlarmWidget::initPanal()
  }
 void AlarmWidget::initDevices()
 {
+    deviceId->clear();
     for(const Userterminal &userdevice: *userDevices)
     {
         deviceId->addItem(userdevice.getTerminalId());
@@ -270,6 +271,7 @@ void AlarmWidget::exportCsv()
                     managebt->setEnabled(true);
                     nAlarm=false;
                 }
+
                 QTableWidgetItem *item0=new QTableWidgetItem(str);
                 item0->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
                 item0->setBackgroundColor(color);

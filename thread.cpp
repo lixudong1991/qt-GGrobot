@@ -27,7 +27,7 @@ void  Thread::run()
    QString ftpuser = ftpconfig.value("ftpserver/user").toString();
    QString ftppwd = ftpconfig.value("ftpserver/pwd").toString();
    int time=ftpconfig.value("picture/refurbishtime").toInt();
-    LOGI("thread1 scanner space time:"<<time<<" second" );
+   LOGI("thread1 scanner space time:"<<time<<" second" );
    QSqlQuery query;
    mutex.lock();
    if(query.exec("SELECT NOW()")&&query.next())
@@ -57,9 +57,9 @@ void  Thread::run()
            if(!db.open())
             {
                 mutex.unlock();
-                LOGE("重新创建数据库连接失败");
-                exec();
-                continue;
+                LOGE("重新创建数据库连接失败 thread1 exit");
+                emit queryErr();
+                return;
             }
             tem=query.exec(statussql);
             LOGE("重新创建数据库连接成功");
@@ -74,7 +74,6 @@ void  Thread::run()
        data.setRobotStatus(nullptr);
        if (tem&&query.next())
        {
-
             statu=new StatusData();
             statu->setId(query.value(0).toInt());
             statu->setTerminalId(query.value(1).toString());
@@ -99,8 +98,8 @@ void  Thread::run()
        tem=query.exec();
        mutex.unlock();
        if(!tem)
-        {
-                 LOGE("execute select sql error : "<<query.lastError().text().toStdString());
+       {
+             LOGE("execute select sql error : "<<query.lastError().text().toStdString());
        }
        if(tem&&query.next())
        {
@@ -178,7 +177,7 @@ void Thread::timeout()
 }
 void Thread::tStart()
 {
-    LOGI("thread1 start------------------------------------------------------------------------------------------------>");
+    LOGI("thread1 start");
     start();
     QSettings timeconfig("db.ini",QSettings::IniFormat);
     timer->start(timeconfig.value("picture/refurbishtime").toInt()*1000);

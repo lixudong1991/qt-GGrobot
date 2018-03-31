@@ -52,7 +52,6 @@ MainWidget::MainWidget(QWidget *parent)
     statked_widget->setPalette(palette);
     statked_widget->setAutoFillBackground(true);
 
-
     statked_widget->addWidget(Cloud_widget);
     statked_widget->addWidget(exprot_widget);
     statked_widget->addWidget(alarmwidget);
@@ -85,11 +84,11 @@ void MainWidget::turnPage(int current_page)
 {
     if(current_page == 0)
     {
-        statked_widget->setCurrentWidget(Cloud_widget);
+         statked_widget->setCurrentWidget(Cloud_widget);
     }
     else if(current_page == 1)
     {   
-          statked_widget->setCurrentWidget(alarmwidget);
+         statked_widget->setCurrentWidget(alarmwidget);
     }
     else
     {
@@ -104,6 +103,7 @@ void MainWidget::showMainMenu()
     p.setX(p.x() - 60);
     p.setY(p.y() + 30);
     main_menu->exec(this->mapToGlobal(p));
+
 }
 void MainWidget::showLoginDialog()
 {
@@ -151,6 +151,7 @@ void MainWidget::mouseMoveEvent(QMouseEvent *event)
         QPoint move_pos = event->globalPos();
         move(move_pos - move_point);
     }
+
 }
 
 void MainWidget::setAlarmstatus(int id)

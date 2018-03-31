@@ -59,7 +59,6 @@ SettingDialog::SettingDialog(QWidget *parent)
     pictimeConfig=new QLineEdit();
     pictimeConfig->setFixedHeight(25);
 
-
     QSettings file("db.ini",QSettings::IniFormat);
     dbserverip->setText(file.value("database/ip").toString());
     dbport->setText(file.value("database/port").toString());
@@ -143,7 +142,6 @@ SettingDialog::SettingDialog(QWidget *parent)
     grid_layout1->setHorizontalSpacing(10);
     grid_layout1->setVerticalSpacing(5);
     ftpconfigBox->setLayout(grid_layout1);
-
 
     QHBoxLayout *pictime=new QHBoxLayout();
     pictime->addWidget(pictimeConfigL);

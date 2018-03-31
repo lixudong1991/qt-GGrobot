@@ -55,7 +55,6 @@ CloudWidget::CloudWidget(QWidget *parent) :
     NET_DVR_SetConnectTime(2000, 1);
     NET_DVR_SetReconnect(10000, true);
     NetDev_Init();
-
     //初始化sdk
     if(!SHOWIMAGE_Init())
     {
@@ -251,7 +250,6 @@ void CloudWidget::right_groupinit()
 
     cloudSpeed=new QComboBox();
 
-
     downima=new ExportDownima(this);
 
     for(int i=1;i<8;i++)
@@ -322,7 +320,6 @@ void CloudWidget::right_groupinit()
     connect(inspecting_special,SIGNAL(clicked(bool)),this,SLOT(inspecting_special_Click()));
 
     connect(cardsW,SIGNAL(checkCards(QList<int>*)),this,SLOT(inspect_send(QList<int>*)));
-
  }
  /***********************************************************************************
  函数名:    	 posinit
@@ -474,6 +471,7 @@ void CloudWidget::log_bt_slot()
 ************************************************************************************/
 void CloudWidget::initTerminal()
 {
+        deviceid->clear();
         for(const Userterminal &userdevice: *userDevices)
         {
             deviceid->addItem(userdevice.getTerminalId());
@@ -613,7 +611,7 @@ void CloudWidget::setLabelIma(Substationdata* dat,QList<int>*is)
             }
         }
        delete  img;
-      QFile(FILECACHEPATH+dat->getPictureName()).remove();
+       QFile(FILECACHEPATH+dat->getPictureName()).remove();
        if(it!=p->cend())
        {
            postr=it.value()->getPosName();
@@ -815,7 +813,6 @@ void CloudWidget::cloudCtrl_down_left_press()
 void CloudWidget::cloudCtrl_down_right_press()
 {
     PTZControlAll(lPlayHandle,DOWN_RIGHT,0,iPTZSpeed);
-
 }
 /***********************************************************************************
 函数名:    	 cloudCtrl_up_right_press
@@ -1020,8 +1017,8 @@ void  CloudWidget::opencloudClick()
             return;
         }
         hWnd =(HWND)cloudL->winId() ;
-            //获取窗口句柄
-         NET_DVR_PREVIEWINFO struPlayInfo = {0};
+
+         NET_DVR_PREVIEWINFO struPlayInfo = {0}; //获取窗口句柄
          struPlayInfo.lChannel= DwStartDChan+1 ;       //预览通道号
          struPlayInfo.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
          struPlayInfo.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
@@ -1089,6 +1086,7 @@ bool CloudWidget::startGray()
     {
         return false;
     }
+
     //连接设备
     QString grayIp=term->getInfraredIp();
     m_sRealHandle = NetDev_Connect(const_cast<char*>(grayIp.toStdString().c_str()),CONNECT_TYPE_ULIRNET);   //
@@ -1096,12 +1094,14 @@ bool CloudWidget::startGray()
     {
         return false;
     }
+
     //开始获取实时数据  ,TI35、TI65系列设备
     BOOL ret = NetDev_StartRealStream(m_sRealHandle,STREAM_TYPE_GRAYDATA);
     if(ret == FALSE)
     {
         return false;
     }
+
     //设置实时数据回调  TI35、TI65系列设备
     NetDev_SetRealStreamCallBack(m_sRealHandle,funRealStream,(DWORD)this);
     return true;
@@ -1282,7 +1282,7 @@ bool CloudWidget::event(QEvent *et)
 函数描述:	 云台jpeg图像抓取
 输入参数:
 输出参数:
- 返回值:
+返回值:
 ************************************************************************************/
 void  CloudWidget::cloudCapture_click()
 {
@@ -1311,20 +1311,20 @@ void  CloudWidget::cloudCapture_click()
 ************************************************************************************/
 void CloudWidget::setInspectingStatus(QString cmd)
  {
-//    if(cmd==STATUS_TEXUN)
-//    {
-//          cardsW->setMsginfo(4);
-//    }else{
-//     inspecting_Pause_Continue->setEnabled(true);
-//     inspecting_Start_Stop->setEnabled(true);
-//     inspecting_special->setEnabled(true);
-//     downima->loadingStart(false,"");
-//     QMessageBox::information(this,CH("提示 "),CH("发送命令失败"));
-//    }
-    inspecting_Pause_Continue->setEnabled(true);
+        inspecting_Pause_Continue->setEnabled(true);
         inspecting_Start_Stop->setEnabled(true);
         inspecting_special->setEnabled(true);
         downima->loadingStart(false,"");
+        if(cmd=="error")
+        {
+            return;
+        }
+        if(cmd==STATUS_TEXUN)
+        {
+            cmdStatus(15,0);
+        }else{
+            cmdStatus(1,0);
+        }
  }
 /***********************************************************************************
  函数名:    	 inspecting_Start_StopClick
@@ -1339,13 +1339,13 @@ void CloudWidget::inspecting_Start_StopClick(){
         inspecting_Pause_Continue->setEnabled(false);
         inspecting_Start_Stop->setEnabled(false);
         inspecting_special->setEnabled(false);
-        if( cmdStart_Stop == 0 ){        
+        if( cmdStart_Stop == 0 )
+        {
             sportT.iceSendCommand(STATUS_STARTAUTO);
             downima->loadingStart(true,CH("开始自动巡检"));
         }
         else
         {
-
             sportT.iceSendCommand(STATUS_QUICKBACK);
             downima->loadingStart(true,CH("快速返航"));
         }      
@@ -1368,25 +1368,18 @@ void CloudWidget::inspecting_Pause_ContinueClick()
         inspecting_special->setEnabled(false);
         if(cmdPause_Continue==0)
         {
-
             sportT.iceSendCommand(STATUS_PAUSEAUTO);
             downima->loadingStart(true,CH("暂停自动巡检"));
-
         }
         else
         {
-
             sportT.iceSendCommand(STATUS_CONTINUEAUTO);
-             downima->loadingStart(true,CH("继续自动巡检"));
+            downima->loadingStart(true,CH("继续自动巡检"));
         }
     }
 }
 void CloudWidget::inspecting_special_Click()
 {
-//    if(sportT.isRunning())
-//    {
-//        sportT.iceSendCommand(STATUS_TEXUN,"2022,2032,2041,2052,2062");
-//    }
     cardsW->show();
 }
 void CloudWidget::inspect_send(QList<int> *l)
@@ -1402,7 +1395,7 @@ void CloudWidget::inspect_send(QList<int> *l)
             if(sportT.isRunning())
              {
                     sportT.iceSendCommand(STATUS_TEXUN,cardsstr);
-                     LOGI("checkcard:"<<cardsstr.toStdString());
+                    LOGI("checkcard:"<<cardsstr.toStdString());
              }
         }
 }

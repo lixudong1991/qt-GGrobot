@@ -135,6 +135,7 @@ void TitleWidget::flashTimeout()
     if(sec==10)
     {
          PlaySound(NULL, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+         sec=1;
     }
     normal=!normal;
     sec++;
