@@ -30,9 +30,9 @@ TitleWidget::TitleWidget(QWidget *parent) :
     string_list<<":/qss/content"<<":/qss/alarm"<<":/qss/export";
     QHBoxLayout *button_layout = new QHBoxLayout();
 
-    QSignalMapper *signal_mapper = new QSignalMapper(this);
-    for(int i=0; i<string_list.size(); i++)
-    {
+    QSignalMapper  *signal_mapper = new QSignalMapper(this);
+     for(int i=0; i<string_list.size(); i++)
+     {
         ToolButton *tool_button = new ToolButton(string_list.at(i));
         button_list.append(tool_button);
         connect(tool_button, SIGNAL(clicked()), signal_mapper, SLOT(map()));
@@ -59,8 +59,10 @@ TitleWidget::TitleWidget(QWidget *parent) :
 
     flashTime=new QTimer;
     connect(flashTime,SIGNAL(timeout()),this,SLOT(flashTimeout()));
+    muic=new QTimer;
+    connect(muic,SIGNAL(timeout()),this,SLOT( muicTimeout()));
 }
-static BOOL MByteToWChar(LPCSTR lpcszStr, LPWSTR lpwszStr, DWORD dwSize)
+static BOOL MByteToWChar(LPCSTR lpcszStr, LPWSTR lpwszStr, DWORD)
 {
     // Get the required size of the buffer that receives the Unicode
     // string.
@@ -111,6 +113,7 @@ void TitleWidget::setAlarmBackground(bool b)
     if(b)
     {
         flashTime->start(500);
+        muic->start(500);
         std::string s = "alarm.wav";
         wchar_t wText[30] = { 0 };
         MByteToWChar(s.c_str(), wText, sizeof(wText) / sizeof(wText[0]));
@@ -125,21 +128,25 @@ void TitleWidget::setAlarmBackground(bool b)
 void TitleWidget::flashTimeout()
 {
     static bool normal=true;
-    static int sec=1;
     if(normal)
     {
         button_list.at(1)->setIcon(QIcon(":/qss/repair"));
     }else{
         button_list.at(1)->setIcon(QIcon(":/qss/alarm"));
     }
+    normal=!normal;   
+}
+void TitleWidget::muicTimeout()
+{
+    sec++;
     if(sec==10)
     {
          PlaySound(NULL, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-         sec=1;
+         muic->stop();
+         sec=0;
     }
-    normal=!normal;
-    sec++;
 }
+
 void TitleWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);

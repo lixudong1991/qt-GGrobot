@@ -57,6 +57,14 @@ public:
              {
                 robotStatus=i;
              }
+             void setRobotWorkMode(const QString & i)
+             {
+                robotWorkMode=i;
+             }
+             void setStatsTime(const QString & i)
+             {
+                statsTime=i;
+             }
 private:
             QString terminalId;
             QString reportTime;
@@ -65,10 +73,12 @@ private:
             QString datatype;
             QString data;
             int w,h;
+            QString statsTime;
             QString electricitys;
             QString voltage;
             QString electricResidue;
             QString robotStatus;
+            QString robotWorkMode;
  };
 
 #endif // INFOWIDGET_H

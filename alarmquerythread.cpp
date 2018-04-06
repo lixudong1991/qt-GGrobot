@@ -35,25 +35,6 @@ void AlarmQueryThread::run()
     bool tem=false;
     mutex.lock();
     tem=query.exec(sql);
-    if(!tem)
-    {
-        LOGE("execute sql  : "<<sql.toStdString()<<" error:  "<<query.lastError().text().toStdString());
-        QSettings ftpconfig("db.ini",QSettings::IniFormat);
-        QSqlDatabase db=QSqlDatabase::addDatabase("QMYSQL");
-        db.setHostName(ftpconfig.value("database/ip").toString());
-        db.setPort(ftpconfig.value("database/port").toInt());
-        db.setUserName(ftpconfig.value("database/user").toString());
-        db.setPassword(ftpconfig.value("database/pwd").toString());
-        db.setDatabaseName(ftpconfig.value("database/db").toString());
-        if(!db.open())
-         {
-             LOGE("重新创建数据库连接失败 AlarmQueryThread exit");
-             mutex.unlock();
-             return;
-         }
-         LOGE("重新创建数据库连接成功");
-         tem=query.exec(sql);
-    }
     mutex.unlock();
     if(tem)
     {

@@ -31,7 +31,7 @@ void FtpManager::get(const QString &fileName)
     connect(pReply, SIGNAL(finished()), this, SLOT(finished()));
     connect(pReply, SIGNAL(downloadProgress(qint64, qint64)), this, SIGNAL(downloadProgress(qint64, qint64)));
     connect(pReply, SIGNAL(error(QNetworkReply::NetworkError)), this,SIGNAL(error(QNetworkReply::NetworkError)));
-
+    LOGI("Ftpmanager get file"<<name.toStdString());
 }
 
 // 下载过程中写文件
@@ -40,20 +40,19 @@ void FtpManager::finished()
     QNetworkReply *pReply = qobject_cast<QNetworkReply *>(sender());
     switch (pReply->error())
     {
-    case QNetworkReply::NoError :
-    {
-        m_file.open(QIODevice::WriteOnly | QIODevice::Append);
-        m_file.write(pReply->readAll());
-        m_file.flush();
-        m_file.close();
-        LOGI("Ftpmanager emit finishe:"<<name.toStdString());
-    }
+        case QNetworkReply::NoError :
+        {
+           m_file.open(QIODevice::WriteOnly | QIODevice::Append);
+           m_file.write(pReply->readAll());
+           m_file.flush();
+           m_file.close();
+           LOGI("Ftpmanager emit finishe:"<<name.toStdString());
+        }
         break;
     default:
         LOGE("QNetworkReply::Error:"<<pReply->error());
         break;
     } 
-
     emit finishe(name);
     pReply->deleteLater();   
 }

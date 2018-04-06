@@ -1,4 +1,4 @@
-#include "thread.h"
+ #include "thread.h"
 #include <QSqlError>
 Thread::Thread()
 {
@@ -46,24 +46,6 @@ void  Thread::run()
        bool tem=false;
        mutex.lock();
        tem=query.exec(statussql);
-       if(!tem)
-       {
-           QSqlDatabase db=QSqlDatabase::addDatabase("QMYSQL");
-           db.setHostName(ftpconfig.value("database/ip").toString());
-           db.setPort(ftpconfig.value("database/port").toInt());
-           db.setUserName(ftpconfig.value("database/user").toString());
-           db.setPassword(ftpconfig.value("database/pwd").toString());
-           db.setDatabaseName(ftpconfig.value("database/db").toString());
-           if(!db.open())
-            {
-                mutex.unlock();
-                LOGE("重新创建数据库连接失败 thread1 exit");
-                emit queryErr();
-                return;
-            }
-            tem=query.exec(statussql);
-            LOGE("重新创建数据库连接成功");
-       }
        mutex.unlock();
        data.setDataId(-1);
        StatusData *statu=data.getRobotStatus();
@@ -82,24 +64,28 @@ void  Thread::run()
             statu->setElectricitys(query.value(4).toInt());
             statu->setVoltage(query.value(5).toInt());
             statu->setElectricResidue(query.value(6).toInt());
-            statu->setRobotStatus(query.value(7).toInt());
-            statu->setRadarFront(query.value(8).toInt());
-            statu->setMagnetismFront(query.value(9).toInt());
-            statu->setMagnetismBack(query.value(10).toInt());
-            statu->setCardReader(query.value(11).toInt());
-            statu->setAutoDoor(query.value(12).toInt());
-            statu->setCharger(query.value(13).toInt());
+            statu->setRobotWorkMode(query.value(7).toInt());
+            statu->setRobotStatus(query.value(8).toInt());
+            statu->setRadarFront(query.value(9).toInt());
+            statu->setMagnetismFront(query.value(10).toInt());
+            statu->setMagnetismBack(query.value(11).toInt());
+            statu->setCardReader(query.value(12).toInt());
+            statu->setAutoDoor(query.value(13).toInt());
+            statu->setCharger(query.value(14).toInt());
             data.setRobotStatus(statu);
        }
        query.prepare("SELECT * FROM tbl_substationdata WHERE terminalId=:id AND writeTime > (SELECT SUBDATE(NOW(),INTERVAL :time SECOND)) ORDER BY writeTime DESC");
        query.bindValue(":id",terminalId);
-       query.bindValue(":time",QString::number(time+1));
+       query.bindValue(":time",QString::number(time+2));
        mutex.lock();
        tem=query.exec();
        mutex.unlock();
        if(!tem)
        {
              LOGE("execute select sql error : "<<query.lastError().text().toStdString());
+             timer->stop();
+             emit queryErr();
+             return;
        }
        if(tem&&query.next())
        {
@@ -144,6 +130,7 @@ void  Thread::run()
            }
            if(data.getPos()>=2000)
            {
+               LOGI("FtpManager begin download file : "<<data.getPictureName().toStdString());
                FtpManager ftpmanager;
                ftpmanager.setHostPort(ftpip, ftpport);
                ftpmanager.setUserInfo(ftpuser, ftppwd);
@@ -161,10 +148,10 @@ void  Thread::run()
        {
            emit finish(&data,&ids);
            exec();
+           LOGI("thread1 scanner image：null");
        }
    }
     LOGI("thread1 exit");
-
 }
 void  Thread::download()
 {

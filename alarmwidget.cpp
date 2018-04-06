@@ -7,6 +7,8 @@ AlarmWidget::AlarmWidget(QWidget *parent) :
     initPanal();
     initLayout();
     initsolts();
+    LOGI("alarmdownthread start------------------------------------->");
+    downt.start();
 }
 
 AlarmWidget::~AlarmWidget()
@@ -63,7 +65,6 @@ void AlarmWidget::initPanal()
  void AlarmWidget::initLayout()
  {
     QHBoxLayout *mainhl=new QHBoxLayout(this);
-
     QVBoxLayout *leftLa=new QVBoxLayout();
     QVBoxLayout *rightLa=new QVBoxLayout();
     mainhl->addLayout(leftLa);
@@ -113,14 +114,13 @@ void AlarmWidget::initPanal()
  }
 void AlarmWidget::initDevices()
 {
-    deviceId->clear();
+    LOGI("AlarmWidget init");
     for(const Userterminal &userdevice: *userDevices)
     {
         deviceId->addItem(userdevice.getTerminalId());
     }
-    LOGI("alarmdownthread start------------------------------------->");   
-    deviceIdchange(deviceId->currentIndex());
-    downt.start();
+   connect(deviceId,SIGNAL(currentIndexChanged(int)),this,SLOT(deviceIdchange(int)));
+   deviceIdchange(deviceId->currentIndex());
 }
 void AlarmWidget::setLabelSize(int w,int h)
 {
@@ -141,6 +141,7 @@ void AlarmWidget::deviceIdchange(int i)
     selectbt->setEnabled(true);
     exportbt->setEnabled(true);
     term=&(userDevices->at(i));
+     LOGI("select : "<<term->getTerminalId().toStdString());
     queryt.preinstallPointMap=term->getPointInfo();
 }
 
@@ -195,7 +196,6 @@ void AlarmWidget::initsolts()
     connect(selectall,SIGNAL(stateChanged(int)),this,SLOT(checkAll(int)));
     connect(&updatet,SIGNAL(updatastatus(int)),this,SLOT(updateStatus(int)));
     connect(managebt,SIGNAL(clicked(bool)),this,SLOT(managebt_click()));
-    connect(deviceId,SIGNAL(currentIndexChanged(int)),SLOT(deviceIdchange(int)));
     connect(downima,SIGNAL(error()),this,SLOT(loadingtimeout()));
 }
 void AlarmWidget::loadingtimeout()
@@ -376,3 +376,13 @@ void AlarmWidget::setCurrentDevice(int i)
     selectbt->setEnabled(false);
     exportbt->setEnabled(false);
 }
+ void AlarmWidget::netError()
+ {
+     selectbt->setEnabled(false);
+     exportbt->setEnabled(false);
+     dataTable->clearContents();
+     LOGI("AlarmWidget neterr1");
+     disconnect(deviceId,SIGNAL(currentIndexChanged(int)),this,SLOT(deviceIdchange(int)));
+     deviceId->clear();
+    LOGI("AlarmWidget neterr");
+ }

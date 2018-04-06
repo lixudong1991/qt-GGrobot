@@ -17,15 +17,13 @@ LoginThread::~LoginThread()
 ************************************************************************************/
 void LoginThread::run()
 {
-    if(!con)
+     LOGI("LoginThread run");
+     if(!createDbConnect())
     {
-        if(!createDbConnect())
-        {
-            emit logstatus(-1);
-            return;
-        }
-        con=true;
-    }
+           emit logstatus(-1);
+           return;
+     }
+
     QSqlQuery query;
     query.prepare("select userid from tbl_users where userName=:user and userPwd=:pwd");
     query.bindValue(":user",user);
@@ -33,6 +31,7 @@ void LoginThread::run()
     bool tem=false;
     mutex.lock();
     tem=query.exec();
+    userDevices->clear();
     mutex.unlock();
     if(tem&&query.next())
     {
@@ -64,10 +63,13 @@ void LoginThread::run()
             userDevices->append(userdevice);
         }
         emit logstatus(userid);
+        LOGI("Login success");
     }
     else{
         emit logstatus(-1);
+        LOGI("Login error");
     }
+    LOGI("LoginThread exit");
 }
 bool LoginThread::createDbConnect()
 {
@@ -86,7 +88,7 @@ bool LoginThread::createDbConnect()
 void  LoginThread::alarmTempSave(Userterminal* term)
 {
     QString fileName="map/"+term->getTerminalId()+".csv";
-    LOGI("AlarmTemp load :"<< fileName.toStdString());
+    LOGI("AlarmTemp load file :"<< fileName.toStdString());
      if(fileName.isEmpty())
      {
          return;

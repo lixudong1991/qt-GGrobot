@@ -67,7 +67,9 @@ SOURCES += main.cpp\
     statusdata.cpp \
     icecommunicatorfactory.cpp \
     sportreceiveicethread.cpp \
-    inspectingcardw.cpp
+    inspectingcardw.cpp \
+    widget.cpp \
+    loginwidget.cpp
 
 HEADERS  += dialog.h \
     head.h \
@@ -116,7 +118,9 @@ HEADERS  += dialog.h \
     statusdata.h \
     icecommunicatorfactory.h \
     sportreceiveicethread.h \
-    inspectingcardw.h
+    inspectingcardw.h \
+    widget.h \
+    loginwidget.h
 
 
 INCLUDEPATH +=C:/ZeroC/Ice-3.6.3/include

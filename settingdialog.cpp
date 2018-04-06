@@ -265,8 +265,6 @@ SettingDialog::~SettingDialog()
          sets.setValue("refurbishtime",pictimeConfig->text());
          sets.endGroup();
          hide();
-         box->setInfo(CH("提示信息"),CH("保存成功") , QPixmap(":/loginDialog/attention"), true);
-         box->exec();
          close();
  }
  void SettingDialog::paintEvent(QPaintEvent *event)

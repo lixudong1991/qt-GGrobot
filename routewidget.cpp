@@ -24,15 +24,14 @@ void RouteWidget::setBackImg(int w ,int h,const QString &map)
     palette.setBrush(QPalette::Window,
             QBrush(QPixmap(QString("map/")+map+".png").scaled(QSize(w,h),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)));             // 使用平滑的缩放方式
     this->setPalette(palette); 
-    afterPoints.clear();
-    points.clear();
     flashTime->stop();
     flashstatus=true;
     wid=w;
     hei=h;
     r=h*0.01;
+    points.clear();
     parseXML(QString("map/")+map+".xml");
-    fristPiontId=points.keys().first();
+    fristPiontId=points .keys().first();
     update();
 }
 
@@ -109,10 +108,12 @@ void RouteWidget::paintEvent(QPaintEvent*)
         {
             afterPoints.clear();
         }else{
-           for(int i=0;i<ids->size();i++)
-           {
-              afterPoints.append(ids->at(i));
-           }
+            if(ids!=NULL){
+                 for(int i=0;i<ids->size();i++)
+                  {
+                     afterPoints.append(ids->at(i));
+                   }
+            }
         }
         QMap<int,QPointF>::iterator mi;
         mi=points.find(pointid);

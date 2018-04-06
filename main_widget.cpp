@@ -6,44 +6,31 @@ MainWidget::MainWidget(QWidget *parent)
 
     setWindowFlags(Qt::FramelessWindowHint);
  //   setAttribute(Qt::WA_TranslucentBackground);
-    setAttribute(Qt::WA_NoBackground);
-    setWindowIcon(QIcon(":/qss/wall"));
-    mouse_press = false;
+//    setAttribute(Qt::WA_NoBackground);
+  //  setWindowIcon(QIcon(":/qss/wall"));
     title_widget=new TitleWidget();
 
     QDesktopWidget *d=QApplication::desktop();
     QRect sc=d->screenGeometry();
     setFixedSize(sc.width(),sc.height());
 
-    userDevices=new QList<Userterminal>();
-
     statked_widget = new QStackedWidget();
 
     Cloud_widget=new CloudWidget();
-    Cloud_widget->setUserDevices(userDevices);
+
     exprot_widget=new ExportWidget();
-    exprot_widget->setUserDevices(userDevices);
-
     alarmwidget=new AlarmWidget();
-    alarmwidget->setUserDevices(userDevices);
-
-    login_dialog=new LoginDialog();
-    login_dialog->setTreadDevices(userDevices);
 
     main_menu=new MainMenu();
 
     connect(title_widget, SIGNAL(showMainMenu()), this, SLOT(showMainMenu()));
-    connect(title_widget, SIGNAL(closeWidget()), this, SLOT(close()));
-    connect(title_widget, SIGNAL(showMin()), this, SLOT(showMinimized()));
+    connect(title_widget, SIGNAL(closeWidget()), this, SIGNAL(exitMain()));
+    connect(title_widget, SIGNAL(showMin()), this, SIGNAL(showMin()));
     connect(title_widget, SIGNAL(turnPage(int)), this, SLOT(turnPage(int)));
 
-    connect(main_menu, SIGNAL(showlogindia()), this, SLOT(showLoginDialog()));
-    connect(main_menu, SIGNAL(showdbset()), this, SLOT(showSettingDialog()));
     connect(main_menu, SIGNAL(showdbManage()), this, SLOT(showdbManage()));
 
-    connect(login_dialog,SIGNAL(doLogin()),this,SLOT(doLog()));
-
-    connect(Cloud_widget,SIGNAL(exitprocess()),this,SLOT(close()));
+    connect(Cloud_widget,SIGNAL(exitprocess()),this,SLOT(neterror()));
     connect(Cloud_widget,SIGNAL(haveAlarm(int)),this,SLOT(setAlarmstatus(int)));
     connect(alarmwidget,SIGNAL(noAlarm()),this,SLOT(resetAlarmstatus()));
 
@@ -78,7 +65,6 @@ MainWidget::MainWidget(QWidget *parent)
 
 MainWidget::~MainWidget()
 {
-    delete userDevices;
 }
 void MainWidget::turnPage(int current_page)
 {
@@ -107,52 +93,31 @@ void MainWidget::showMainMenu()
 }
 void MainWidget::showLoginDialog()
 {
-    login_dialog->exec();
+    //login_dialog->exec();
 }
 void MainWidget::showSettingDialog()
 {
-    SettingDialog dbsetting;
-    dbsetting.exec();
+  //  SettingDialog dbsetting;
+   // dbsetting.exec();
 }
 void MainWidget::showdbManage()
 {
     QProcess *dbMangerProcess = new QProcess(this);
     dbMangerProcess ->start("WallRegister.exe");
 }
-
 void MainWidget::doLog()
 {
    Cloud_widget->initTerminal();
    exprot_widget->initData();
    alarmwidget->initDevices();
 }
-
-void MainWidget::mousePressEvent(QMouseEvent *event)
+void  MainWidget::setUserDevice(QList<Userterminal> * devices)
 {
-    //只能是鼠标左键移动和改变大小
-    if(event->button() == Qt::LeftButton)
-    {
-        mouse_press = true;
-    }
-    //窗口移动距离
-    move_point = event->globalPos() - pos();
-}
+         Cloud_widget->setUserDevices(devices);
+         exprot_widget->setUserDevices(devices);
+         alarmwidget->setUserDevices(devices);
+ }
 
-void MainWidget::mouseReleaseEvent(QMouseEvent *)
-{
-    mouse_press = false;
-}
-
-void MainWidget::mouseMoveEvent(QMouseEvent *event)
-{
-    //移动窗口
-    if(mouse_press)
-    {
-        QPoint move_pos = event->globalPos();
-        move(move_pos - move_point);
-    }
-
-}
 
 void MainWidget::setAlarmstatus(int id)
 {
@@ -163,4 +128,11 @@ void MainWidget::setAlarmstatus(int id)
 void MainWidget::resetAlarmstatus()
 {
      title_widget->setAlarmBackground(false);
+}
+void MainWidget::neterror()
+{
+    exprot_widget->netError();
+    alarmwidget->netError();
+    emit netErr();
+    LOGI("MainWidget neterr");
 }

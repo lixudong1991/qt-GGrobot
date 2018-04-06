@@ -51,5 +51,7 @@
 		<file alias="alarm">style/alarm.png</file>
 		<file alias="repair">style/repair.png</file>
 		<file alias="ba">style/ba.jpg</file>
+		<file alias="loginback">style/login.jpg</file>
+		<file alias="log">style/log.png</file>
     </qresource>
 </RCC>

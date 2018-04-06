@@ -23,6 +23,8 @@ ExportWidget::ExportWidget(QWidget *parent) :
     {
         dir.mkpath(EXPORTPATH);
     }
+    LOGI("exportdownthread start------------------------------------->");
+    downt.start();
 }
 ExportWidget::~ExportWidget()
 {
@@ -197,13 +199,14 @@ void ExportWidget::initPanal()
 ************************************************************************************/
 void ExportWidget::initData()
 {
+    LOGI("ExportWidget init");
+
     for(const Userterminal &userdevice: *userDevices)
     {
         deviceId->addItem(userdevice.getTerminalId());
     }
+    connect(deviceId,SIGNAL(currentIndexChanged(int)),this,SLOT(deviceIdchange(int)));
     deviceIdchange(deviceId->currentIndex());
-    LOGI("exportdownthread start------------------------------------->");
-    downt.start();
 }
 
 /***********************************************************************************
@@ -312,7 +315,6 @@ void ExportWidget::posSizeChange(QString s)
 ************************************************************************************/
 void ExportWidget::initsolts()
 {
-     connect(deviceId,SIGNAL(currentIndexChanged(int)),this,SLOT(deviceIdchange(int)));
      connect(exportbt,SIGNAL(clicked(bool)),SLOT(exportCsv()));
      connect(selectbt,SIGNAL(clicked(bool)),this,SLOT(selectData()));
      connect(&thr,SIGNAL(threadEnd(QMap<int,QList<Substationdata*>*>*)),this,SLOT(getDatamap(QMap<int,QList<Substationdata*>*>*)));
@@ -470,4 +472,16 @@ void ExportWidget::getDatamap(QMap<int,QList<Substationdata*>*>* v)
            connect(posbox,SIGNAL(currentIndexChanged(QString)),this,SLOT(posSizeChange(QString)));
            posSizeChange(posbox->currentText());
        }
+}
+void ExportWidget::netError()
+{
+     LOGI("ExportWidget neterr1");
+    disconnect(deviceId,SIGNAL(currentIndexChanged(int)),this,SLOT(deviceIdchange(int)));
+    deviceId->clear();
+    exportbt->setEnabled(false);
+    selectbt->setEnabled(false);
+    disconnect(posbox,SIGNAL(currentIndexChanged(QString)),this,SLOT(posSizeChange(QString)));
+    posbox->clear();
+    dataTable->clearContents();
+    LOGI("ExportWidget neterr");
 }

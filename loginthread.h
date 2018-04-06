@@ -20,7 +20,6 @@ private slots:
 protected:
     void run();
 public:
-   bool con=false;
    bool createDbConnect();
    QString ip;
    int port;

@@ -33,8 +33,8 @@ void Infowidget::paintEvent(QPaintEvent *)
     painter.fillPath(path, QBrush(Qt::black));
 
     painter.setPen(QPen(Qt::white, 2, Qt::SolidLine));
-    float weith=w*3/5;
-    float weith1=w*2/5;
+    float weith=w*4/7;
+    float weith1=w*3/7;
     painter.drawLine(weith,0,weith,h);
     painter.setPen(QPen(Qt::blue, 2, Qt::SolidLine));
     painter.setFont(QFont("Times",13,QFont::Black));
@@ -55,7 +55,7 @@ void Infowidget::paintEvent(QPaintEvent *)
     painter.drawText(QRectF(wei,hei*5/8+fonthei,weith*2/5,fonthei),Qt::AlignLeft,CH("检测类型:"));
     painter.drawText(QRectF(wei,hei*6/8+fonthei,weith*2/5,fonthei),Qt::AlignLeft,CH("数    据:"));
 
-    float we=weith/2-h*0.094;
+    float we=weith/2-h*0.1;
     painter.drawText(QRectF(we,hei/8+fonthei,weith*3/5,fonthei),Qt::AlignLeft,terminalId);
     painter.drawText(QRectF(we,hei*2/8+fonthei,weith*3/5,fonthei),Qt::AlignLeft,reportTime);
     painter.drawText(QRectF(we,hei*3/8+fonthei,weith*3/5,fonthei),Qt::AlignLeft,pos);
@@ -77,17 +77,21 @@ void Infowidget::paintEvent(QPaintEvent *)
 //    painter.drawText(QRectF(wei1,hei*9/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("地标读卡器:"));
 //    painter.drawText(QRectF(wei1,hei*10/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("自动门状态:"));
 //    painter.drawText(QRectF(wei1,hei*11/13+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("充电器状态: "));
-      float wei1=weith+weith1/6;
-      float fonthei1=fonthei*1.5;
-      painter.drawText(QRectF(wei1,hei/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电  流:"));
-      painter.drawText(QRectF(wei1,hei*2/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电  压:"));
-      painter.drawText(QRectF(wei1,hei*3/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电  量:"));
-      painter.drawText(QRectF(wei1,hei*4/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("状  态:"));
+      float wei1=weith+weith1/14;
+      float fonthei1=fonthei;
+      painter.drawText(QRectF(wei1,hei/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("上报时间:"));
+      painter.drawText(QRectF(wei1,hei*2/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电池电流:"));
+      painter.drawText(QRectF(wei1,hei*3/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电池电压:"));
+      painter.drawText(QRectF(wei1,hei*4/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("电池电量:"));
+      painter.drawText(QRectF(wei1,hei*5/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("工作模式:"));
+      painter.drawText(QRectF(wei1,hei*6/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,CH("当前状态:"));
 
-       float we1=weith+weith1/2;
-      painter.drawText(QRectF(we1,hei/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,electricitys);
-      painter.drawText(QRectF(we1,hei*2/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,voltage);
-      painter.drawText(QRectF(we1,hei*3/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,electricResidue);
-      painter.drawText(QRectF(we1,hei*4/6+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft, robotStatus);
+       float we1=weith+weith1/2-weith1/6;
+      painter.drawText(QRectF(we1,hei/8+fonthei1,weith,fonthei1),Qt::AlignLeft,statsTime);
+      painter.drawText(QRectF(we1,hei*2/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,electricitys);
+      painter.drawText(QRectF(we1,hei*3/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,voltage);
+      painter.drawText(QRectF(we1,hei*4/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft,electricResidue);
+      painter.drawText(QRectF(we1,hei*5/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft, robotWorkMode);
+      painter.drawText(QRectF(we1,hei*6/8+fonthei1,weith*2/5,fonthei1),Qt::AlignLeft, robotStatus);
 
 }

@@ -62,6 +62,14 @@ public:
     {
         return electricResidue;
     }
+    inline void setRobotWorkMode(int i)
+    {
+       robotWorkMode=i;
+    }
+   inline  int getRobotWorkMode()const
+    {
+        return robotWorkMode;
+    }
     inline void setRobotStatus(int i)
     {
        robotStatus=i;
@@ -134,6 +142,7 @@ private:
     int electricitys ;
     int voltage ;
     int electricResidue  ;
+    int robotWorkMode;
     int robotStatus;
     int radarFront;
     int radarBack;

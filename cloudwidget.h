@@ -31,12 +31,11 @@ public:
 
 
      void PushRealData(DWORD dwDataType,char *pDataBuffer,DWORD dwDataSize);
-public slots:
+private slots:
     void log_bt_slot();
     void opencloudClick();
     void deviceidChange(int);
     void setLabelIma(Substationdata*,QList<int>*);
-    void querError();
 
     void cloudCtrUp_press();
     void cloudCtrDown_press();
@@ -73,8 +72,12 @@ public slots:
 
     void infradautoFocus_click();
 
-    void inspecting_Start_StopClick();
-    void inspecting_Pause_ContinueClick();
+    void inspecting_StartClick();
+    void inspecting_StopClick();
+
+    void inspecting_PauseClick();
+    void inspecting_ContinueClick();
+
     void inspecting_special_Click();
 
     void setInspectingStatus(QString);
@@ -82,6 +85,7 @@ public slots:
     void inspect_send(QList<int> *);
 
     void cmdStatus(int,int);
+    void netErr();
 protected:
      void paintEvent(QPaintEvent *event);
      bool event(QEvent *et);
@@ -105,7 +109,6 @@ private:
     RouteWidget *positionL;
 
     Infowidget *infoL;
-
 
     QPushButton *opencloudw;
 
@@ -132,8 +135,11 @@ private:
     QPushButton *cloudnormalCamera_focalRight;
     QPushButton *infradautoFocus;
 
-    QPushButton *inspecting_Start_Stop;
-    QPushButton *inspecting_Pause_Continue;
+    QPushButton *inspecting_Start;
+    QPushButton *inspecting_Stop;
+    QPushButton *inspecting_Continue;
+    QPushButton *inspecting_Pause;
+
     QPushButton *inspecting_special;
 
     QPushButton *log_bt;
@@ -150,8 +156,6 @@ private:
     void posinit();
 
     void slotsinit();
-
-
 
     const QList<Userterminal> *userDevices;
     const Userterminal *term;
@@ -199,16 +203,20 @@ private:
 
     SportsCtrThread sportT;
     SportReceiveICEthread sportServerT;
-
-    int sportid=0;
-    int cmdStart_Stop=0;
-    int cmdPause_Continue=0;
-    enum RobotStatus{OFF=1,DEBUG,AUTO,SPECIAL,BACK};
+    enum RobotWorkMode{OFF=1,DEBUG,AUTO,SPECIAL,BACK};
+    QStringList robotStatus;
+    bool nete=false;
 
     ExportDownima *downima;
     InspectingCardW *cardsW;
     QList<int> cardsNum;
     void initCardsW();
+
+    bool isStart=false;
+    bool isBack=false;
+    bool isPause=false;
+    bool isContinue=false;
+    bool charge=false;
 };
 
 #endif // CLOUDWIDGET_H

@@ -1,9 +1,11 @@
  #include "logindialog.h"
 
 LoginDialog::LoginDialog(QWidget *parent)
-    : Dialog(parent)
+    : QDialog(parent)
 {
-    resize(280, 240);
+    resize(340, 230);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    setAttribute(Qt::WA_TranslucentBackground);
     loading_widget = new LoadingWidget(this);
     login_widget = new QWidget(this);
     title_wid= new QWidget(this);
@@ -22,18 +24,17 @@ LoginDialog::LoginDialog(QWidget *parent)
     login_stacked_layout->addWidget(logmsg);
     login_stacked_layout->setCurrentWidget(login_widget);
 
-
-
     QHBoxLayout *title_layout = new QHBoxLayout();
     title_layout->addWidget(title_wid);
     title_layout->setSpacing(0);
     title_layout->setContentsMargins(5, 5, 5, 5);
 
     QHBoxLayout *login_layout = new QHBoxLayout();
+     login_layout->addWidget(configbt);
     login_layout->addStretch();
     login_layout->addWidget(login_button);
     login_layout->setSpacing(0);
-    login_layout->setContentsMargins(0, 0, 20, 20);
+    login_layout->setContentsMargins(54, 12, 43, 18);
 
     QVBoxLayout *main_layout = new QVBoxLayout();
     main_layout->addLayout(title_layout);
@@ -44,17 +45,17 @@ LoginDialog::LoginDialog(QWidget *parent)
 
     connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
     connect(login_button, SIGNAL(clicked()), this, SLOT(verify()));
+    connect(configbt,SIGNAL(clicked(bool)),this,SIGNAL(showdbset()));
     connect(&logt,SIGNAL(logstatus(int)),this,SLOT(logstatus(int)));
     setLayout(main_layout);
     translateLanguage();
+    setStyleSheet("QWidget{border-top-left-radius:5px;border-top-right-radius:5px;border-bottom-left-radius:5px, border-bottom-right-radius:5px}");
 }
 LoginDialog::~LoginDialog()
 {
 }
 void LoginDialog::inittitlewid()
 {
-    title_label = new QLabel(CH("µÇÂ½"));
-    title_label->setAlignment(Qt::AlignBottom);
 
     close_button = new PushButton();
     close_button->setPicName(QString(":/sysButton/close"));
@@ -62,73 +63,47 @@ void LoginDialog::inittitlewid()
     QHBoxLayout *title_layout = new QHBoxLayout();
     QPalette pe;
     pe.setColor(QPalette::WindowText,Qt::white);
-    title_label->setPalette(pe);
-    title_layout->addWidget(title_label);
     title_layout->addStretch();
-    title_layout->addWidget(close_button);
+    title_layout->addWidget(close_button,0,Qt::AlignTop);
     title_layout->setSpacing(0);
-    title_layout->setContentsMargins(10, 0, 0, 10);
+    title_layout->setContentsMargins(0, 0, 0, 0);
 
-    QPalette pal;
-    pal.setColor(QPalette::Background, Qt::black);
-    title_wid->setAutoFillBackground(true);
-    title_wid->setPalette(pal);
-    title_wid->setFixedHeight(30);
+    title_wid->setFixedHeight(25);
     title_wid->setLayout(title_layout);
 }
 
 void LoginDialog::initloginwid()
 {
-    account_label = new QLabel();
-    password_label = new QLabel();
     login_button = new QPushButton();
+    configbt = new QPushButton();
 
     password_line_edit = new QLineEdit();
     remember_check_box = new QCheckBox();
-    auto_login_check_box = new QCheckBox();
 
-    account_combo_box = new QComboBox();
+    account_combo_box = new QLineEdit();
+    account_combo_box->setFont(QFont(tr("Microsoft YaHei"), 13));
+   // account_combo_box->setStyleSheet("background:rgba(255,0,0,0);border-radius:0px;");
     list_widget = new QListWidget();
-    account_combo_box->setModel(list_widget->model());
-    account_combo_box->setView(list_widget);
-    account_combo_box->setEditable(true);
-
-    account_label->setScaledContents(true);
-    password_label->setScaledContents(true);
-    account_label->setAlignment(Qt::AlignRight);
-    password_label->setAlignment(Qt::AlignRight);
     password_line_edit->setEchoMode(QLineEdit::Password);
+    //password_line_edit->setStyleSheet("background:rgba(255,0,0,0);border-radius:0px;");
+    account_combo_box->setFixedSize(208,25);
+    password_line_edit->setFixedSize(208,25);
 
-    account_combo_box->setFixedSize(190,25);
-    password_line_edit->setFixedSize(190,25);
-
-    login_button->setFixedSize(60, 25);
-
-
-    QHBoxLayout *h_layout = new QHBoxLayout();
-    h_layout->addWidget(remember_check_box);
-    h_layout->addStretch();
-    h_layout->setSpacing(40);
-    h_layout->setContentsMargins(0, 0, 0, 0);
-
-    QGridLayout *grid_layout = new QGridLayout();
-
-
-    grid_layout->addWidget(account_label, 0, 0);
-    grid_layout->addWidget(account_combo_box, 0, 1);
-    grid_layout->addWidget(password_label, 1, 0);
-    grid_layout->addWidget(password_line_edit, 1, 1);
-    grid_layout->addLayout(h_layout, 2, 1);
-    grid_layout->setHorizontalSpacing(5);
-    grid_layout->setVerticalSpacing(10);
-    grid_layout->setContentsMargins(10, 0, 0, 0);
+    login_button->setFixedSize(62, 30);
+    configbt->setFixedSize(62,30);
+    QVBoxLayout *grid_layout=new QVBoxLayout();
+    grid_layout->setSpacing(7);
+    grid_layout->addWidget(account_combo_box);
+    grid_layout->addWidget(password_line_edit);
+    grid_layout->addWidget(remember_check_box);
+    grid_layout->setContentsMargins(84, 4, 0, 0);
     login_widget->setLayout(grid_layout);
 
     QSettings sets("user.ini", QSettings::IniFormat);
     if(sets.contains("user/username")&& sets.contains("user/password"))
     {
         remember_check_box->setChecked(true);
-        account_combo_box->lineEdit()->setText(sets.value("user/username").toString());
+        account_combo_box->setText(sets.value("user/username").toString());
         password_line_edit->setText(sets.value("user/password").toString());
     }
     else
@@ -139,11 +114,8 @@ void LoginDialog::initloginwid()
 void LoginDialog::translateLanguage()
 {
     close_button->setToolTip(CH("¹Ø±Õ"));
-
-    account_label->setText(CH("ÓÃ»§Ãû:"));
-    password_label->setText(CH("ÃÜÂë:"));
-
     login_button->setText(CH("µÇÂ¼"));
+    configbt->setText(CH("ÅäÖÃ"));
     remember_check_box->setText(CH("¼Ç×¡ÃÜÂë"));
 }
 /***********************************************************************************
@@ -159,7 +131,7 @@ void LoginDialog::verify()
     if(remember_check_box->isChecked())
     {
         sets.beginGroup("user");
-        sets.setValue("username", account_combo_box->lineEdit()->text());
+        sets.setValue("username", account_combo_box->text());
         sets.setValue("password",password_line_edit->text() );
         sets.endGroup();
     }
@@ -174,9 +146,7 @@ void LoginDialog::verify()
             QMessageBox::critical(this,CH("´íÎó"),CH("ÇëÅäÖÃFTP·þÎñÆ÷ÐÅÏ¢"));
             return;
     }
-     if(!file.contains("database/ip")||
-        !file.contains("database/user")||
-        !file.contains("database/pwd")||
+     if(!file.contains("database/ip")|| !file.contains("database/user")|| !file.contains("database/pwd")||
         !file.contains("database/db"))
       {
             QMessageBox::critical(this,CH("´íÎó"),CH("ÇëÅäÖÃÊý¾Ý¿âÐÅÏ¢"));
@@ -206,11 +176,11 @@ void LoginDialog::verify()
          return;
      }
     QWidget *current_widget = login_stacked_layout->currentWidget();
-    if(current_widget != loading_widget)
+    if(current_widget == login_widget)
     {
         login_button->setText(CH("È¡Ïû"));
         login_stacked_layout->setCurrentWidget(loading_widget);
-        loading_widget->setAccount(account_combo_box->lineEdit()->text());      
+        loading_widget->setAccount(account_combo_box->text());
         loading_widget->start(true);     
 
             logt.ip=file.value("database/ip").toString();
@@ -218,14 +188,13 @@ void LoginDialog::verify()
             logt.username=file.value("database/user").toString();
             logt.password=file.value("database/pwd").toString();
             logt.dbna=file.value("database/db").toString();
-            logt.user=account_combo_box->lineEdit()->text();
-            logt.pwd=password_line_edit->text();
+            logt.user=username=account_combo_box->text();
+            logt.pwd=password=password_line_edit->text();
             logt.start();
     }
     else
     {
         login_button->setText(CH("µÇÂ¼"));
-        loading_widget->start(false);
         login_stacked_layout->setCurrentWidget(login_widget);
         if(logt.isRunning())
         {
@@ -244,18 +213,20 @@ void LoginDialog::verify()
 void LoginDialog::logstatus(int status)
 {
     loading_widget->start(false);
+    emit doLogin(status);
     if(status==-1)
     {
-          login_button->setHidden(true);
+          login_button->setText(CH("·µ»Ø"));
           msg->setText(CH("µÇÂ½Ê§°Ü"));
           login_stacked_layout->setCurrentWidget(logmsg);
           islog=false;
-          return;
+    }else
+    {
+          login_button->setEnabled(false);
+          islog=true;
+          close();
     }
-    emit doLogin();
-    login_button->setEnabled(false);
-    islog=true;
-    close();
+
 }
 
 void LoginDialog::closeEvent(QCloseEvent* e)
@@ -263,6 +234,23 @@ void LoginDialog::closeEvent(QCloseEvent* e)
     login_stacked_layout->setCurrentWidget(login_widget);
     login_button->setText(CH("µÇÂ¼"));
     login_button->setHidden(false);
+    if(!islog)
+    {
+        emit exitMain();
+    }
     e->accept();
 }
-
+ void LoginDialog::reLogin()
+ {
+    islog=false;
+    login_button->setEnabled(true);
+    login_stacked_layout->setCurrentWidget(login_widget);
+    verify();
+ }
+ void LoginDialog::paintEvent(QPaintEvent *)
+ {
+     QPainter painter(this);
+     painter.setPen(Qt::NoPen);
+     painter.setBrush(Qt::white);
+     painter.drawPixmap(QRect(0, 0, this->width(), this->height()), QPixmap(":/qss/log"));
+ }

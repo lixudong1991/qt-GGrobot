@@ -12,7 +12,17 @@ public:
     ~RouteWidget();
     void paintEvent(QPaintEvent*);
     void setBackImg(int w ,int h,const QString &);
+    void clearPoints()
+    {
+        afterPoints.clear();
+    }
+
     void startPoint(int pointid,QList<int>*);
+    int getFirstPoint()
+    {
+        return fristPiontId;
+    }
+
 private slots:
     void flashTimeout();
 private:

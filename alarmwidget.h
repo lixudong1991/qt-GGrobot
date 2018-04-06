@@ -23,6 +23,7 @@ public:
     void setLabelSize(int w,int h);
     void initDevices();
     void setCurrentDevice(int i);
+    void netError();
 signals:
     void noAlarm();
 private slots:

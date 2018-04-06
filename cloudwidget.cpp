@@ -61,6 +61,12 @@ CloudWidget::CloudWidget(QWidget *parent) :
           LOGE("SHOWIMAGE_Init() error");
     }
     //灰图显示sdk初始化
+    connect(&sportServerT,SIGNAL(comStatus(int,int)),this,SLOT(cmdStatus(int,int)));
+    connect(&sportT,SIGNAL(execComStatus(QString)),this,SLOT(setInspectingStatus(QString)));
+    sportServerT.start();
+    sportT.start();
+    connect(&t,SIGNAL(finish(Substationdata*,QList<int>*)),this,SLOT(setLabelIma(Substationdata*,QList<int>*)));
+    connect(&t,SIGNAL(queryErr()),this,SLOT(netErr()));
 }
 
 
@@ -215,8 +221,16 @@ void CloudWidget::posinit()
     right_cloudCtrl->setLayout(rightcloud);
 
     QVBoxLayout *rightpatrolView=new QVBoxLayout();
-    rightpatrolView->addWidget(inspecting_Start_Stop);
-    rightpatrolView->addWidget(inspecting_Pause_Continue);
+
+    QHBoxLayout *hbox=new QHBoxLayout();
+    QHBoxLayout *hbox1=new QHBoxLayout();
+    hbox->addWidget(inspecting_Start);
+    hbox->addWidget(inspecting_Stop);
+    hbox1->addWidget(inspecting_Pause);
+    hbox1->addWidget(inspecting_Continue);
+
+    rightpatrolView->addLayout(hbox);
+    rightpatrolView->addLayout(hbox1);
     rightpatrolView->addWidget(inspecting_special);
     right_patrolView->setLayout(rightpatrolView);
 }
@@ -261,15 +275,37 @@ void CloudWidget::right_groupinit()
     cloudnormalCamera_focalRight=new QPushButton(CH("缩"));
     infradautoFocus=new QPushButton(CH("自动"));
 
-    inspecting_Start_Stop=new QPushButton(CH("开始巡检"));
-    inspecting_Start_Stop->setEnabled(false);
-    inspecting_Pause_Continue=new QPushButton(CH("暂停巡检"));
-    inspecting_Pause_Continue->setEnabled(false);
+    inspecting_Start=new QPushButton(CH("开始巡检"));
+    inspecting_Start->setEnabled(false);
+
+    inspecting_Pause=new QPushButton(CH("暂停巡检"));
+    inspecting_Pause->setEnabled(false);
+
+    inspecting_Stop=new QPushButton(CH("快速返航"));
+    inspecting_Stop->setEnabled(false);
+    inspecting_Continue=new QPushButton(CH("继续巡检"));
+    inspecting_Continue->setEnabled(false);
+
     inspecting_special=new QPushButton(CH("特定巡检"));
     inspecting_special->setEnabled(false);
 
     cardsW=new InspectingCardW(this);
-
+    robotStatus.clear();
+    robotStatus.append(CH("起始点"));
+    robotStatus.append(CH("自巡行进"));
+    robotStatus.append(CH("自巡停止"));
+    robotStatus.append(CH("自巡暂停"));
+    robotStatus.append(CH("特巡行进"));
+    robotStatus.append(CH("特巡停止"));
+    robotStatus.append(CH("特巡暂停"));
+    robotStatus.append(CH("返航"));
+    robotStatus.append(CH("调试"));
+    robotStatus.append(CH("充电中"));
+    robotStatus.append(CH("机构异常"));
+    robotStatus.append(CH("遇障停止"));
+    robotStatus.append(CH("跑偏停止"));
+    robotStatus.append(CH("特巡"));
+    robotStatus.append(CH("自巡前充电"));
     slotsinit();
     setButtonstatus(false);
 }
@@ -282,6 +318,7 @@ void CloudWidget::right_groupinit()
 ************************************************************************************/
  void CloudWidget::slotsinit()
  {
+
     connect(log_bt,SIGNAL(clicked(bool)),this,SLOT(log_bt_slot()));
     connect(opencloudw,SIGNAL(clicked(bool)),this,SLOT(opencloudClick()));
     connect(cloudCapture,SIGNAL(clicked(bool)),this,SLOT(cloudCapture_click()));
@@ -309,14 +346,18 @@ void CloudWidget::right_groupinit()
     connect(cloudCtrl_down_left,SIGNAL(released()),this,SLOT(cloudCtrl_down_left_released()));
     connect(cloudCtrl_down_right,SIGNAL(released()),this,SLOT(cloudCtrl_down_right_released()));
 
-    connect( cloudnormalCamera_focalLeft,SIGNAL(pressed()),this,SLOT(cloudZoomLeft_press()));
-    connect( cloudnormalCamera_focalLeft,SIGNAL(released()),this,SLOT(cloudZoomLeft_released()));
-    connect( cloudnormalCamera_focalRight,SIGNAL(pressed()),this,SLOT(cloudZoomRight_press()));
-    connect( cloudnormalCamera_focalRight,SIGNAL(released()),this,SLOT(cloudZoomRight_released()));
+    connect(cloudnormalCamera_focalLeft,SIGNAL(pressed()),this,SLOT(cloudZoomLeft_press()));
+    connect(cloudnormalCamera_focalLeft,SIGNAL(released()),this,SLOT(cloudZoomLeft_released()));
+    connect(cloudnormalCamera_focalRight,SIGNAL(pressed()),this,SLOT(cloudZoomRight_press()));
+    connect(cloudnormalCamera_focalRight,SIGNAL(released()),this,SLOT(cloudZoomRight_released()));
     connect(infradautoFocus,SIGNAL(clicked(bool)),this,SLOT(infradautoFocus_click()));
 
-    connect(inspecting_Pause_Continue,SIGNAL(clicked(bool)),this,SLOT(inspecting_Pause_ContinueClick()));
-    connect(inspecting_Start_Stop,SIGNAL(clicked(bool)),this,SLOT(inspecting_Start_StopClick()));
+    connect(inspecting_Pause,SIGNAL(clicked(bool)),this,SLOT(inspecting_PauseClick()));
+    connect(inspecting_Continue,SIGNAL(clicked(bool)),this,SLOT(inspecting_ContinueClick()));
+
+    connect(inspecting_Start,SIGNAL(clicked(bool)),this,SLOT(inspecting_StartClick()));
+    connect(inspecting_Stop,SIGNAL(clicked(bool)),this,SLOT(inspecting_StopClick()));
+
     connect(inspecting_special,SIGNAL(clicked(bool)),this,SLOT(inspecting_special_Click()));
 
     connect(cardsW,SIGNAL(checkCards(QList<int>*)),this,SLOT(inspect_send(QList<int>*)));
@@ -471,33 +512,22 @@ void CloudWidget::log_bt_slot()
 ************************************************************************************/
 void CloudWidget::initTerminal()
 {
-        deviceid->clear();
         for(const Userterminal &userdevice: *userDevices)
-        {
-            deviceid->addItem(userdevice.getTerminalId());
-        }
+         {
+                deviceid->addItem(userdevice.getTerminalId());
+         }
         connect(deviceid,SIGNAL(currentIndexChanged(int)),this,SLOT(deviceidChange(int)));
-        connect(&t,SIGNAL(finish(Substationdata*,QList<int>*)),this,SLOT(setLabelIma(Substationdata*,QList<int>*)));
-        connect(&t,SIGNAL(queryErr()),this,SLOT(querError()));
         positionL->show();
         deviceidChange(deviceid->currentIndex());
         t.tStart();
-        connect(&sportServerT,SIGNAL(comStatus(int,int)),this,SLOT(cmdStatus(int,int)));
-        connect(&sportT,SIGNAL(execComStatus(QString)),this,SLOT(setInspectingStatus(QString)));
-        sportServerT.start();
-        sportT.start();
         infoL->show();
         log_bt->setEnabled(true);
         opencloudw->setEnabled(true);
-        inspecting_Start_Stop->setEnabled(true);
-        inspecting_Pause_Continue->setEnabled(true);
+        inspecting_Start->setEnabled(true);
+        inspecting_Stop->setEnabled(true);
+        inspecting_Pause->setEnabled(true);
+        inspecting_Continue->setEnabled(true);
         inspecting_special->setEnabled(true);
-}
-
-void CloudWidget::querError()
-{
-    QMessageBox::information(this,CH("错误"),CH("网络异常"));
-    emit exitprocess();
 }
 /***********************************************************************************
 函数名:    	 deviceidChange
@@ -507,9 +537,10 @@ void CloudWidget::querError()
 返回值:
 ************************************************************************************/
 void CloudWidget::deviceidChange(int i)
-{
+{  
     log_bt->setEnabled(true);
     term=&(userDevices->at(i));
+    LOGI("select deviceid: "<<term->getTerminalId().toStdString());
     t.setTerminalId(term->getTerminalId());
     QString terminIp=term->getTerminalIp();
     QString terminPort=term->getTerminalPort();
@@ -544,7 +575,14 @@ void CloudWidget::deviceidChange(int i)
     initCardsW();
     t.setPointInfo(term->getPointInfo());
     int width=w*0.868;
-    positionL->setBackImg((width-16)/2,h/2-12,userDevices->at(i).getTerminalId());
+    if(nete)
+    {
+      nete=false;
+      positionL->startPoint(0,NULL);
+    }else{
+       positionL->clearPoints();
+       positionL->setBackImg((width-16)/2,h/2-12,userDevices->at(i).getTerminalId());
+    }
 }
 /***********************************************************************************
 函数名:    	 setLabelIma
@@ -556,33 +594,65 @@ void CloudWidget::deviceidChange(int i)
 void CloudWidget::setLabelIma(Substationdata* dat,QList<int>*is)
 {
     StatusData *st=dat->getRobotStatus();
+    isStart=false;
+    isBack=false;
+    isPause=false;
+    isContinue=false;
+    charge=false;
     if(st!=nullptr)
     {
+        infoL->setStatsTime(st->getWriteTime());
         infoL->setElectricitys(QString::number(st->getElectricitys()*10)+" mA");
         infoL->setVoltage(QString::number(st->getVoltage()*0.01)+" V");
         infoL->setElectricResidue(QString::number(st->getElectricResidue())+" %");
-        int s=st->getRobotStatus();
+        int s=st->getRobotWorkMode();
         QString stastr;
         switch (s) {
-        case RobotStatus::OFF:
-             stastr=CH("待机模式");
+        case RobotWorkMode::OFF:
+             stastr=CH("待机");
             break;
-        case RobotStatus::DEBUG:
-             stastr=CH("调试模式");
+        case RobotWorkMode::DEBUG:
+             stastr=CH("调试");
             break;
-        case RobotStatus::AUTO:
-             stastr=CH("自动巡检");
+        case RobotWorkMode::AUTO:
+             stastr=CH("自动");
             break;
-        case RobotStatus::SPECIAL:
+        case RobotWorkMode::SPECIAL:
              stastr=CH("特巡");
             break;
-        case RobotStatus::BACK:
+        case RobotWorkMode::BACK:
              stastr=CH("返航");
             break;
         default:
+            stastr=CH("未知");
             break;
+        }  
+        infoL->setRobotWorkMode(stastr);
+        int sta=st->getRobotStatus();
+        if(sta>0&&sta<16)
+        {
+              infoL->setRobotStatus(robotStatus.at(sta-1));
+        }else{
+              infoL->setRobotStatus(CH("未知"));
         }
-        infoL->setRobotStatus(stastr);
+        if(sta==1&&s==RobotWorkMode::OFF)
+        {
+             isStart=true;
+        }
+        if(st->getElectricResidue()>=96)
+        {
+            charge=true;
+        }
+        if(sta==2||sta==1)
+        {
+               isPause=true;
+              isBack=true;
+        }
+        if(sta==4||sta==1)
+        {
+             isContinue=true;
+             isBack=true;
+        }
     }
    if(dat->getDataId()==-1)
    {
@@ -594,6 +664,7 @@ void CloudWidget::setLabelIma(Substationdata* dat,QList<int>*is)
    QHash<int,PreinstallPoint*> *p=term->getPointInfo();
    QHash<int,PreinstallPoint*>::const_iterator it=p->find(dat->getSonPos());;
    QString postr,sonstr,datatype;
+   infoL->setData(CH("正常"));
    if(dat->getPos()>=2000)
    {
        QImage *img=new QImage();
@@ -620,14 +691,19 @@ void CloudWidget::setLabelIma(Substationdata* dat,QList<int>*is)
            infoL->setData(CH("正常"));
        }
    }else if(dat->getPos()>=1000&&dat->getPos()<2000){
-      postr=CH("拐点");  
+       if(dat->getPos()==positionL->getFirstPoint())
+       {
+            postr=CH("起始点");
+       }else{
+            postr=CH("拐点");
+       }
    }
    infoL->setPos(postr);
    infoL->setSonPos(sonstr);
    infoL->setDatatype(datatype);
    if(dat->getDatatype()==2)
    {
-        infoL->setData(QString::number(dat->getData()*0.01));
+        infoL->setData(QString::number(dat->getData()*0.01)+CH(" ℃"));
         if(dat->getData()>=it.value()->getAlarmTemp())
         {
              emit haveAlarm(deviceid->currentIndex());
@@ -1311,8 +1387,11 @@ void  CloudWidget::cloudCapture_click()
 ************************************************************************************/
 void CloudWidget::setInspectingStatus(QString cmd)
  {
-        inspecting_Pause_Continue->setEnabled(true);
-        inspecting_Start_Stop->setEnabled(true);
+        inspecting_Pause->setEnabled(true);
+        inspecting_Start->setEnabled(true);
+        inspecting_Continue->setEnabled(true);
+        inspecting_Stop->setEnabled(true);
+
         inspecting_special->setEnabled(true);
         downima->loadingStart(false,"");
         if(cmd=="error")
@@ -1333,24 +1412,47 @@ void CloudWidget::setInspectingStatus(QString cmd)
  输出参数:
  返回值:
  ************************************************************************************/
-void CloudWidget::inspecting_Start_StopClick(){
-    if( sportT.isRunning() ) {
-        sportid = 0;
-        inspecting_Pause_Continue->setEnabled(false);
-        inspecting_Start_Stop->setEnabled(false);
-        inspecting_special->setEnabled(false);
-        if( cmdStart_Stop == 0 )
-        {
-            sportT.iceSendCommand(STATUS_STARTAUTO);
-            downima->loadingStart(true,CH("开始自动巡检"));
-        }
-        else
-        {
-            sportT.iceSendCommand(STATUS_QUICKBACK);
-            downima->loadingStart(true,CH("快速返航"));
-        }      
-    }
+void CloudWidget::inspecting_StartClick()
+{
+
+     if(!isStart)
+     {
+        QMessageBox::information(this,CH("提示"),CH("机器人未处于待机模式，请稍后再试"));
+        return;
+     }
+     if(!charge)
+     {
+           QMessageBox::information(this,CH("提示"),CH("机器人电量较低，请稍后再试"));
+     }
+     if( sportT.isRunning() ) {
+         inspecting_Start->setEnabled(false);
+         inspecting_Stop->setEnabled(false);
+         inspecting_Pause->setEnabled(false);
+         inspecting_Continue->setEnabled(false);
+
+         sportT.iceSendCommand(STATUS_STARTAUTO);
+         downima->loadingStart(false,CH("开始巡检"));
+     }
 }
+void CloudWidget::inspecting_StopClick()
+{
+    if(!isBack)
+    {
+       QMessageBox::information(this,CH("提示"),CH("机器人未处于自动巡检状态"));
+       return;
+    }
+    if( sportT.isRunning() ) {
+        inspecting_Start->setEnabled(false);
+        inspecting_Stop->setEnabled(false);
+        inspecting_Pause->setEnabled(false);
+        inspecting_Continue->setEnabled(false);
+
+        sportT.iceSendCommand(STATUS_QUICKBACK);
+        downima->loadingStart(false,CH("快速返航"));
+    }
+
+}
+
 /***********************************************************************************
 函数名:    	 inspecting_Pause_ContinueClick
 函数描述:	 暂停巡检,继续巡检 命令发送
@@ -1358,28 +1460,53 @@ void CloudWidget::inspecting_Start_StopClick(){
 输出参数:
 返回值:
 ************************************************************************************/
-void CloudWidget::inspecting_Pause_ContinueClick()
-{  
-    if(sportT.isRunning())
+void CloudWidget::inspecting_PauseClick()
+{
+    if(!isPause)
     {
-        sportid=1;
-        inspecting_Pause_Continue->setEnabled(false);
-        inspecting_Start_Stop->setEnabled(false);
-        inspecting_special->setEnabled(false);
-        if(cmdPause_Continue==0)
-        {
-            sportT.iceSendCommand(STATUS_PAUSEAUTO);
-            downima->loadingStart(true,CH("暂停自动巡检"));
-        }
-        else
-        {
-            sportT.iceSendCommand(STATUS_CONTINUEAUTO);
-            downima->loadingStart(true,CH("继续自动巡检"));
-        }
+       QMessageBox::information(this,CH("提示"),CH("机器人未处于自动巡检状态"));
+       return;
+    }
+    if( sportT.isRunning() ) {
+        inspecting_Start->setEnabled(false);
+        inspecting_Stop->setEnabled(false);
+        inspecting_Pause->setEnabled(false);
+        inspecting_Continue->setEnabled(false);
+
+        sportT.iceSendCommand(STATUS_PAUSEAUTO);
+        downima->loadingStart(false,CH("暂停巡检"));
+    }
+
+}
+void CloudWidget::inspecting_ContinueClick()
+{
+    if(!isContinue)
+    {
+       QMessageBox::information(this,CH("提示"),CH("机器人未处于自动巡检状态"));
+       return;
+    }
+    if( sportT.isRunning() ) {
+        inspecting_Start->setEnabled(false);
+        inspecting_Stop->setEnabled(false);
+        inspecting_Pause->setEnabled(false);
+        inspecting_Continue->setEnabled(false);
+
+        sportT.iceSendCommand(STATUS_CONTINUEAUTO);
+        downima->loadingStart(false,CH("继续巡检"));
     }
 }
+
 void CloudWidget::inspecting_special_Click()
 {
+    if(!isStart)
+    {
+       QMessageBox::information(this,CH("提示"),CH("机器人未处于待机模式，请稍后再试"));
+       return;
+    }
+    if(!charge)
+    {
+          QMessageBox::information(this,CH("提示"),CH("机器人电量较低，请稍后再试"));
+    }
     cardsW->show();
 }
 void CloudWidget::inspect_send(QList<int> *l)
@@ -1425,36 +1552,55 @@ void CloudWidget::cmdStatus(int c, int s)
     if(c==15)
     {
             cardsW->setMsginfo(s);
-    }else
+    }
+    else
     {
-        inspecting_Pause_Continue->setEnabled(true);
-        inspecting_Start_Stop->setEnabled(true);
-        inspecting_special->setEnabled(true);
+        inspecting_Pause->setEnabled(true);
+        inspecting_Continue->setEnabled(true);
+        inspecting_Start->setEnabled(true);
+        inspecting_Stop->setEnabled(true);
+
+        inspecting_special->setEnabled(true);  
         downima->loadingStart(false,"");
-        if(sportid==0)
-        {
-               if(cmdStart_Stop==0)
-               {
-                    cmdStart_Stop=1;
-                    inspecting_Start_Stop->setText(CH("快速返航"));
-               }else
-               {
-                   cmdStart_Stop=0;
-                   inspecting_Start_Stop->setText(CH("开始巡检"));
-               }
-        }else{
-            if(cmdPause_Continue==0)
-            {
-                cmdPause_Continue=1;
-                inspecting_Pause_Continue->setText(CH("继续巡检"));
-            }else
-            {
-                 cmdPause_Continue=0;
-                 inspecting_Pause_Continue->setText(CH("暂停巡检"));
-            }
-       }
-       QMessageBox::information(this,CH("提示 "),CH("发送命令成功"));
-  }
+
+        QMessageBox::information(this,CH("提示 "),CH("发送命令成功"));
+   }
 
 }
 
+void CloudWidget::netErr()
+{
+    LOGI("cloudwidget neterr1");
+    setButtonstatus(false);
+    disconnect(deviceid,SIGNAL(currentIndexChanged(int)),this,SLOT(deviceidChange(int)));
+    deviceid->clear();
+    inspecting_Start->setEnabled(false);
+    inspecting_Stop->setEnabled(false);
+    inspecting_Pause->setEnabled(false);
+    inspecting_Continue->setEnabled(false);
+    inspecting_special->setEnabled(false);
+    log_bt->setEnabled(false);
+    device_logInfo.setLoginID(-1);
+     LOGI("cloudwidget neterr2");
+    if(lRealPlayHandle!=-1)
+    {
+            NET_DVR_StopRealPlay(lRealPlayHandle);
+            lRealPlayHandle=-1;
+#ifdef   SDK_REALPLAY
+            PlayM4_Stop(lPort);
+            PlayM4_CloseStream(lPort);
+            PlayM4_FreePort(lPort);
+#endif
+    }
+
+   stopGray();
+   opencloudw->setEnabled(false);
+
+   opencloudw->setText(CH("显示视频"));
+   leftupLayout->setCurrentWidget(normalWid);
+   leftdownLayout->setCurrentWidget(infraredWid);
+   LOGI("cloudwidget neterr3");
+   nete=true;
+   emit exitprocess();
+   LOGI("cloudwidget neterr");
+}

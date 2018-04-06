@@ -11,8 +11,12 @@ public:
     void translateLanguage();
     ~TitleWidget();
     void setAlarmBackground(bool);
-signals:
+    void setMsg(const QString& m)
+    {
+        msg->setText(m);
+    }
 
+signals:
     void showMainMenu();
     void closeWidget();
     void showMin();
@@ -24,18 +28,22 @@ public slots:
 
 private slots:
     void flashTimeout();
-
+    void muicTimeout();
 private:
     QPoint press_point;//鼠标按下去的点
     bool is_move;
 
     QLabel *version_title; //标题
+    QLabel *msg;
     PushButton *main_menu_button; //主菜单
     PushButton *close_button; //关闭
     PushButton *min_button;
     QList<ToolButton *> button_list;
 
     QTimer *flashTime;
+    QTimer * muic;
+
+    int sec=0;
 };
 
 #endif // TITLEWIDGET_H

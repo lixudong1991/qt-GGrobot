@@ -23,6 +23,7 @@ public:
     {
         userDevices=devices;
     }
+    void netError();
 private slots:
     void deviceIdchange(int);
     void posSizeChange(QString);
